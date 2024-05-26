@@ -5,8 +5,6 @@ import { useUserQuery } from '@/services/user';
 import Loading from '@/components/Loading';
 import UserPostList from '@/components/UserPostList';
 
-export const POST__KEY = '/posts';
-
 function UserPosts() {
   const { data: user } = useUserQuery();
 

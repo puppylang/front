@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Post } from '@/types/post';
 import { UserDeleteError } from '@/types/user';
 
-import { POST__KEY } from './post';
+import { POST_KEY } from './post';
 
 const DEV_SERVER_URL = 'http://localhost:8000';
 
@@ -56,7 +56,7 @@ export const useLikeCancelMutation = (id: string) => {
   return useMutation({
     mutationFn: (id: string) => deleteLike(id),
     onSuccess: () => {
-      queryClient.setQueryData([POST__KEY, id], (prev: Post) => {
+      queryClient.setQueryData([POST_KEY, id], (prev: Post) => {
         if (prev.like_count === undefined) return;
 
         return { ...prev, is_liked: false, like_count: prev.like_count - 1 };
@@ -71,7 +71,7 @@ export const useLikePostMutation = (id: string) => {
   return useMutation({
     mutationFn: (id: string) => createLike(id),
     onSuccess: () => {
-      queryClient.setQueryData([POST__KEY, id], (prev: Post) => {
+      queryClient.setQueryData([POST_KEY, id], (prev: Post) => {
         if (prev.like_count === undefined) return;
 
         return { ...prev, is_liked: true, like_count: prev.like_count + 1 };

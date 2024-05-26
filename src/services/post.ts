@@ -5,12 +5,12 @@ import { PageResponse } from '@/types/response';
 import { UserDeleteError } from '@/types/user';
 import { fetcherWithSSRToken, fetcherWithToken } from '@/utils/request';
 
-export const POST__KEY = '/posts';
+export const POST_KEY = '/posts';
 export const MESSAGE_POST_KEY = '/chat/post';
 
 export const createPost = async (postData: Post) => {
   try {
-    const data = await fetcherWithToken<Post>(POST__KEY, { method: 'POST', data: postData });
+    const data = await fetcherWithToken<Post>(POST_KEY, { method: 'POST', data: postData });
     return data;
   } catch (err) {
     if (err instanceof UserDeleteError) {
@@ -21,7 +21,7 @@ export const createPost = async (postData: Post) => {
 
 export const getPosts = async () => {
   try {
-    const data = await fetcherWithToken<PageResponse<Post[]>>(POST__KEY);
+    const data = await fetcherWithToken<PageResponse<Post[]>>(POST_KEY);
     return data;
   } catch (err) {
     if (err instanceof UserDeleteError) {
@@ -32,7 +32,7 @@ export const getPosts = async () => {
 
 export const getPostsWithPaging = async ({ page = 0, size = 10 }: PageParams) => {
   try {
-    const data = await fetcherWithToken<PageResponse<Post[]>>(`${POST__KEY}?size=${size}&page=${page}`);
+    const data = await fetcherWithToken<PageResponse<Post[]>>(`${POST_KEY}?size=${size}&page=${page}`);
     return data;
   } catch (err) {
     if (err instanceof UserDeleteError) {
@@ -43,14 +43,14 @@ export const getPostsWithPaging = async ({ page = 0, size = 10 }: PageParams) =>
 
 export const usePostDetailQuery = (id: string) => {
   return useQuery({
-    queryKey: [POST__KEY, id],
-    queryFn: () => fetcherWithToken<Post>(`${POST__KEY}/${id}`),
+    queryKey: [POST_KEY, id],
+    queryFn: () => fetcherWithToken<Post>(`${POST_KEY}/${id}`),
   });
 };
 
 export const updatePost = async (id: string, postData: Post) => {
   try {
-    const data = await fetcherWithToken(`${POST__KEY}/${id}`, { method: 'PUT', data: postData });
+    const data = await fetcherWithToken(`${POST_KEY}/${id}`, { method: 'PUT', data: postData });
     return data;
   } catch (err) {
     if (err instanceof UserDeleteError) {
@@ -63,19 +63,19 @@ export const useUpdatePost = (id: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: [POST__KEY, id],
+    mutationKey: [POST_KEY, id],
     mutationFn: ({ id, postData }: { id: string; postData: Post }) => updatePost(id, postData),
     onSuccess: response => {
       if (!response) return;
 
-      queryClient.setQueryData([POST__KEY, id], () => ({ ...response }));
+      queryClient.setQueryData([POST_KEY, id], () => ({ ...response }));
     },
   });
 };
 
 export const deletePost = async (id: string) => {
   try {
-    const data = await fetcherWithToken(`${POST__KEY}/${id}`, { method: 'DELETE' });
+    const data = await fetcherWithToken(`${POST_KEY}/${id}`, { method: 'DELETE' });
     return data;
   } catch (err) {
     if (err instanceof UserDeleteError) {
@@ -99,7 +99,7 @@ export const getPostPetDetail = (id: string | null, token?: string) => {
 
 export const updatePostStatus = async (id: string, status: PostStatus) => {
   try {
-    const data = await fetcherWithToken<Post>(`${POST__KEY}/${id}/status`, {
+    const data = await fetcherWithToken<Post>(`${POST_KEY}/${id}/status`, {
       method: 'PUT',
       data: { status },
     });
@@ -116,12 +116,12 @@ export const useUpdatePostStatus = (id: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: [POST__KEY, id],
+    mutationKey: [POST_KEY, id],
     mutationFn: ({ id, status }: { id: string; status: PostStatus }) => updatePostStatus(id, status),
     onSuccess: response => {
       if (!response) return;
 
-      queryClient.setQueryData([POST__KEY, id], (prev: Post) => {
+      queryClient.setQueryData([POST_KEY, id], (prev: Post) => {
         return { ...prev, status: response.status };
       });
     },

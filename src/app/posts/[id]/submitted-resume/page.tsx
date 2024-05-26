@@ -7,7 +7,7 @@ import { TfiAngleRight } from 'react-icons/tfi';
 
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { createChatRoom } from '@/services/chat';
-import { POST__KEY, updatePost } from '@/services/post';
+import { POST_KEY, updatePost } from '@/services/post';
 import { RESUMES_KEY, updateResume } from '@/services/resume';
 import { USER_QUERY_KEY } from '@/services/user';
 import { CreateChatType } from '@/types/chat';
@@ -45,8 +45,8 @@ function SubmittedResumeUI({ id }: { id: string }) {
   const queryClient = useQueryClient();
 
   const { data: postDetail } = useSuspenseQuery({
-    queryKey: [POST__KEY, id],
-    queryFn: () => fetcherWithToken<Post>(`${POST__KEY}/${id}`),
+    queryKey: [POST_KEY, id],
+    queryFn: () => fetcherWithToken<Post>(`${POST_KEY}/${id}`),
   });
 
   const { data: resumes } = useSuspenseQuery({
