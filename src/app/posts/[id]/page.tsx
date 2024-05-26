@@ -23,7 +23,7 @@ import Toast from '@/components/Toast';
 
 import PostStatusUpdateBottomSheet from './PostBottomSheet/PostStatusUpdateBottomSheet';
 import PostUpdateBottomSheet from './PostBottomSheet/PostUpdateBottomSheet';
-import Resume from './resume/page';
+import Resume from './resume';
 import { IconHeartOutline, IconView, IconHeartFill } from '../../../../public/assets/svgs';
 import { PostInfo } from '../../../components/PostInfo';
 
