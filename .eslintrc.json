@@ -1,0 +1,112 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "extends": [
+    "plugin:@tanstack/eslint-plugin-query/recommended",
+    "airbnb",
+    "airbnb/hooks",
+    "plugin:react/recommended",
+    "plugin:jsx-a11y/recommended",
+    "eslint-config-prettier",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "plugin:import/recommended",
+    "next/core-web-vitals"
+  ],
+  "plugins": ["import", "@typescript-eslint"],
+  "rules": {
+    "camelcase": "off",
+    "react/no-array-index-key": "warn",
+    "react/jsx-props-no-spreading": "off",
+    "react/jsx-filename-extension": [
+      "error",
+      { "extensions": [".js", ".jsx", ".ts", ".tsx", ".mjs"] }
+    ],
+    "jsx-a11y/label-has-associated-control": [
+      2,
+      {
+        "labelAttributes": ["htmlFor"]
+      }
+    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "import/prefer-default-export": "off",
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          ["builtin", "external"],
+          ["type", "internal"],
+          ["parent", "sibling", "index"]
+        ],
+        "pathGroups": [
+          {
+            "pattern": "{@/components,@/components/*}",
+            "group": "internal",
+            "position": "after"
+          },
+          {
+            "pattern": "{@/hooks,@/hooks/*}",
+            "group": "internal"
+          },
+          {
+            "pattern": "{@/services,@/services/*}",
+            "group": "type"
+          },
+          {
+            "pattern": "{@/states,@/states/*}",
+            "group": "type"
+          },
+          {
+            "pattern": "{@/types,@/types/*}",
+            "group": "type"
+          },
+          {
+            "pattern": "{@/utils,@/utils/*}",
+            "group": "type"
+          },
+          {
+            "pattern": "{styles,./*.css,../*.css,../*.module.css}",
+            "group": "index",
+            "position": "after"
+          }
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "no-use-before-define": "off",
+    "consistent-return": "off",
+    "no-shadow": "off",
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        "additionalHooks": "useRecoilCallback"
+      }
+    ],
+    "@tanstack/query/exhaustive-deps": "warn",
+    "react/require-default-props": "off"
+  }
+}

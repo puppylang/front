@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+input {
+	outline: none;
+}
+
+@keyframes load {
+	0% {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animation-load {
+	opacity: 0;
+	transition: 0.2s;
+	animation: load 0.5s 0.3s cubic-bezier(0.35, 0.22, 0.32, 1.27) forwards;
+}
+
+@keyframes show {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+.animation-show {
+	opacity: 0;
+	transition: 0.2s;
+	animation: show 0.5s 0.3s cubic-bezier(0.35, 0.22, 0.32, 1.27) forwards;
+}
+.animation-toast {
+	opacity: 0;
+	animation: animation-toast 2.8s ease-in-out alternate;
+}
+
+.animation-popup {
+	transform: translateY(100%);
+	opacity: 1;
+	animation: animation-popup 0.3s ease;
+}
+
+.popup-exit {
+	transform: translateY(0);
+	opacity: 1;
+}
+.popup-exit-active {
+	transform: translateY(80%);
+	opacity: 0;
+	transition:
+		opacity 400ms ease-in-out,
+		transform 400ms ease-in-out;
+}
+
+.bottomSheet-enter {
+	transform: translateY(100%);
+}
+
+.bottomSheet-enter-active {
+	transform: translateY(0);
+	transition: transform 300ms ease-in-out;
+}
+
+.bottomSheet-exit {
+	transform: translateY(0);
+	opacity: 1;
+}
+
+.bottomSheet-exit-active {
+	transform: translateY(80%);
+	opacity: 0;
+	transition:
+		opacity 400ms ease-in-out,
+		transform 400ms ease-in-out;
+}
+
+@keyframes animation-toast {
+	0% {
+		opacity: 0;
+	}
+
+	20% {
+		opacity: 1;
+	}
+
+	80% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+@keyframes animation-popup {
+	0% {
+		transform: translateY(0);
+		opacity: 1;
+	}
+
+	100% {
+		transform: translateY(80%);
+		opacity: 0;
+	}
+}

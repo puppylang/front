@@ -1,0 +1,11 @@
+.date-time-picker input {
+	height: 40px;
+	box-sizing: border-box;
+}
+
+.MuiTypography-overline {
+	display: none;
+}
+.MuiPickersToolbar-content {
+	align-items: flex-end;
+}
