@@ -8,8 +8,7 @@ import { getKakaoAuth, getNaverAuth } from '@/services/user';
 import { LoggedFrom } from '@/types/user';
 import { saveToken } from '@/utils/token';
 
-// eslint-disable-next-line
-import lottieLoadingJSON from '../../../../public/loading.json';
+import { LoddingJSON } from '../../../../public/assets/json';
 
 export default function LoginSuccess() {
   const [isFirstLogin, setIsFirstLogin] = useState<boolean>();
@@ -50,7 +49,7 @@ export default function LoginSuccess() {
 
   return (
     <div className='h-screen flex flex-col items-center justify-center'>
-      <Lottie loop animationData={lottieLoadingJSON} play className='w-36' />
+      <Lottie loop animationData={LoddingJSON} play className='w-36' />
     </div>
   );
 }
