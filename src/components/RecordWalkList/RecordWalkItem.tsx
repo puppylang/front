@@ -38,7 +38,7 @@ function RecordWalkItem({ walk, className, role }: RecordWalkItemProps) {
       }}
     >
       <div className={`${className} flex gap-x-4 p-4`}>
-        {walk.pet && <PetProfile pet={walk.pet} width={45} height={45} minW={45} />}
+        {walk.pet && <PetProfile pet={walk.pet} width={45} height={45} minW={45} className='w-[45px] h-[45px]' />}
 
         <div className='walk-info w-full flex mt-[-4px]'>
           <RecordInfo label='산책 거리' value={recordedDistance} containerStyle='flex-1' />
