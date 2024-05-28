@@ -2,8 +2,11 @@
 
 import { CgSpinner } from 'react-icons/cg';
 
+import RecordWalkItem from '@/components/RecordWalkList/RecordWalkItem';
+import { useRecordWalkByUser } from '@/services/walk';
 import { Gender } from '@/types/pet';
 import { Resume } from '@/types/resume';
+import { WalkRole } from '@/types/walk';
 
 import { Form } from '@/components/Form';
 import ImageUpload from '@/components/ImageUpload';
@@ -25,6 +28,8 @@ export default function ResumeInfoPopup({
   getSelectBtnText,
   isSelectLoading,
 }: ResumeInfoPopupProps) {
+  const { data: walkList, isLoading } = useRecordWalkByUser(resume.user_id, WalkRole.PetOwner);
+
   return (
     <section className='px-4 pt-4'>
       <h2 className='text-center font-Jalnan py-2 text-lg'>{resume.name}님의 지원서</h2>
@@ -57,21 +62,28 @@ export default function ResumeInfoPopup({
       />
 
       <Form.Title title='산책 경험'>
-        <button type='button' className='block bg-gray-3 w-full py-7 rounded-xl'>
-          <div className='flex justify-center items-center text-[#7F7F7F]'>
-            <p className='text-xs'>산책 불러오기</p>
-          </div>
-          <p className='text-xs text-[#7F7F7F]'>해당 영역을 클릭하면 앱에 등록된 산책 기록을 불러와요.</p>
-        </button>
+        <p className='text-xs mb-2 text-text-1'>앱에 등록된 최신 산책 기록 10개를 불러옵니다.</p>
+        <div className='bg-gray-3 w-full p-2 py-3 rounded-xl px-3 h-[200px] overflow-y-scroll flex flex-col gap-y-3'>
+          {!isLoading && walkList && walkList.length ? (
+            walkList.map(walk => (
+              <RecordWalkItem
+                key={walk.id}
+                className='drop-shadow-sm bg-white-1 rounded-xl'
+                walk={walk}
+                role={WalkRole.PetOwner}
+              />
+            ))
+          ) : (
+            <div className='h-full flex items-center flex-col justify-center'>
+              <p className='text-xs'>등록된 산책 기록이 없어요.</p>
+            </div>
+          )}
+        </div>
       </Form.Title>
 
       <Form.Number title='연락처' value={resume.phone_number} onChange={() => {}} disabled />
 
-      <Form.Textarea disabled title='간단 자기소개' value={resume.introduction} onChange={() => {}}>
-        <p className='text-xs mb-1 text-text-1'>나를 소개할 수 있는 인사말로 시작해요.</p>
-        <p className='text-xs mb-1 text-text-1'>강아지 산책 경험이나 강아지를 언제 키워봤는지 작성하면 좋아요.</p>
-        <p className='text-xs mb-1 text-text-1'>해당 견종 산책 경험이 있는지 작성하면 좋아요.</p>
-      </Form.Textarea>
+      <Form.Textarea disabled title='간단 자기소개' value={resume.introduction} onChange={() => {}} />
 
       <div className='grid grid-cols-2 gap-x-3 text-sm sticky bottom-0 bg-white left-0 py-4'>
         <button

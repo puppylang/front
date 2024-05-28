@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { ReactNode } from 'react';
 
-import { IconUserDefault } from '../../../public/assets/svgs';
+import { IconDog, IconUserDefault } from '../../../public/assets/svgs';
 
 function CardContainer({ className = '', children }: { className?: string; children: ReactNode }) {
   return <div className={`grid grid-cols-[70px_1fr] p-4 ${className}`}>{children}</div>;
@@ -13,18 +13,17 @@ function CardImageContainer({
   className = '',
   src,
   alt = 'profile',
+  type = 'USER',
 }: {
   className?: string;
+  type?: 'USER' | 'PET';
   src?: string;
   alt?: string;
 }) {
   return (
-    <div className='rounded-full w-[70px] h-[70px] overflow-hidden'>
-      {src ? (
-        <Image className={`rounded-full ${className}`} src={src} alt={alt} width={70} height={70} />
-      ) : (
-        <IconUserDefault alt='default user image' width={70} height={70} />
-      )}
+    <div className={`rounded-full w-[70px] h-[70px] overflow-hidden flex justify-center items-center ${className}`}>
+      {src && <Image className='rounded-full' src={src} alt={alt} width={70} height={70} />}
+      {!src && type === 'USER' ? <IconUserDefault alt='default user' width={35} height={35} /> : <IconDog />}
     </div>
   );
 }

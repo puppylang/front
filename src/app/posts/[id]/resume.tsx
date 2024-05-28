@@ -1,16 +1,19 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { FiPlus } from 'react-icons/fi';
 
+import RecordWalkItem from '@/components/RecordWalkList/RecordWalkItem';
 import { createResume } from '@/services/resume';
 import { useUserQuery } from '@/services/user';
+import { useCalendarWalks } from '@/services/walk';
 import { Gender } from '@/types/pet';
-import { ResumeFormType } from '@/types/post';
+import { ResumeFormType } from '@/types/resume';
+import { WalkRole } from '@/types/walk';
 
 import { Form } from '@/components/Form';
 import ImageUpload from '@/components/ImageUpload';
 import Loading from '@/components/Loading';
+import NativeLink from '@/components/NativeLink';
 
 const DEFAULT_FORM: ResumeFormType = {
   image: '',
@@ -20,6 +23,7 @@ const DEFAULT_FORM: ResumeFormType = {
   birth_year: '',
   has_puppy: null,
   gender: null,
+  has_walk_record: null,
 };
 
 interface ResumeProps {
@@ -32,6 +36,11 @@ export default function Resume({ id, onClose }: ResumeProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { data: user } = useUserQuery();
+  const { data: walkList, isLoading: isLoadingWalkList } = useCalendarWalks({
+    from: '2024-04-30T15:00:00.000Z',
+    to: '2024-05-31T14:59:59.999Z',
+    role: WalkRole.PetOwner,
+  });
 
   const isDisabledSubmitBtn =
     formState.birth_year.length !== 4 ||
@@ -41,7 +50,12 @@ export default function Resume({ id, onClose }: ResumeProps) {
 
   const sendResume = async () => {
     if (!user) return;
-    const { status } = await createResume({ ...formState, user_id: user.id, post_id: id });
+    const { status } = await createResume({
+      ...formState,
+      user_id: user.id,
+      post_id: id,
+      has_walk_record: Boolean(walkList?.length),
+    });
     if (status === 201) {
       setIsLoading(false);
       onClose();
@@ -114,13 +128,26 @@ export default function Resume({ id, onClose }: ResumeProps) {
         />
 
         <Form.Title title='산책 경험'>
-          <button type='button' className='block bg-gray-3 w-full py-7 rounded-xl'>
-            <div className='flex justify-center items-center text-[#7F7F7F]'>
-              <FiPlus className='text-xs' />
-              <p className='text-xs'>산책 불러오기</p>
-            </div>
-            <p className='text-xs text-[#7F7F7F]'>해당 영역을 클릭하면 앱에 등록된 산책 기록을 불러와요.</p>
-          </button>
+          <p className='text-xs mb-2 text-text-1'>앱에 등록된 나의 산책 기록 10개를 불러와요!</p>
+          <div className='bg-gray-3 w-full p-2 py-3 rounded-xl px-3 h-[200px] overflow-y-scroll flex flex-col gap-y-3'>
+            {!isLoadingWalkList && walkList && walkList.length ? (
+              walkList.map(walk => (
+                <RecordWalkItem
+                  key={walk.id}
+                  className='drop-shadow-sm bg-white-1 rounded-xl'
+                  walk={walk}
+                  role={WalkRole.PetOwner}
+                />
+              ))
+            ) : (
+              <div className='h-full flex items-center flex-col justify-center'>
+                <p className='text-xs'>등록된 산책 기록이 없어요.</p>
+                <NativeLink href='/walk-role' className='bg-main-3 text-white-1 rounded-lg text-xs px-2 py-1 mt-1'>
+                  산책하러 가기
+                </NativeLink>
+              </div>
+            )}
+          </div>
         </Form.Title>
 
         <Form.Number

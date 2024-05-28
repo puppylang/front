@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { ResumeFormType } from '@/types/post';
+import { ResumeFormType } from '@/types/resume';
 import { Resume } from '@/types/resume';
 import { fetcherStatusWithToken, fetcherWithToken } from '@/utils/request';
 
