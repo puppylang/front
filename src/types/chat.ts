@@ -5,10 +5,14 @@ export interface ChatRoom {
   author_id: string;
   guest_id: string;
   post_id: number;
-  guest_image?: string;
   post: {
     title: string | null;
     pet: Pet;
+    preferred_walk_location: true;
+  };
+  guest: {
+    image: string | null;
+    name: string;
   };
   user: {
     image: string | null;

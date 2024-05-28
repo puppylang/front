@@ -283,17 +283,23 @@ const Message = React.memo(
     return (
       <>
         {isNotReadedFirstMessage && (
-          <span className='my-4 m-auto flex justify-center text-xs bg-gray-200 text-text-3  w-[130px] py-1 rounded-lg'>
+          <span className='my-4 m-auto flex justify-center text-xs bg-gray-200 text-text-3 w-[130px] py-1 rounded-lg'>
             여기까지 읽었습니다.
           </span>
         )}
         {!isSameDate && <p className='text-xs text-text-2 text-center'>{getFullYear(message.time)}</p>}
         <div className={`flex w-full mb-3 ${isMyChat && 'flex-row-reverse'}`} ref={messageRef}>
           {message.user_image ? (
-            <Image width={50} height={50} src={message.user_image} alt='example' className='rounded-full self-start' />
+            <Image
+              width={50}
+              height={50}
+              src={message.user_image}
+              alt='example'
+              className='rounded-full self-start w-[50px] h-[50px]'
+            />
           ) : (
             <div className='bg-gray-200 rounded-full w-[50px] h-[50px] flex justify-center items-center'>
-              <IconUserDefault className='w-[40px] h-[40px]' />
+              <IconUserDefault className='w-[35px] h-[35px]' />
             </div>
           )}
           <div className='flex self-end relative'>
@@ -302,8 +308,8 @@ const Message = React.memo(
             )}
             <div className={`relative `}>
               <p
-                className={`p-2 h-auto rounded-xl text-sm self-start max-w-[200px] ${
-                  isMyChat ? 'bg-main-2 text-white-1 mr-3 ml-1' : 'bg-white-1 ml-3 mr-1'
+                className={`p-[6px_12px] h-auto rounded-xl text-sm self-start max-w-[200px] mx-2 ${
+                  isMyChat ? 'bg-main-2 text-white-1' : 'bg-white-1'
                 }`}
               >
                 {message.text}
