@@ -195,39 +195,38 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
             className='animation-show sticky left-0 bottom-0 flex justify-center bg-white border-[1px] border-gray-3'
           >
             <div className='container flex justify-between items-center p-4'>
+              <div className='icon-button-container flex gap-x-2'>
+                <div className='like flex items-center gap-x-1'>
+                  <button type='button' onClick={handleClickLike}>
+                    {postData.is_liked ? <IconHeartFill /> : <IconHeartOutline />}
+                  </button>
+                  <span className='count text-xs text-text-2'>{postData.like_count?.toLocaleString()}</span>
+                </div>
+
+                <div className='view flex items-center gap-x-1'>
+                  <IconView />
+                  <span className='count text-xs text-text-2'>{postData.view_count?.toLocaleString()}</span>
+                </div>
+              </div>
+
               {user?.id === postData.author?.id ? (
                 <NativeLink
                   href={`/posts/${id}/submitted-resume`}
-                  className='bg-main-1 text-white text-sm w-full py-3 rounded-xl font-bold text-center'
+                  className='bg-main-2 text-white text-sm h-8 leading-8 px-4 rounded-[10px]'
                 >
-                  지원서보기 ({resumes?.length})
+                  지원서보기 ({resumes && resumes?.length > 99 ? '99+' : resumes?.length || 0})
                 </NativeLink>
               ) : (
-                <>
-                  <div className='icon-button-container flex gap-x-2'>
-                    <div className='like flex items-center gap-x-1'>
-                      <button type='button' onClick={handleClickLike}>
-                        {postData.is_liked ? <IconHeartFill /> : <IconHeartOutline />}
-                      </button>
-                      <span className='count text-xs text-text-2'>{postData.like_count?.toLocaleString()}</span>
-                    </div>
-
-                    <div className='view flex items-center gap-x-1'>
-                      <IconView />
-                      <span className='count text-xs text-text-2'>{postData.view_count?.toLocaleString()}</span>
-                    </div>
-                  </div>
-                  <button
-                    type='button'
-                    className={`${
-                      filteredMyResume.length && 'opacity-40'
-                    } text-white bg-main-2 rounded-[10px] w-[80px] h-8 text-sm`}
-                    onClick={() => setIsOpenPopup(true)}
-                    disabled={Boolean(filteredMyResume.length)}
-                  >
-                    {filteredMyResume.length ? '신청완료' : '신청하기'}
-                  </button>
-                </>
+                <button
+                  type='button'
+                  className={`${
+                    filteredMyResume.length && 'opacity-40'
+                  } text-white bg-main-2 rounded-[10px] w-[80px] h-8 text-sm`}
+                  onClick={() => setIsOpenPopup(true)}
+                  disabled={Boolean(filteredMyResume.length)}
+                >
+                  {filteredMyResume.length ? '신청완료' : '신청하기'}
+                </button>
               )}
             </div>
           </section>

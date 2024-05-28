@@ -8,6 +8,7 @@ export interface ResumeFormType {
   name: string | null;
   has_puppy: boolean | null;
   gender: Gender | null;
+  has_walk_record: boolean | null;
 }
 
 export interface Resume {
@@ -20,7 +21,7 @@ export interface Resume {
   created_at: Date;
   is_checked: boolean;
   is_selected: boolean;
-
+  has_walk_record: boolean;
   has_puppy?: boolean;
   image?: string;
   post_id: number;

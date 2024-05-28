@@ -135,28 +135,28 @@ function SubmittedResumeUI({ id }: { id: string }) {
   return isMyPost ? (
     <div className='p-4 container'>
       <ul>{postDetail && <PostItem post={postDetail} />}</ul>
-      <section className='my-4 py-2 px-4 bg-white rounded-[10px] shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'>
-        <h1 className='pb-2'>지원자 목록 🐾</h1>
-        <div>
-          {resumes &&
-            resumes.map(resume => (
-              <div className='py-3' key={resume.id}>
-                <button type='button' className='w-full text-left pb-3' onClick={() => onClickResume(resume.id)}>
-                  <Card.Container className='text-text-1 px-0 py-0'>
-                    <Card.ImgContainer src={resume.image} alt={resume.name} />
+      <section className='my-4 pt-4 bg-white rounded-[10px] shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'>
+        <h2 className='px-4 pb-2 text-[#666666] font-semibold text-sm'>지원자 목록</h2>
+        <ul>
+          {resumes && resumes.length ? (
+            resumes.map((resume, index) => (
+              <li className={`py-3 ${index !== 0 && 'border-t border-gray-3'}`} key={resume.id}>
+                <button type='button' className='w-full text-left pb-3 px-4' onClick={() => onClickResume(resume.id)}>
+                  <Card.Container className='text-text-1 px-0 py-0 items-center'>
+                    <Card.ImgContainer className='bg-gray-3' src={resume.image} alt={resume.name} />
                     <Card.TextContainer>
                       <div className='flex items-center'>
                         <div className='w-full'>
                           <div className='flex items-center'>
-                            <p className='mr-2 text-md'>{resume.name}</p>
-                            <p className='text-sm'>{formatDiffTime(resume.created_at)}전</p>
+                            <p className='mr-2 text-sm'>{resume.name}</p>
+                            <p className='text-xs text-text-2'>{formatDiffTime(resume.created_at)}전</p>
                           </div>
                           <div>
-                            <span className='text-xs mr-1 bg-gray-100 text-gray-700 rounded-md px-2 py-0.5 ring-1 ring-inset ring-gray-500/10'>
-                              산책 경험 다수
-                            </span>
-                            <span className='text-xs bg-main-3 text-gray-100 rounded-md px-2 py-0.5 ring-1 ring-inset ring-blue-600/10'>
+                            <span className='text-[11px] bg-white-1 mr-2 border-[1px] border-main-1 text-main-1 rounded-lg px-2 py-0.5'>
                               {resume.has_puppy ? '반려견 소유' : '반려견 미소유'}
+                            </span>
+                            <span className='text-[11px] bg-white-1 text-text-2 rounded-lg px-2 py-0.5 border-[1px] border-gray-2'>
+                              {resume.has_walk_record ? '산책 경험 다수' : '산책 기록 없음'}
                             </span>
                           </div>
                         </div>
@@ -165,12 +165,12 @@ function SubmittedResumeUI({ id }: { id: string }) {
                     </Card.TextContainer>
                   </Card.Container>
                 </button>
-                <div className='grid grid-cols-2 gap-x-3 text-sm'>
+                <div className='grid grid-cols-2 gap-x-3 text-xs px-4'>
                   <button
                     type='button'
                     className={`${
                       resume.is_selected ? 'bg-[#f66969]' : 'bg-main-1'
-                    } text-white-1 rounded-md h-[36px] flex justify-center items-center`}
+                    } text-white-1 rounded-lg h-[30px] flex justify-center items-center `}
                     onClick={() => onClickSelectBtn(resume)}
                     disabled={isSelectLoading}
                   >
@@ -178,21 +178,19 @@ function SubmittedResumeUI({ id }: { id: string }) {
                   </button>
                   <button
                     type='button'
-                    className='bg-gray-200 rounded-md h-[36px] flex justify-center items-center'
+                    className='bg-gray-3 text-text-2 rounded-lg h-[30px] flex justify-center items-center'
                     onClick={() => onClickChatBtn(resume.user_id, resume.image)}
                     disabled={isChatLoading}
                   >
                     {isChatLoading ? <CgSpinner className='text-text-3 animate-spin w-6 h-6' /> : '채팅하기'}
                   </button>
                 </div>
-              </div>
-            ))}
-          {resumes && resumes.length === 0 && (
-            <PuppyError.Container className='!pt-4 pb-4'>
-              <PuppyError.Title title='아직 지원자가 없어요.' />
-            </PuppyError.Container>
+              </li>
+            ))
+          ) : (
+            <div className=''>아직 지원자가 없습니다.</div>
           )}
-        </div>
+        </ul>
       </section>
       <Popup isOpen={showsPopup} onClose={() => setShowsPopup(false)}>
         {clickedResume && (

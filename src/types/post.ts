@@ -1,4 +1,4 @@
-import { Gender, Pet } from './pet';
+import { Pet } from './pet';
 import { UserType } from './user';
 
 export interface Post {
@@ -38,16 +38,6 @@ export enum PostStatus {
 export interface PageParams {
   page?: number;
   size?: number;
-}
-
-export interface ResumeFormType {
-  image: string;
-  birth_year: string;
-  introduction: string;
-  phone_number: string;
-  name: string | null;
-  has_puppy: boolean | null;
-  gender: Gender | null;
 }
 
 export type BottomSheetType = 'POST_UPDATE' | 'POST_STATUS_UPDATE' | null;

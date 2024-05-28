@@ -34,3 +34,11 @@ export const useRecordWalkDetail = ({ id, role }: { id: string | null; role: Wal
     queryFn: () => (role ? fetcherWithToken<WalkForm>(`${RECORD_WALK_QUERY_KEY}/${id}?role=${role}`) : null),
   });
 };
+
+export const useRecordWalkByUser = (userId: string, role: WalkRole, limit?: number) => {
+  return useQuery({
+    queryKey: [RECORD_WALK_QUERY_KEY, userId],
+    queryFn: () =>
+      fetcherWithToken<WalkForm[]>(`${RECORD_WALK_QUERY_KEY}/user?user_id=${userId}&role=${role}&limit=${limit || 10}`),
+  });
+};

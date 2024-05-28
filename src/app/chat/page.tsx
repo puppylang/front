@@ -16,11 +16,11 @@ import { ChatSkelectonUI, TabSkelectonUI } from './chatSkeletionUI';
 import { IconUserDefault } from '../../../public/assets/svgs';
 
 export default function Chat() {
-  const [selectedRoom, setSelectedRoom] = useState<ChatWritterType>(ChatWritterType.Author);
+  const [selectedType, setSelectedType] = useState<ChatWritterType>(ChatWritterType.Author);
 
   // const serverSentEvent = useRef<EventSource | null>(null);
 
-  const { data: chatRooms, isLoading } = useChatQuery(selectedRoom);
+  const { data: chatRooms, isLoading } = useChatQuery(selectedType);
 
   // useEffect(() => {
   //   serverSentEvent.current = new EventSource('http://localhost:8000/chat/sse', {
@@ -50,26 +50,26 @@ export default function Chat() {
           <ul className='grid grid-cols-2 w-full'>
             <li
               className={`${
-                selectedRoom === ChatWritterType.Author ? 'border-b-text-1 text-text-1' : ' border-b-gray-2 text-text-2'
+                selectedType === ChatWritterType.Author ? 'border-b-text-1 text-text-1' : ' border-b-gray-2 text-text-2'
               } border-b`}
             >
               <button
                 className='w-full h-12 font-semibold text-xs'
                 type='button'
-                onClick={() => setSelectedRoom(ChatWritterType.Author)}
+                onClick={() => setSelectedType(ChatWritterType.Author)}
               >
                 견주
               </button>
             </li>
             <li
               className={`${
-                selectedRoom === ChatWritterType.Guest ? 'border-b-text-1 text-text-1' : 'border-b-gray-2 text-text-2'
+                selectedType === ChatWritterType.Guest ? 'border-b-text-1 text-text-1' : 'border-b-gray-2 text-text-2'
               } border-b`}
             >
               <button
                 type='button'
                 className='w-full h-12 font-semibold text-xs'
-                onClick={() => setSelectedRoom(ChatWritterType.Guest)}
+                onClick={() => setSelectedType(ChatWritterType.Guest)}
               >
                 펫시터
               </button>
@@ -77,7 +77,7 @@ export default function Chat() {
           </ul>
           <ul>
             {chatRooms.map(chatRoom => (
-              <ChatRoomList key={chatRoom.id} chatRoom={chatRoom} />
+              <ChatRoomList key={chatRoom.id} chatRoom={chatRoom} type={selectedType} />
             ))}
           </ul>
         </>
@@ -94,10 +94,13 @@ export default function Chat() {
 
 interface ChatRoomListProps {
   chatRoom: ChatRoom;
+  type: ChatWritterType;
 }
 
-function ChatRoomList({ chatRoom }: ChatRoomListProps) {
-  const { post, user, guest_image, post_id, id, lastMessage } = chatRoom;
+function ChatRoomList({ chatRoom, type }: ChatRoomListProps) {
+  const { post, user, guest, post_id, id, lastMessage } = chatRoom;
+
+  const userImage = type === 'AUTHOR' ? guest.image : user.image;
 
   return (
     <li>
@@ -107,25 +110,25 @@ function ChatRoomList({ chatRoom }: ChatRoomListProps) {
         type={RouterMethod.Push}
       >
         <div className='relative flex justify-end'>
-          {guest_image ? (
+          {userImage ? (
             <Image
               className='absolute top-[-10px] left-0 rounded-full'
-              src={guest_image}
+              src={userImage}
               alt='guest image'
               width={50}
               height={50}
             />
           ) : (
             <div className='absolute top-[-10px] left-0 bg-gray-200 rounded-full h-[50px] w-[50px] flex justify-center items-center'>
-              <IconUserDefault alt='default user image' width={40} height={40} />
+              <IconUserDefault alt='default user image' width={35} height={35} />
             </div>
           )}
           <PetProfile pet={post.pet} height={60} width={60} className='z-10 !bg-gray-200 w-[60px]' />
         </div>
         <div className='flex flex-col justify-center pr-2 pl-4'>
           <div className='flex items-center'>
-            <p className='mr-1 text-text-1'>{user.name}</p>
-            <p className='text-xs text-gray-400 mr-1'>작전동</p>
+            <p className='mr-1 text-text-1'>{type === ChatWritterType.Author ? guest.name : user.name}</p>
+            <p className='text-xs text-gray-400 mr-1'>{post.preferred_walk_location}</p>
             {lastMessage && <p className='text-xs text-gray-400'>{formatDiffTime(lastMessage.time)} 전</p>}
           </div>
           <div className='flex relative items-center'>
