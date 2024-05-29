@@ -19,6 +19,7 @@ import NativeLink from '@/components/NativeLink';
 import Popup from '@/components/Popup';
 import PostStatusBadge from '@/components/PostStatusBadge';
 import PostStatusButton from '@/components/PostStatusButton';
+import { Section } from '@/components/Section';
 import Toast from '@/components/Toast';
 
 import PostStatusUpdateBottomSheet from './PostBottomSheet/PostStatusUpdateBottomSheet';
@@ -130,7 +131,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
                 {isMyPost && <HeaderNavigation.DotBtn onClick={handleClickDotBtn} />}
               </HeaderNavigation.Container>
 
-              <PostInfo.Container className='post-info-container'>
+              <Section.Container className='post-info-container p-[0px]'>
                 <PostInfo.Top
                   title={postData.title}
                   author={postData.author}
@@ -144,17 +145,17 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
                 </PostInfo.Top>
 
                 <PostInfo.Content content={postData.content} />
-              </PostInfo.Container>
+              </Section.Container>
 
-              <PostInfo.Container className='pet-and-walk-info-container flex flex-col p-4 mt-4 '>
+              <Section.Container className='pet-and-walk-info-container flex flex-col p-4 mt-4'>
                 <div className='pet-info pb-4'>
-                  <PostInfo.SectionTitle title='함께 산책할 반려견 🐾' />
+                  <Section.Title title='함께 산책할 반려견 🐾' />
 
                   {postData.pet && <PetCardItem pet={postData.pet} />}
                 </div>
 
                 <div className='walk-info'>
-                  <PostInfo.SectionTitle title='산책 정보' />
+                  <Section.Title title='산책 정보' />
 
                   <ul>
                     <PostInfo.WalkItem
@@ -172,10 +173,10 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
                     <PostInfo.WalkItem title='종료 일시' description={postData.end_at} type='DATE' />
                   </ul>
                 </div>
-              </PostInfo.Container>
+              </Section.Container>
 
-              <PostInfo.Container className='caution-container p-4 mt-4'>
-                <PostInfo.SectionTitle title='주의사항' />
+              <Section.Container className='caution-container p-4 mt-4'>
+                <Section.Title title='주의사항' />
 
                 {postData.cautions?.length ? (
                   <ul className='flex flex-col gap-y-1'>
@@ -186,7 +187,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
                 ) : (
                   <span className='text-sm font-light text-text-1'>없습니다 :&#41;</span>
                 )}
-              </PostInfo.Container>
+              </Section.Container>
             </div>
           </section>
 
