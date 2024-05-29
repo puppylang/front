@@ -10,7 +10,7 @@ function SectionContainer({ children, className }: SectionContainerProps) {
 }
 
 function SectionTitle({ title, className }: { title: string; className?: string }) {
-  return <p className={`font-semibold text-text-2 text-sm mb-4 ${className || ''}`}>{title}</p>;
+  return <h3 className={`font-semibold text-text-2 text-sm mb-4 ${className || ''}`}>{title}</h3>;
 }
 
 export const Section = {
