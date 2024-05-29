@@ -8,6 +8,7 @@ import { fetchWithStatus, fetcher, fetcherStatusWithToken, fetcherWithToken, req
 
 export const USER_QUERY_KEY = '/user';
 export const USER_REGION_QUERY_KEY = '/user/region';
+export const USER_ACTIVED_REGION_QUERY_KEY = '/user/actived-region';
 
 const REGION_QUERY_KEY = '/region';
 const VALIDATE_USER_NAME_QUERY_KEY = '/user/name';
@@ -86,17 +87,6 @@ export const useValidateUserName = (name: string) => {
   });
 };
 
-export const useUserRegionQuery = () => {
-  return useQuery({
-    queryKey: [USER_REGION_QUERY_KEY],
-    queryFn: getUserRegion,
-  });
-};
-
-const getUserRegion = () => {
-  return fetcherWithToken<string[]>(USER_REGION_QUERY_KEY);
-};
-
 export const logoutUser = async () => {
   const URL = '/user/logout';
   const response = await fetcherStatusWithToken(URL);
@@ -141,4 +131,13 @@ export const deleteUserRegion = (region: string) => {
 
 export const createUserRegion = (region: string) => {
   return fetcherStatusWithToken(USER_REGION_QUERY_KEY, { method: 'POST', data: { region } });
+};
+
+export const updateUserActivedRegion = (region: string) => {
+  return fetcherStatusWithToken(USER_ACTIVED_REGION_QUERY_KEY, {
+    method: 'PATCH',
+    data: {
+      region,
+    },
+  });
 };
