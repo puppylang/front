@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 import { getToken } from './token';
 
-export const requestURL = process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : '';
+export const requestURL = process.env.NODE_ENV === 'development' ? 'http://localhost:8000' : 'http://localhost:8000';
 
 export const fetcher = async <T>(queryKey: string, axiosConfig?: AxiosRequestConfig) => {
   const { data } = await axios<T>({ ...axiosConfig, url: `${requestURL}${queryKey}` });
