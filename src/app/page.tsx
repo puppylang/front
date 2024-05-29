@@ -3,17 +3,25 @@
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
 
+import useNativeRouter from '@/hooks/useNativeRouter';
+
 import AppleLoginLogo from '../../public/apple_login_logo.png';
 import KakaoLoginLogo from '../../public/kakao_login_logo.png';
 import LoginLogo from '../../public/login_logo.png';
 import NaverLoginLogo from '../../public/naver_login_logo.png';
 
 export default function Home() {
+  const router = useNativeRouter();
+
   const onClickKakaoBtn = () => {
     const { Kakao } = window;
     Kakao.Auth.authorize({
       redirectUri: 'http://localhost:3000/login/success',
     });
+  };
+
+  const onClickAppleBtn = () => {
+    router.push('/login/success?code=hyebin');
   };
 
   return (
@@ -42,7 +50,7 @@ export default function Home() {
             <NaverLoginButton />
             <button
               type='button'
-              onClick={onClickKakaoBtn}
+              onClick={onClickAppleBtn}
               className='px-5 w-[311px] h-[45px] flex items-center justify-center rounded-[15px] mb-5 bg-text-1 relative'
             >
               <Image src={AppleLoginLogo} alt='apple login logo' className='absolute left-5 w-[16px]' />
