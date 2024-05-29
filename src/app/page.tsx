@@ -16,7 +16,7 @@ export default function Home() {
   const onClickKakaoBtn = () => {
     const { Kakao } = window;
     Kakao.Auth.authorize({
-      redirectUri: 'http://localhost:3000/login/success',
+      redirectUri: '/login/success',
     });
   };
 
@@ -75,7 +75,7 @@ function NaverLoginButton() {
     if (!window.naver) return;
     const naverLogin = new window.naver.LoginWithNaverId({
       clientId: process.env.NEXT_PUBLIC_NAVER_CLIENT_ID,
-      callbackUrl: 'http://localhost:3000/login/success',
+      callbackUrl: '/login/success',
       isPopup: false,
       loginButton: {
         color: 'green',
