@@ -1,23 +1,11 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { ReactNode } from 'react';
 
 import { UserType } from '@/types/user';
 import { formatDateTime } from '@/utils/date';
 
 import { IconUserDefault } from '../../../public/assets/svgs';
-
-interface PostInfoContainerProps {
-  children?: ReactNode;
-  className?: string;
-}
-
-function PostContainer({ children, className }: PostInfoContainerProps) {
-  return <div className={`bg-white ${className || ''}`}>{children}</div>;
-}
-
-function PostSectionTitle({ title }: { title: string }) {
-  return <p className='font-bold text-text-2 text-sm mb-4'>{title}</p>;
-}
 
 interface PostTopInfoProps {
   date: string;
@@ -37,20 +25,24 @@ function PostTopInfo({ date, title, author, children }: PostTopInfoProps) {
 
           {author && (
             <div className='user-info flex items-center gap-x-2'>
-              <div className='flex justify-center items-center rounded-full overflow-hidden bg-gray-3 w-8 h-8'>
-                {author.image ? (
-                  <Image
-                    width={32}
-                    height={32}
-                    src={author.image}
-                    alt={`${author.name}프로필이미지`}
-                    className='object-cover'
-                  />
-                ) : (
-                  <IconUserDefault width='18px' height='18px' />
-                )}
-              </div>
-              <span className='user-name text-xs text-text-1'>{author.name}</span>
+              <Link href={`/user/${author.id}`}>
+                <div className='flex justify-center items-center rounded-full overflow-hidden bg-gray-3 w-8 h-8'>
+                  {author.image ? (
+                    <Image
+                      width={32}
+                      height={32}
+                      src={author.image}
+                      alt={`${author.name}프로필이미지`}
+                      className='object-cover'
+                    />
+                  ) : (
+                    <IconUserDefault width='18px' height='18px' />
+                  )}
+                </div>
+              </Link>
+              <Link href={`/user/${author.id}`}>
+                <span className='user-name text-xs text-text-1'>{author.name}</span>
+              </Link>
             </div>
           )}
         </div>
@@ -101,8 +93,6 @@ function PostWalkCautionItem({ index, content }: { index: number; content: strin
 }
 
 export const PostInfo = {
-  Container: PostContainer,
-  SectionTitle: PostSectionTitle,
   Top: PostTopInfo,
   Content: PostContent,
   WalkItem: PostWalkInfoItem,
