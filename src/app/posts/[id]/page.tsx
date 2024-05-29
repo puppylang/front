@@ -131,7 +131,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
                 {isMyPost && <HeaderNavigation.DotBtn onClick={handleClickDotBtn} />}
               </HeaderNavigation.Container>
 
-              <Section.Container className='post-info-container p-[0px]'>
+              <Section.Container className='post-info-container bg-white p-[0px]'>
                 <PostInfo.Top
                   title={postData.title}
                   author={postData.author}
@@ -147,7 +147,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
                 <PostInfo.Content content={postData.content} />
               </Section.Container>
 
-              <Section.Container className='pet-and-walk-info-container flex flex-col p-4 mt-4'>
+              <Section.Container className='pet-and-walk-info-container bg-white flex flex-col p-4 mt-4'>
                 <div className='pet-info pb-4'>
                   <Section.Title title='함께 산책할 반려견 🐾' />
 
@@ -175,7 +175,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
                 </div>
               </Section.Container>
 
-              <Section.Container className='caution-container p-4 mt-4'>
+              <Section.Container className='caution-container bg-white p-4 mt-4'>
                 <Section.Title title='주의사항' />
 
                 {postData.cautions?.length ? (
