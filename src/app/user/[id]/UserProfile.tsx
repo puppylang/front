@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 
+import UserProfileSkeleton from '@/components/SkeletonUI/UserProfileSkeleton';
 import { usePetQuery } from '@/services/pet';
 
-import Loading from '@/components/Loading';
 import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
 import { Section } from '@/components/Section';
@@ -24,11 +24,11 @@ export default function UserProfile({ id }: UserProfileProps) {
   const { data: recordWalks } = useRecordWalkCount(id);
   const { data: totalDistance } = useRecordWalkDistance(id);
 
-  if (isLoading) return <Loading />; // TODO Skeleton
+  if (isLoading) return <UserProfileSkeleton />;
 
   return user ? (
     <>
-      <section id='user-info-container' className='flex flex-col items-center'>
+      <section id='user-info-container' className='flex flex-col items-center animation-show'>
         <Section.Container className='bg-white'>
           <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>퍼피랑 사용자 프로필 화면</h1>
 
@@ -59,21 +59,21 @@ export default function UserProfile({ id }: UserProfileProps) {
         </Section.Container>
       </section>
 
-      <section id='pet-info-container' className='flex flex-col items-center'>
+      <section id='pet-info-container' className='flex flex-col items-center animation-show'>
         <Section.Container className='bg-white border-t border-t-1 border-gray-3'>
           <Section.Title title='반려견 정보 🐾' />
           <PetCardList pets={pets} type='slide' />
         </Section.Container>
       </section>
 
-      <section id='post-info-container' className='flex flex-col items-center'>
+      <section id='post-info-container' className='flex flex-col items-center animation-show'>
         <Section.Container className='bg-white border-t border-t-1 border-gray-3'>
           <Section.Title title='활동' />
           <UserActivity totalDistance={totalDistance?.total_distance} walkCount={recordWalks} />
         </Section.Container>
       </section>
 
-      <section id='post-info-container' className='flex flex-col items-center'>
+      <section id='post-info-container' className='flex flex-col items-center animation-show'>
         <Section.Container className='mt-4 p-[0px]'>
           <Section.Title title='작성한 글' className='bg-white mb-[0px] p-4' />
           <UserPostList authorId={id} />
@@ -81,7 +81,7 @@ export default function UserProfile({ id }: UserProfileProps) {
       </section>
     </>
   ) : (
-    <section id='user'>
+    <section id='user' className='animation-show'>
       <Section.Container className='bg-white flex flex-col gap-y-4 items-center justify-center min-h-[100vh]'>
         <h2 className='font-Jalnan text-text-1'>해당 유저가 존재하지 않습니다.</h2>
         <NativeLink href='/posts' className='bg-main-2 text-white text-sm px-6 py-2 rounded-[10px]'>
