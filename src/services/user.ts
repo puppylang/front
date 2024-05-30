@@ -4,6 +4,7 @@ import axios from 'axios';
 import { PageParams, Post, PostStatus } from '@/types/post';
 import { PageResponse } from '@/types/response';
 import { RegionType, UserEditForm, UserResponseType, UserType, UserDeleteError } from '@/types/user';
+import { TotalDistance } from '@/types/walk';
 import { fetchWithStatus, fetcher, fetcherStatusWithToken, fetcherWithToken, requestURL } from '@/utils/request';
 
 export const USER_QUERY_KEY = '/user';
@@ -141,4 +142,18 @@ export const deleteUserRegion = (region: string) => {
 
 export const createUserRegion = (region: string) => {
   return fetcherStatusWithToken(USER_REGION_QUERY_KEY, { method: 'POST', data: { region } });
+};
+
+export const useRecordWalkCount = (id: string) => {
+  return useQuery({
+    queryKey: [USER_QUERY_KEY, id, 'RECORD_WALK_COUNT'],
+    queryFn: () => fetcherWithToken<number>(`${USER_QUERY_KEY}/${id}/record-walks/count`),
+  });
+};
+
+export const useRecordWalkDistance = (id: string) => {
+  return useQuery({
+    queryKey: [USER_QUERY_KEY, id, 'RECORD_WALK_TOTAL_DISTANCE'],
+    queryFn: () => fetcherWithToken<TotalDistance>(`${USER_QUERY_KEY}/${id}/record-walks/distance`),
+  });
 };
