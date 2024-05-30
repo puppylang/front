@@ -5,15 +5,17 @@ import Image from 'next/image';
 import { Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
+import MyPageSkeleton from '@/components/SkeletonUI/MyPageSkeleton';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
-import { deleteUser, logoutUser, useUserQuery } from '@/services/user';
+import { deleteUser, logoutUser, useRecordWalkCount, useRecordWalkDistance, useUserQuery } from '@/services/user';
 
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
 import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
 import { Section } from '@/components/Section';
+import UserActivity from '@/components/UserActivity';
 
 import ApiErrorFallback from './error';
 import { IconCaretRight, IconEdit, IconUserDefault } from '../../../public/assets/svgs';
@@ -35,8 +37,12 @@ export default function UserComponent() {
 function User() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: pets } = usePetQuery();
-  const { data: user } = useUserQuery();
+  const { data: pets, isLoading: isPetLoading } = usePetQuery();
+  const { data: user, isLoading: isUserLoading } = useUserQuery();
+  const { data: recordWalks, isLoading: isRecordWalkKLoading } = useRecordWalkCount();
+  const { data: totalDistance, isLoading: isDistanceLoading } = useRecordWalkDistance();
+
+  const isLoading = isPetLoading && isUserLoading && isRecordWalkKLoading && isDistanceLoading;
 
   const router = useNativeRouter();
   const queryClient = useQueryClient();
@@ -63,6 +69,8 @@ function User() {
       router.replace('/');
     }
   };
+
+  if (isLoading) return <MyPageSkeleton />;
 
   return (
     <>
@@ -118,7 +126,10 @@ function User() {
       <section className='flex flex-col items-center mt-4'>
         <Section.Container className='bg-white'>
           <Section.Title title='나의 활동' />
-          <ul className='text-text-1'>
+
+          <UserActivity totalDistance={totalDistance?.total_distance} walkCount={recordWalks} />
+
+          <ul className='text-text-1 mt-4'>
             <ProfileLinkList text='내 게시글' href='/user/posts' />
             <ProfileLinkList text='좋아요 목록' href='/user/liked-posts' />
             <ProfileLinkList text='산책 신청목록' href='/' />

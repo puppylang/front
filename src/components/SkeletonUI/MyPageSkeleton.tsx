@@ -11,7 +11,7 @@ function MyPageSkeleton() {
         </div>
         <div>
           <UserSkeleton.Activity />
-          <div className='flex flex-col gap-y-4 mt-4'>
+          <div className='flex flex-col gap-y-4 mt-4 animate-pulse'>
             <div className='w-full h-9 rounded-[10px] bg-bg-blue' />
             <div className='w-full h-9 rounded-[10px] bg-bg-blue' />
             <div className='w-full h-9 rounded-[10px] bg-bg-blue' />

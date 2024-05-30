@@ -66,7 +66,7 @@ export default function UserProfile({ id }: UserProfileProps) {
         </Section.Container>
       </section>
 
-      <section id='post-info-container' className='flex flex-col items-center animation-show'>
+      <section id='activity-info-container' className='flex flex-col items-center animation-show'>
         <Section.Container className='bg-white border-t border-t-1 border-gray-3'>
           <Section.Title title='활동' />
           <UserActivity totalDistance={totalDistance?.total_distance} walkCount={recordWalks} />
@@ -74,7 +74,7 @@ export default function UserProfile({ id }: UserProfileProps) {
       </section>
 
       <section id='post-info-container' className='flex flex-col items-center animation-show'>
-        <Section.Container className='mt-4 p-[0px]'>
+        <Section.Container className='p-[0px] border-t border-t-1 border-gray-3'>
           <Section.Title title='작성한 글' className='bg-white mb-[0px] p-4' />
           <UserPostList authorId={id} />
         </Section.Container>
