@@ -144,16 +144,22 @@ export const createUserRegion = (region: string) => {
   return fetcherStatusWithToken(USER_REGION_QUERY_KEY, { method: 'POST', data: { region } });
 };
 
-export const useRecordWalkCount = (id: string) => {
+export const useRecordWalkCount = (id?: string) => {
   return useQuery({
     queryKey: [USER_QUERY_KEY, id, 'RECORD_WALK_COUNT'],
-    queryFn: () => fetcherWithToken<number>(`${USER_QUERY_KEY}/${id}/record-walks/count`),
+    queryFn: () =>
+      fetcherWithToken<number>(
+        id ? `${USER_QUERY_KEY}/record-walks/count?user_id=${id}` : `${USER_QUERY_KEY}/record-walks/count`,
+      ),
   });
 };
 
-export const useRecordWalkDistance = (id: string) => {
+export const useRecordWalkDistance = (id?: string) => {
   return useQuery({
     queryKey: [USER_QUERY_KEY, id, 'RECORD_WALK_TOTAL_DISTANCE'],
-    queryFn: () => fetcherWithToken<TotalDistance>(`${USER_QUERY_KEY}/${id}/record-walks/distance`),
+    queryFn: () =>
+      fetcherWithToken<TotalDistance>(
+        id ? `${USER_QUERY_KEY}/record-walks/distance?user_id=${id}` : `${USER_QUERY_KEY}/record-walks/distance`,
+      ),
   });
 };
