@@ -16,6 +16,7 @@ declare global {
     Kakao: any;
     naver: any;
     ReactNativeWebView: any;
+    AppleID: any;
   }
 }
 /* eslint-enable */
@@ -39,6 +40,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           async
         />
         <script type='text/javascript' src='https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js' async />
+        <script
+          async
+          type='text/javascript'
+          src='https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js'
+        />
       </head>
       <body>
         <RecoilRoot>

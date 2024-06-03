@@ -1,9 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
-
-import useNativeRouter from '@/hooks/useNativeRouter';
+import { MouseEvent, useEffect, useRef } from 'react';
 
 import AppleLoginLogo from '../../public/apple_login_logo.png';
 import KakaoLoginLogo from '../../public/kakao_login_logo.png';
@@ -11,17 +9,11 @@ import LoginLogo from '../../public/login_logo.png';
 import NaverLoginLogo from '../../public/naver_login_logo.png';
 
 export default function Home() {
-  const router = useNativeRouter();
-
   const onClickKakaoBtn = () => {
     const { Kakao } = window;
     Kakao.Auth.authorize({
-      redirectUri: '/login/success',
+      redirectUri: 'http://localhost:3000/login/success',
     });
-  };
-
-  const onClickAppleBtn = () => {
-    router.push('/login/success?code=hyebin');
   };
 
   return (
@@ -48,14 +40,7 @@ export default function Home() {
               <p className='text-center text-[12px]'>카카오톡으로 계속하기</p>
             </button>
             <NaverLoginButton />
-            <button
-              type='button'
-              onClick={onClickAppleBtn}
-              className='px-5 w-[311px] h-[45px] flex items-center justify-center rounded-[15px] mb-5 bg-text-1 relative'
-            >
-              <Image src={AppleLoginLogo} alt='apple login logo' className='absolute left-5 w-[16px]' />
-              <p className='text-white-1 text-center text-[12px]'>애플로 계속하기</p>
-            </button>
+            <AppleLoginButtn />
           </div>
         </div>
       </div>
@@ -75,7 +60,7 @@ function NaverLoginButton() {
     if (!window.naver) return;
     const naverLogin = new window.naver.LoginWithNaverId({
       clientId: process.env.NEXT_PUBLIC_NAVER_CLIENT_ID,
-      callbackUrl: '/login/success',
+      callbackUrl: 'http://localhost:3000/login/success',
       isPopup: false,
       loginButton: {
         color: 'green',
@@ -99,5 +84,24 @@ function NaverLoginButton() {
         <p className='text-center text-white-1 text-[12px]'>네이버로 계속하기</p>
       </button>
     </>
+  );
+}
+
+function AppleLoginButtn() {
+  const onClickAppleBtn = (event: MouseEvent) => {
+    event.preventDefault();
+    const CLIENT_ID = process.env.NODE_ENV === 'development' ? 'com.test.puppylang' : 'com.puppylang';
+    window.location.href = `https://appleid.apple.com/auth/authorize?client_id=${CLIENT_ID}&redirect_uri=https://09d9-211-222-98-23.ngrok-free.app/login/success&response_mode=fragment&response_type=code id_token`;
+  };
+
+  return (
+    <button
+      type='button'
+      onClick={onClickAppleBtn}
+      className='px-5 w-[311px] h-[45px] flex items-center justify-center rounded-[15px] mb-5 bg-text-1 relative'
+    >
+      <Image src={AppleLoginLogo} alt='apple login logo' className='absolute left-5 w-[16px]' />
+      <p className='text-white-1 text-center text-[12px]'>애플로 계속하기</p>
+    </button>
   );
 }
