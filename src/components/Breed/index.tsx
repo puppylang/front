@@ -1,13 +1,9 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { IoSearch, IoCloseCircle } from 'react-icons/io5';
 
 import { DogBreed } from '@/types/pet';
-import { RouterMethod } from '@/types/route';
-
-import NativeLink from '@/components/NativeLink';
 
 const PUPULAR_DOG_BREED = [
   DogBreed.말티즈,
@@ -20,13 +16,15 @@ const PUPULAR_DOG_BREED = [
   DogBreed.비숑_프리제,
 ];
 
-export default function Breed() {
+interface BreedProps {
+  onClick: (value: string) => void;
+}
+
+export default function Breed({ onClick }: BreedProps) {
   const [value, setValue] = useState('');
   const filteredBreed = Object.values(DogBreed).filter(breed => {
     return breed.includes(value.replace(/\s/g, '_'));
   });
-
-  const searchParams = useSearchParams();
 
   return (
     <section>
@@ -44,14 +42,9 @@ export default function Breed() {
         </button>
       </div>
       <ul className='mx-4'>
-        {value !== '' &&
-          filteredBreed.map(dog => (
-            <BreedList prevPath={searchParams.get('from') || ''} key={dog} breed={dog} value={value} />
-          ))}
+        {value !== '' && filteredBreed.map(dog => <BreedList onClick={onClick} key={dog} breed={dog} value={value} />)}
         {value === '' &&
-          PUPULAR_DOG_BREED.map(dog => (
-            <BreedList prevPath={searchParams.get('from') || ''} key={dog} breed={dog} value={value} />
-          ))}
+          PUPULAR_DOG_BREED.map(dog => <BreedList onClick={onClick} key={dog} breed={dog} value={value} />)}
       </ul>
     </section>
   );
@@ -60,20 +53,19 @@ export default function Breed() {
 interface BreedListProps {
   breed: DogBreed;
   value: string;
-  prevPath: string;
+  onClick: (value: string) => void;
 }
 
-function BreedList({ breed, value, prevPath }: BreedListProps) {
+function BreedList({ breed, value, onClick }: BreedListProps) {
   const replaceBreedName = breed.replace(/_/g, ' ').split('');
   const arrayValue = value.split('');
 
   return (
     <li>
-      <NativeLink
-        href={`${prevPath}?breed=${breed}`}
-        type={RouterMethod.Push}
-        isStack={false}
-        className='block border-b border-gray-1 py-2 text-[14px]'
+      <button
+        type='button'
+        className='block border-b border-gray-1 py-2 text-[14px] w-full text-left'
+        onClick={() => onClick(breed)}
       >
         {replaceBreedName.map((text, index) => {
           return (
@@ -82,7 +74,7 @@ function BreedList({ breed, value, prevPath }: BreedListProps) {
             </span>
           );
         })}
-      </NativeLink>
+      </button>
     </li>
   );
 }

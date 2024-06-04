@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, KeyboardEvent, ReactNode, useRef, useState } from 'react';
+import { ChangeEvent, InputHTMLAttributes, KeyboardEvent, ReactNode, useRef, useState } from 'react';
 
 interface FormProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'type' | 'onChange'> {
   onChange: (value: string) => void;
@@ -66,7 +66,7 @@ function FormNumber({
   maxLength,
   errorText,
   ...props
-}: FormProps) {
+}: Omit<FormProps, 'onChange'> & { onChange: (event: ChangeEvent<HTMLInputElement>) => void }) {
   const [isError, setIsError] = useState(false);
 
   const isErrorState = isError && minLength && maxLength && isRequired;
@@ -91,7 +91,7 @@ function FormNumber({
         value={value !== undefined ? value : ''}
         maxLength={maxLength}
         minLength={minLength}
-        onChange={({ currentTarget }) => onChange(currentTarget.value)}
+        onChange={onChange}
         {...props}
       />
       {isErrorState && (

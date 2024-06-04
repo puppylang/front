@@ -20,7 +20,7 @@ import { fetcherWithToken } from '@/utils/request';
 
 import { Card } from '@/components/Card';
 import Loading from '@/components/Loading';
-import Popup from '@/components/Popup';
+import { Popup } from '@/components/Popup';
 import { PuppyError } from '@/components/PuppyError';
 import SuspenseWithoutSSR from '@/components/Suspense';
 
@@ -192,7 +192,8 @@ function SubmittedResumeUI({ id }: { id: string }) {
           )}
         </ul>
       </section>
-      <Popup isOpen={showsPopup} onClose={() => setShowsPopup(false)}>
+      <Popup.Container isOpen={showsPopup}>
+        <Popup.CloseButton onClose={() => setShowsPopup(false)} />
         {clickedResume && (
           <ResumeInfoPopup
             onClickSelectBtn={onClickSelectBtn}
@@ -203,7 +204,7 @@ function SubmittedResumeUI({ id }: { id: string }) {
             isSelectLoading={isSelectLoading}
           />
         )}
-      </Popup>
+      </Popup.Container>
     </div>
   ) : (
     <PuppyError.Container>

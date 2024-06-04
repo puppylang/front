@@ -9,13 +9,24 @@ interface PopupProps {
   isOpen: boolean;
   children: ReactNode;
   className?: string;
-  onClose: () => void;
 }
 
-export default function Popup({ isOpen, children, onClose, className }: PopupProps) {
+function PopupConatiner({ isOpen, children, className }: PopupProps) {
   const [isMounted, setIsMounted] = useState(false);
 
   const nodeRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   if (typeof window === 'undefined') return null;
 
@@ -34,16 +45,33 @@ export default function Popup({ isOpen, children, onClose, className }: PopupPro
     <CSSTransition in={isOpen} timeout={400} nodeRef={nodeRef} classNames='popup' unmountOnExit>
       <section
         ref={nodeRef}
-        className={`fixed w-screen h-screen overflow-scroll top-0 z-50 bg-white-1 ${className || ''}`}
+        className={`fixed w-screen h-screen overflow-scroll top-0 z-50 bg-white-1 ${className || ''} pb-3`}
       >
-        <div className='py-3 px-3 border-b-[1px] border-gray-3 flex items-center'>
-          <button type='button' onClick={onClose}>
-            <TfiClose className='text-xl text-text-1' />
-          </button>
-        </div>
         {children}
       </section>
     </CSSTransition>,
     portalRoot,
   );
 }
+
+interface PopupCloseButtonProps {
+  onClose: () => void;
+  className?: string;
+  children?: ReactNode;
+}
+
+function PopupCloseButton({ onClose, className = '', children }: PopupCloseButtonProps) {
+  return (
+    <div className={`py-3 px-3 border-b-[1px] border-gray-3 flex items-center ${className} relative`}>
+      {children}
+      <button type='button' onClick={onClose} className='right-4 absolute'>
+        <TfiClose className='text-xl text-text-1' />
+      </button>
+    </div>
+  );
+}
+
+export const Popup = {
+  Container: PopupConatiner,
+  CloseButton: PopupCloseButton,
+};

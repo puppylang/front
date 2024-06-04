@@ -194,3 +194,8 @@ export interface UpdatePetFormType extends PetFormType {
   user_id: string;
   id: number;
 }
+
+export enum Neuter {
+  Neuter = 'neuter',
+  NotNeuter = 'notNeuter',
+}

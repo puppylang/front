@@ -16,7 +16,7 @@ import BottomSheet from '@/components/BottomSheet';
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Loading from '@/components/Loading';
 import NativeLink from '@/components/NativeLink';
-import Popup from '@/components/Popup';
+import { Popup } from '@/components/Popup';
 import PostStatusBadge from '@/components/PostStatusBadge';
 import PostStatusButton from '@/components/PostStatusButton';
 import Toast from '@/components/Toast';
@@ -260,9 +260,10 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
         )}
       </BottomSheet>
 
-      <Popup isOpen={isOpenPopup} onClose={() => setIsOpenPopup(false)}>
+      <Popup.Container isOpen={isOpenPopup}>
+        <Popup.CloseButton onClose={() => setIsOpenPopup(false)} />
         <Resume id={Number(id)} onClose={onSubmitResume} />
-      </Popup>
+      </Popup.Container>
     </>
   );
 }
