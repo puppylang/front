@@ -12,8 +12,9 @@ export default function Home() {
   const onClickKakaoBtn = () => {
     const { Kakao } = window;
     Kakao.Auth.authorize({
-      redirectUri: process.env.NEXT_REDIRECT_URI,
+      redirectUri: process.env.NEXT_PUBLIC_REDIRECT_URI,
     });
+    // console.log(process.env.NEXT_PUBLIC_REDIRECT_URI);
   };
 
   return (
@@ -60,7 +61,7 @@ function NaverLoginButton() {
     if (!window.naver) return;
     const naverLogin = new window.naver.LoginWithNaverId({
       clientId: process.env.NEXT_PUBLIC_NAVER_CLIENT_ID,
-      callbackUrl: process.env.NEXT_REDIRECT_URI,
+      callbackUrl: process.env.NEXT_PUBLIC_REDIRECT_URI,
       isPopup: false,
       loginButton: {
         color: 'green',
@@ -91,7 +92,7 @@ function AppleLoginButtn() {
   const onClickAppleBtn = (event: MouseEvent) => {
     event.preventDefault();
     const CLIENT_ID = process.env.NODE_ENV === 'development' ? 'com.test.puppylang' : 'com.puppylang';
-    window.location.href = `https://appleid.apple.com/auth/authorize?client_id=${CLIENT_ID}&redirect_uri=${process.env.NEXT_REDIRECT_URI}&response_mode=fragment&response_type=code id_token`;
+    window.location.href = `https://appleid.apple.com/auth/authorize?client_id=${CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_URI}&response_mode=fragment&response_type=code id_token`;
   };
 
   return (
