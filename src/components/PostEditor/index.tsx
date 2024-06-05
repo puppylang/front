@@ -7,9 +7,9 @@ import { usePetQuery } from '@/services/pet';
 import { Caution, Post, PostStatus } from '@/types/post';
 
 import { Cautions } from './Cautions';
-import { IconClose } from '../../../public/assets/svgs';
 import { DateTimePickerWithLabel } from '../DateTimePicker';
 import { FormInputsWithLabel } from '../FormInputs';
+import { HeaderNavigation } from '../HeaderNavigation';
 import { PetCardList } from '../PetCardList';
 import Toast from '../Toast';
 
@@ -88,7 +88,6 @@ function PostEditor({ defaultValue, onSubmit }: PostEditorProps) {
 
     if (!(start_at <= end_at)) return handleShowToast('종료일시는 시작일시보다 최소 30분 늦게 등록되어야합니다.');
 
-    console.log(postData);
     onSubmit(postData);
   };
 
@@ -102,12 +101,9 @@ function PostEditor({ defaultValue, onSubmit }: PostEditorProps) {
       <div className='container mx-auto my-0 bg-white'>
         <form onSubmit={handleOnSubmit}>
           <div className='min-h-[100vh]'>
-            <div className='top-navigation sticky top-0 left-0 p-4 bg-white z-10'>
-              <IconClose />
-              <p className='absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] text-sm text-text-2'>
-                구인 게시글 {defaultValue ? '수정' : '작성'}
-              </p>
-            </div>
+            <HeaderNavigation.Container className='z-10'>
+              <HeaderNavigation.Title text={`구인 게시글 ${defaultValue ? '수정' : '작성'}`} />
+            </HeaderNavigation.Container>
 
             <div className='post-info p-4 pt-0 flex flex-col gap-y-4'>
               <FormInputsWithLabel.Container label='제목' isRequired>

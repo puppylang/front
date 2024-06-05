@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-
+import useNativeRouter from '@/hooks/useNativeRouter';
 import { WalkForm, WalkRole } from '@/types/walk';
 import { formatDate } from '@/utils/date';
+
+import NativeLink from '@/components/NativeLink';
 
 import WalkSuccessContainer from './WalkSuccessContainer';
 import WalkSuccessSkeletonUI from './WalkSuccessSkeletonUI';
@@ -16,7 +16,7 @@ interface WalkSuccessProps {
 }
 
 function WalkSuccess({ type, data }: WalkSuccessProps) {
-  const router = useRouter();
+  const router = useNativeRouter();
 
   const handleGoTO = () => router.push('/posts');
 
@@ -52,12 +52,12 @@ function WalkSuccess({ type, data }: WalkSuccessProps) {
                   : '나의 반려동물을 등록하고 산책을 기록해보세요!'}
               </p>
 
-              <Link
+              <NativeLink
                 href='/posts'
                 className='block w-full mt-4 bg-main-2 text-sm text-white text-center h-[45px] leading-[45px] rounded-[10px]'
               >
                 둘러보러 가기
-              </Link>
+              </NativeLink>
             </div>
           </>
         ) : (

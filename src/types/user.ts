@@ -18,6 +18,8 @@ export interface UserType {
   gender: Gender | null;
   birthday: string | null;
   character: string | null;
+  region: string[];
+  actived_region?: string;
 }
 
 export interface UserResponseType {

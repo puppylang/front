@@ -1,10 +1,10 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { PetCardItem } from '@/components/PetCardList/PetCardItem';
 import PostDetailSkeletonUI from '@/components/SkeletonUI/PostDetailSkeletonUI';
+import useNativeRouter from '@/hooks/useNativeRouter';
 import { useLikeCancelMutation, useLikePostMutation } from '@/services/like';
 import { deletePost, usePostDetailQuery, useUpdatePostStatus } from '@/services/post';
 import { useResumesQuery } from '@/services/resume';
@@ -16,7 +16,7 @@ import BottomSheet from '@/components/BottomSheet';
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Loading from '@/components/Loading';
 import NativeLink from '@/components/NativeLink';
-import Popup from '@/components/Popup';
+import { Popup } from '@/components/Popup';
 import PostStatusBadge from '@/components/PostStatusBadge';
 import PostStatusButton from '@/components/PostStatusButton';
 import Toast from '@/components/Toast';
@@ -49,7 +49,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
   const [isShowBottomMenu, setIsShowBottomMenu] = useState(false);
   const [bottomSheetType, setBottomSheetType] = useState<BottomSheetType>(null);
 
-  const router = useRouter();
+  const router = useNativeRouter();
 
   const isShowPost = !isLoading && postData;
   const isMyPost = user && postData && user.id === postData.author?.id;
@@ -65,7 +65,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
           setIsShowToast(true);
 
           const timer = setTimeout(() => {
-            router.push('/posts');
+            router.replace('/posts');
           }, 2000);
 
           return () => clearTimeout(timer);
@@ -260,9 +260,10 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
         )}
       </BottomSheet>
 
-      <Popup isOpen={isOpenPopup} onClose={() => setIsOpenPopup(false)}>
+      <Popup.Container isOpen={isOpenPopup}>
+        <Popup.CloseButton onClose={() => setIsOpenPopup(false)} />
         <Resume id={Number(id)} onClose={onSubmitResume} />
-      </Popup>
+      </Popup.Container>
     </>
   );
 }

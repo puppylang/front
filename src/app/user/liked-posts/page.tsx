@@ -6,6 +6,7 @@ import { PostItem } from '@/app/posts/PostItem';
 import { getPostsByLike } from '@/services/user';
 import { Post } from '@/types/post';
 
+import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Loading from '@/components/Loading';
 
 export default function UserFavorites() {
@@ -60,6 +61,9 @@ export default function UserFavorites() {
 
   return (
     <section id='favorite-post' className='flex flex-col items-center'>
+      <HeaderNavigation.Container>
+        <HeaderNavigation.Title text='좋아요 목록' />
+      </HeaderNavigation.Container>
       <div className='container'>
         <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>좋아요 목록</h1>
 

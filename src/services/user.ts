@@ -3,11 +3,12 @@ import axios from 'axios';
 
 import { PageParams, Post, PostStatus } from '@/types/post';
 import { PageResponse } from '@/types/response';
-import { RegionType, UserEditForm, UserResponseType, UserType, UserDeleteError } from '@/types/user';
+import { RegionType, UserEditForm, UserResponseType, UserType, UserDeleteError, LoggedFrom } from '@/types/user';
 import { fetchWithStatus, fetcher, fetcherStatusWithToken, fetcherWithToken, requestURL } from '@/utils/request';
 
 export const USER_QUERY_KEY = '/user';
 export const USER_REGION_QUERY_KEY = '/user/region';
+export const USER_ACTIVED_REGION_QUERY_KEY = '/user/actived-region';
 
 const REGION_QUERY_KEY = '/region';
 const VALIDATE_USER_NAME_QUERY_KEY = '/user/name';
@@ -22,6 +23,17 @@ export const getKakaoAuth = async (code: string) => {
   return response;
 };
 
+export const getAppleAuth = async (code: string, token: string) => {
+  const URL = '/user/login-apple';
+  const response = await fetcher<UserResponseType>(URL, {
+    method: 'POST',
+    withCredentials: true,
+    data: { code, token },
+  });
+
+  return response;
+};
+
 export const getNaverAuth = async (accessToken: string) => {
   const URL = '/user/login-naver';
   const response = await fetcher<UserResponseType>(URL, {
@@ -32,11 +44,12 @@ export const getNaverAuth = async (accessToken: string) => {
   return response;
 };
 
-export const deleteUser = async (id: string) => {
+export const deleteUser = async (userId: string, loggedFrom: LoggedFrom) => {
   const response = await fetchWithStatus(USER_QUERY_KEY, {
     method: 'DELETE',
     data: {
-      id,
+      user_id: userId,
+      logged_from: loggedFrom,
     },
   });
 
@@ -86,20 +99,12 @@ export const useValidateUserName = (name: string) => {
   });
 };
 
-export const useUserRegionQuery = () => {
-  return useQuery({
-    queryKey: [USER_REGION_QUERY_KEY],
-    queryFn: getUserRegion,
-  });
-};
-
-const getUserRegion = () => {
-  return fetcherWithToken<string[]>(USER_REGION_QUERY_KEY);
-};
-
-export const logoutUser = async () => {
+export const logoutUser = async (userId: string, loggedFrom: LoggedFrom) => {
   const URL = '/user/logout';
-  const response = await fetcherStatusWithToken(URL);
+  const response = await fetcherStatusWithToken(URL, {
+    method: 'POST',
+    data: { user_id: userId, logged_from: loggedFrom },
+  });
   const { status } = response;
   return status;
 };
@@ -141,4 +146,13 @@ export const deleteUserRegion = (region: string) => {
 
 export const createUserRegion = (region: string) => {
   return fetcherStatusWithToken(USER_REGION_QUERY_KEY, { method: 'POST', data: { region } });
+};
+
+export const updateUserActivedRegion = (region: string) => {
+  return fetcherStatusWithToken(USER_ACTIVED_REGION_QUERY_KEY, {
+    method: 'PATCH',
+    data: {
+      region,
+    },
+  });
 };

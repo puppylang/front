@@ -2,14 +2,14 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
+import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 
 import Loading from '@/components/Loading';
+import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
 
 import ApiErrorFallback from '../user/error';
@@ -32,7 +32,7 @@ function WalkRolePicker() {
   const { data: pets } = usePetQuery();
   const [notifications, setNotifications] = useState([]); // TODO
 
-  const router = useRouter();
+  const router = useNativeRouter();
 
   const handleClickPetWalk = (petId: number) => {
     router.push(`/pet-walk/${petId}`);
@@ -70,13 +70,13 @@ function WalkRolePicker() {
               <div>신청 내역에서 선택하는 UI</div>
             ) : (
               <div className='flex flex-col justify-center items-center h-[112px] rounded-[10px] border-2 border-main-5'>
-                <Link href='/posts' className=''>
+                <NativeLink href='/posts' className=''>
                   <p className='text-center text-sm text-text-2 leading-[20px]'>
                     신청 내역이 없습니다.
                     <br />
                     <span>신청하러 가볼까요?</span>
                   </p>
-                </Link>
+                </NativeLink>
               </div>
             )}
           </div>

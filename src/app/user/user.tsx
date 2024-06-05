@@ -44,7 +44,7 @@ function User() {
 
   const onClickLogoutBtn = async () => {
     if (!user) return;
-    const status = await logoutUser();
+    const status = await logoutUser(user.id, user.logged_from);
 
     if (status === 201) {
       queryClient.clear();
@@ -58,7 +58,7 @@ function User() {
 
   const onClickAlertBtn = async () => {
     if (!user) return;
-    const status = await deleteUser(user.id);
+    const status = await deleteUser(user.id, user.logged_from);
     if (status === 201) {
       queryClient.clear();
       router.replace('/');
@@ -73,7 +73,13 @@ function User() {
             <div className='flex items-center gap-x-4'>
               <div className='image-container'>
                 {user && user.image ? (
-                  <Image className='rounded-full' src={user.image} alt='profile' width={70} height={70} />
+                  <Image
+                    className='w-[70px] h-[70px] rounded-full'
+                    src={user.image}
+                    alt='profile'
+                    width={70}
+                    height={70}
+                  />
                 ) : (
                   <FaUserCircle color='#dee1e4' className='w-[70px] h-[70px]' />
                 )}
@@ -90,6 +96,7 @@ function User() {
             <div className='link-btn-container'>
               <NativeLink
                 href='/user/edit'
+                webviewPushPage='detail'
                 className='flex items-center border border-gray-2 text-text-2 text-[12px] px-4 py-2 rounded-xl'
               >
                 <Image src={EditProfile} alt='edit profile' className='w-[16px] h-[16px]' />

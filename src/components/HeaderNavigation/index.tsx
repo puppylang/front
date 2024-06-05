@@ -14,25 +14,25 @@ interface HeaderNavigationContainer {
 
 function Container({ children, className }: HeaderNavigationContainer) {
   return (
-    <nav className={`sticky top-0 w-full px-4 py-3 bg-white ${className || ''}`}>
-      <NativeLink type={RouterMethod.Back} href=''>
-        <IoIosArrowRoundBack className='text-text-2 text-2xl' />
+    <nav className={`sticky top-0 w-full px-4 py-3 h-14 bg-white flex items-center justify-center ${className || ''}`}>
+      <NativeLink type={RouterMethod.Back} href='' className='absolute left-4'>
+        <IoIosArrowRoundBack className='text-text-2 text-2xl font-bold' />
       </NativeLink>
       {children}
     </nav>
   );
 }
 
-function DotBtn({ onClick }: { onClick: () => void }) {
+function DotBtn({ onClick, className = '' }: { onClick: () => void; className?: string }) {
   return (
-    <button onClick={onClick} type='button'>
+    <button className={`absolute ${className} right-4`} onClick={onClick} type='button'>
       <IoMdMore className='text-text-2 text-2xl' />
     </button>
   );
 }
 
 function Title({ text, className }: { text: string; className?: string }) {
-  return <h3 className={`font-bold text-sm  ${className || ''}`}>{text}</h3>;
+  return <h3 className={`text-text-2 text-sm ${className || ''}`}>{text}</h3>;
 }
 
 export const HeaderNavigation = {

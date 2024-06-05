@@ -2,16 +2,20 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDeferredValue, useState } from 'react';
+import { CgSpinner } from 'react-icons/cg';
 import { IoCloseCircle, IoCloseOutline, IoSearch } from 'react-icons/io5';
 
 import {
-  USER_REGION_QUERY_KEY,
+  USER_QUERY_KEY,
   createUserRegion,
   deleteUserRegion,
+  updateUserActivedRegion,
   useRegionQuery,
-  useUserRegionQuery,
+  useUserQuery,
 } from '@/services/user';
+import { UserType } from '@/types/user';
 
+import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Toast from '@/components/Toast';
 
 export default function UserRegion() {
@@ -23,29 +27,46 @@ export default function UserRegion() {
   });
   const [showsToast, setShowsToast] = useState(false);
   const [toastDescription, setDescription] = useState('');
+  const [updatingActivedRegion, setUpdatingActivedRegion] = useState('');
 
   const defferedValue = useDeferredValue(value);
 
   const { data: regionInfos } = useRegionQuery(defferedValue || position);
-  const { data: userRegions } = useUserRegionQuery();
+  const { data: user } = useUserQuery();
   const queryClient = useQueryClient();
 
   const createRegionMutation = useMutation({
     mutationFn: (region: string) => createUserRegion(region),
-    mutationKey: [USER_REGION_QUERY_KEY],
+    mutationKey: [USER_QUERY_KEY],
     onSuccess: (_, variable) => {
-      queryClient.setQueryData([USER_REGION_QUERY_KEY], (oldData: string[]) => {
-        return [...oldData, variable];
+      queryClient.setQueryData([USER_QUERY_KEY], (oldData: UserType) => {
+        return { ...oldData, region: [...oldData.region, variable] };
       });
     },
   });
 
   const deleteRegionMutation = useMutation({
     mutationFn: (region: string) => deleteUserRegion(region),
-    mutationKey: [USER_REGION_QUERY_KEY],
+    mutationKey: [USER_QUERY_KEY],
     onSuccess: (_, variable) => {
-      queryClient.setQueryData([USER_REGION_QUERY_KEY], (oldData: string[]) => {
-        return oldData.filter(data => data !== variable);
+      setUpdatingActivedRegion('');
+      queryClient.setQueryData([USER_QUERY_KEY], (oldData: UserType) => {
+        return {
+          ...oldData,
+          region: oldData.region.filter(data => data !== variable),
+          actived_region: variable === oldData.actived_region ? null : oldData.actived_region,
+        };
+      });
+    },
+  });
+
+  const updateReigonMutation = useMutation({
+    mutationFn: (region: string) => updateUserActivedRegion(region),
+    mutationKey: [USER_QUERY_KEY],
+    onSuccess: (_, variable) => {
+      setUpdatingActivedRegion('');
+      queryClient.setQueryData([USER_QUERY_KEY], (oldData: UserType) => {
+        return { ...oldData, actived_region: variable };
       });
     },
   });
@@ -57,13 +78,13 @@ export default function UserRegion() {
     });
   };
 
-  const onClickRegionBtn = async (address: string) => {
-    if (userRegions && userRegions.length === 2) {
+  const onClickAddRegionBtn = async (address: string) => {
+    if (user && user.region.length === 2) {
       setShowsToast(true);
       setDescription('지역은 최대 2개까지 설정할 수 있습니다.');
       return;
     }
-    const isIncludedSameGeo = userRegions && userRegions.includes(address);
+    const isIncludedSameGeo = user && user.region.includes(address);
     if (isIncludedSameGeo) {
       setShowsToast(true);
       setDescription('중복된 지역이 존재합니다.');
@@ -76,31 +97,38 @@ export default function UserRegion() {
     createRegionMutation.mutate(address);
   };
 
-  const onClickGeoCloseBtn = (address: string) => {
+  const onClickDeleteRegionBtn = (address: string) => {
+    setUpdatingActivedRegion(address);
     deleteRegionMutation.mutate(address);
   };
 
   const onClickGeoBtn = async (address: string) => {
     setActivedGeo(address);
+    setUpdatingActivedRegion(address);
+    updateReigonMutation.mutate(address);
   };
 
   return (
     <>
       <section className='container pt-4 px-4'>
+        <HeaderNavigation.Container>
+          <HeaderNavigation.Title text='내 동네 설정' />
+        </HeaderNavigation.Container>
         <div className='mb-3'>
           <div className='mb-1 flex items-center'>
             <span className='text-sm'>내 동네</span>
             <span className='ml-2 text-[10px] text-text-3'>동네는 최대 2개까지 설정할 수 있습니다.</span>
           </div>
           <div className='grid grid-cols-2 gap-3'>
-            {userRegions &&
-              userRegions.map(geo => (
+            {user &&
+              user.region.map(geo => (
                 <RegisterLocationList
-                  isActived={activedGeo === geo}
+                  isActived={user.actived_region === geo}
                   address={geo}
                   key={geo}
-                  onClickGeoBtn={onClickGeoBtn}
-                  onClickCloseBtn={onClickGeoCloseBtn}
+                  isLoading={updatingActivedRegion === geo}
+                  onClickRegionBtn={onClickGeoBtn}
+                  onClickDeleteBtn={onClickDeleteRegionBtn}
                 />
               ))}
           </div>
@@ -135,7 +163,7 @@ export default function UserRegion() {
               <li key={region.address_name}>
                 <button
                   type='button'
-                  onClick={() => onClickRegionBtn(region.address_name)}
+                  onClick={() => onClickAddRegionBtn(region.address_name)}
                   className='block w-full text-left border-b border-gray-1 py-2 text-[14px]'
                 >
                   <span className='text-text-1'>{region.address_name}</span>
@@ -160,17 +188,29 @@ export default function UserRegion() {
 interface RegisterLocationListProps {
   isActived: boolean;
   address: string;
-  onClickCloseBtn: (address: string) => void;
-  onClickGeoBtn: (address: string) => void;
+  onClickDeleteBtn: (address: string) => void;
+  onClickRegionBtn: (address: string) => void;
+  isLoading: boolean;
 }
 
-function RegisterLocationList({ isActived, address, onClickCloseBtn, onClickGeoBtn }: RegisterLocationListProps) {
+function RegisterLocationList({
+  isActived,
+  address,
+  onClickDeleteBtn,
+  onClickRegionBtn,
+  isLoading,
+}: RegisterLocationListProps) {
   return (
     <div className={`${isActived ? 'bg-text-3 text-white-1' : 'bg-gray-1  text-text-1'} rounded-md flex`}>
-      <button type='button' className='pl-4 w-full py-2 text-left text-sm' onClick={() => onClickGeoBtn(address)}>
-        {address.split(' ')[2]}
+      <button
+        type='button'
+        disabled={isLoading}
+        className='pl-4 w-full py-2 text-left text-sm'
+        onClick={() => onClickRegionBtn(address)}
+      >
+        {isLoading ? <CgSpinner className='text-text-2  animate-spin w-5 h-5 m-[0_auto]' /> : address.split(' ')[2]}
       </button>
-      <button type='button' className='py-2 pr-3' onClick={() => onClickCloseBtn(address)}>
+      <button type='button' className='py-2 pr-3' onClick={() => onClickDeleteBtn(address)}>
         <IoCloseOutline />
       </button>
     </div>

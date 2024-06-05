@@ -102,7 +102,7 @@ export default function Resume({ id, onClose }: ResumeProps) {
           isRequired
           title='태어난 연도'
           value={formState.birth_year}
-          onChange={value => setFormState(prev => ({ ...prev, birth_year: value }))}
+          onChange={({ target }) => setFormState(prev => ({ ...prev, birth_year: target.value }))}
           maxLength={4}
           minLength={4}
           placeholder='0000'
@@ -155,8 +155,8 @@ export default function Resume({ id, onClose }: ResumeProps) {
           placeholder='010 0000 0000'
           title='연락처'
           value={formState.phone_number}
-          onChange={value => {
-            setFormState(prev => ({ ...prev, phone_number: value }));
+          onChange={({ target }) => {
+            setFormState(prev => ({ ...prev, phone_number: target.value }));
           }}
           maxLength={11}
           minLength={11}

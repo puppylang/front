@@ -5,6 +5,7 @@ import { FaUserCircle } from 'react-icons/fa';
 
 import { usePetQuery } from '@/services/pet';
 
+import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
 import UserPostList from '@/components/UserPostList';
@@ -22,6 +23,9 @@ export default function UserId({ id }: UserId) {
 
   return user ? (
     <>
+      <HeaderNavigation.Container>
+        <HeaderNavigation.Title text='프로필' />
+      </HeaderNavigation.Container>
       <section>
         <div className='container bg-white'>
           <div className='flex w-full items-center justify-between p-4'>
@@ -60,7 +64,7 @@ export default function UserId({ id }: UserId) {
     <section className='container flex flex-col items-center justify-center font-bold h-screen'>
       <Image src={ErrorImage} width={130} height={130} alt='error' />
       <p className='text-lg mt-1 mb-5'>해당 유저가 존재하지 않아요.</p>
-      <NativeLink href='/posts' className='bg-main-1 text-white-1 px-10 py-2 rounded-md'>
+      <NativeLink href='/' className='bg-main-1 text-white-1 px-10 py-2 rounded-md'>
         홈으로 가기
       </NativeLink>
     </section>
