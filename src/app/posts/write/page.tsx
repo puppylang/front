@@ -1,8 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import useNativeRouter from '@/hooks/useNativeRouter';
 import { createPost } from '@/services/post';
 import { useUserQuery } from '@/services/user';
 import { Post } from '@/types/post';
@@ -11,7 +11,7 @@ import Loading from '@/components/Loading';
 import PostEditor from '@/components/PostEditor';
 
 function PostWrite() {
-  const router = useRouter();
+  const router = useNativeRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const { data: user } = useUserQuery();

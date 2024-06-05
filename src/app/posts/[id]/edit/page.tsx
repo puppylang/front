@@ -1,8 +1,8 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePostDetailQuery, useUpdatePost } from '@/services/post';
 import { Post } from '@/types/post';
 
@@ -19,7 +19,7 @@ export default function PostEdit({ params: { id } }: PostEditProps) {
   const { data: postData, isLoading } = usePostDetailQuery(id);
   const updatePostMutation = useUpdatePost(id);
   const [isEditing, setIsEditing] = useState(false);
-  const router = useRouter();
+  const router = useNativeRouter();
 
   const handleSubmit = (postData: Post) => {
     setIsEditing(true);

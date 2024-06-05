@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { useState } from 'react';
 import SwiperCore from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
@@ -12,6 +11,7 @@ import { Pet } from '@/types/pet';
 
 import { PetCardItem } from './PetCardItem';
 import { IconCheck } from '../../../public/assets/svgs';
+import NativeLink from '../NativeLink';
 import PetCardSkeletonUI from '../SkeletonUI/PetCardSkeletonUI';
 
 SwiperCore.use([Navigation, Pagination]);
@@ -69,7 +69,7 @@ export function PetCardList({ pets, type, defaultValue, onClick, showsAddCard }:
         ))}
         {showsAddCard && sortedPetsById.length === 1 && (
           <SwiperSlide key='add' className='rounded-[10px] border-2 border-main-5'>
-            <Link
+            <NativeLink
               href='/pets/new'
               className='flex flex-col justify-center items-center h-[112px] leading-5 p-4 bg-main-5 rounded-[10px]'
             >
@@ -78,13 +78,13 @@ export function PetCardList({ pets, type, defaultValue, onClick, showsAddCard }:
                 <br />
                 <span>등록하러 갈까요?</span>
               </p>
-            </Link>
+            </NativeLink>
           </SwiperSlide>
         )}
       </Swiper>
     </div>
   ) : (
-    <Link
+    <NativeLink
       href='/pets/new'
       className='flex flex-col justify-center items-center h-[112px] leading-5 p-4 bg-main-5 rounded-[10px]'
     >
@@ -93,6 +93,6 @@ export function PetCardList({ pets, type, defaultValue, onClick, showsAddCard }:
         <br />
         <span>등록하러 가보실까요?</span>
       </p>
-    </Link>
+    </NativeLink>
   );
 }

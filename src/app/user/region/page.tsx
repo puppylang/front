@@ -15,6 +15,7 @@ import {
 } from '@/services/user';
 import { UserType } from '@/types/user';
 
+import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Toast from '@/components/Toast';
 
 export default function UserRegion() {
@@ -110,6 +111,9 @@ export default function UserRegion() {
   return (
     <>
       <section className='container pt-4 px-4'>
+        <HeaderNavigation.Container>
+          <HeaderNavigation.Title text='내 동네 설정' />
+        </HeaderNavigation.Container>
         <div className='mb-3'>
           <div className='mb-1 flex items-center'>
             <span className='text-sm'>내 동네</span>

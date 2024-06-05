@@ -1,10 +1,10 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { PetCardItem } from '@/components/PetCardList/PetCardItem';
 import PostDetailSkeletonUI from '@/components/SkeletonUI/PostDetailSkeletonUI';
+import useNativeRouter from '@/hooks/useNativeRouter';
 import { useLikeCancelMutation, useLikePostMutation } from '@/services/like';
 import { deletePost, usePostDetailQuery, useUpdatePostStatus } from '@/services/post';
 import { useResumesQuery } from '@/services/resume';
@@ -49,7 +49,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
   const [isShowBottomMenu, setIsShowBottomMenu] = useState(false);
   const [bottomSheetType, setBottomSheetType] = useState<BottomSheetType>(null);
 
-  const router = useRouter();
+  const router = useNativeRouter();
 
   const isShowPost = !isLoading && postData;
   const isMyPost = user && postData && user.id === postData.author?.id;
@@ -65,7 +65,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
           setIsShowToast(true);
 
           const timer = setTimeout(() => {
-            router.push('/posts');
+            router.replace('/posts');
           }, 2000);
 
           return () => clearTimeout(timer);

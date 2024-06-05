@@ -13,6 +13,7 @@ import { Message, Message as MessageType, SocketData } from '@/types/chat';
 import { Post } from '@/types/post';
 import { formatAge } from '@/utils/date';
 
+import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
 import PetProfile from '@/components/PetProfile';
 import PostStatusBadge from '@/components/PostStatusBadge';
@@ -152,6 +153,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
 
   return (
     <div className='relative h-screen flex flex-col'>
+      <HeaderNavigation.Container />
       <NativeLink href={`/posts/${post?.id}`} className='flex px-4 py-3 border-b-[1px]'>
         <div className='flex-[1_0_50px]'>
           {post && post.pet && <PetProfile className='!bg-gray-200' pet={post.pet} width={50} height={50} />}

@@ -62,7 +62,7 @@ interface PopupCloseButtonProps {
 
 function PopupCloseButton({ onClose, className = '', children }: PopupCloseButtonProps) {
   return (
-    <div className={`py-3 px-3 border-b-[1px] border-gray-3 flex items-center ${className} relative`}>
+    <div className={`py-3 px-3 border-b-[1px] border-gray-3 flex items-center relative h-12 ${className} `}>
       {children}
       <button type='button' onClick={onClose} className='right-4 absolute'>
         <TfiClose className='text-xl text-text-1' />

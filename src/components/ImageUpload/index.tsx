@@ -46,7 +46,6 @@ export default function ImageUpload({ defaultURL, onChangeFileInput, disabled }:
         ref={imageUploadRef}
         onChange={onChangeImageInput}
         accept='image/*'
-        capture
         disabled={disabled}
       />
 

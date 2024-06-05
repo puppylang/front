@@ -1,10 +1,10 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { IoSearch } from 'react-icons/io5';
 
+import useNativeRouter from '@/hooks/useNativeRouter';
 import { PET_QUERY_KEY } from '@/services/pet';
 import { useUserQuery } from '@/services/user';
 import { CreatePetFormType, DogBreed, Gender, Neuter, PetFormType } from '@/types/pet';
@@ -15,7 +15,7 @@ import { Form } from '@/components/Form';
 import ImageUpload from '@/components/ImageUpload';
 import { Popup } from '@/components/Popup';
 
-export const DEFAULT_PET_FORM: PetFormType = {
+const DEFAULT_PET_FORM: PetFormType = {
   birthday: '',
   name: '',
   character: undefined,
@@ -30,7 +30,7 @@ export default function NewPet() {
   const [formState, setFormState] = useState<PetFormType>(DEFAULT_PET_FORM);
   const [isOpenPopup, setIsOpenPopup] = useState(false);
 
-  const router = useRouter();
+  const router = useNativeRouter();
 
   const petMutation = useMutation({
     mutationFn: (newPet: CreatePetFormType) => {

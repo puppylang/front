@@ -16,7 +16,7 @@ import ImageUpload from '@/components/ImageUpload';
 import Loading from '@/components/Loading';
 import { Popup } from '@/components/Popup';
 
-export const DEFAULT_PET_FORM: PetFormType = {
+const DEFAULT_PET_FORM: PetFormType = {
   birthday: '',
   name: '',
   character: undefined,

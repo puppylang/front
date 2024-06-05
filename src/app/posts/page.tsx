@@ -1,11 +1,11 @@
 'use client';
 
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
 import { ChangeEvent, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { PostItem } from '@/app/posts/PostItem';
+import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 import { getPostsWithPaging } from '@/services/post';
 import { DogBreed } from '@/types/pet';
@@ -35,7 +35,7 @@ export default function PostComponent() {
 }
 
 function Post() {
-  const router = useRouter();
+  const router = useNativeRouter();
   const { data: pets } = usePetQuery();
 
   const [posts, setPosts] = useState<IPost[]>([]);

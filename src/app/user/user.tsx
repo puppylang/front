@@ -96,6 +96,7 @@ function User() {
             <div className='link-btn-container'>
               <NativeLink
                 href='/user/edit'
+                webviewPushPage='detail'
                 className='flex items-center border border-gray-2 text-text-2 text-[12px] px-4 py-2 rounded-xl'
               >
                 <Image src={EditProfile} alt='edit profile' className='w-[16px] h-[16px]' />

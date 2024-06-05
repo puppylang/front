@@ -19,6 +19,7 @@ import { formatDiffTime } from '@/utils/date';
 import { fetcherWithToken } from '@/utils/request';
 
 import { Card } from '@/components/Card';
+import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Loading from '@/components/Loading';
 import { Popup } from '@/components/Popup';
 import { PuppyError } from '@/components/PuppyError';
@@ -134,6 +135,9 @@ function SubmittedResumeUI({ id }: { id: string }) {
 
   return isMyPost ? (
     <div className='p-4 container'>
+      <HeaderNavigation.Container>
+        <HeaderNavigation.Title text='펫시터 지원자 목록' />
+      </HeaderNavigation.Container>
       <ul>{postDetail && <PostItem post={postDetail} />}</ul>
       <section className='my-4 pt-4 bg-white rounded-[10px] shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'>
         <h2 className='px-4 pb-2 text-[#666666] font-semibold text-sm'>지원자 목록</h2>

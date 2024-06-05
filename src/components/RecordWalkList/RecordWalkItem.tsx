@@ -1,10 +1,10 @@
-import Link from 'next/link';
 import { useMemo } from 'react';
 
 import { WalkForm, WalkRole } from '@/types/walk';
 import { formatRecordedWalkTime } from '@/utils/time';
 import { formatDistance } from '@/utils/walk';
 
+import NativeLink from '../NativeLink';
 import PetProfile from '../PetProfile';
 import { FormattedRecordWalkTime } from '../RecordWalkTime';
 import RecordInfo from '../WalkEditor/RecordInfo';
@@ -31,7 +31,7 @@ function RecordWalkItem({ walk, className, role }: RecordWalkItemProps) {
   const recordedDistance = useMemo(() => formatDistance(walk.distance), [walk.distance]);
 
   return (
-    <Link
+    <NativeLink
       href={{
         pathname: `/user/record-walks/${walk.id}`,
         query: { role: role === WalkRole.PetOwner ? WalkRole.PetOwner : WalkRole.PetSitterWalker },
@@ -45,7 +45,7 @@ function RecordWalkItem({ walk, className, role }: RecordWalkItemProps) {
           <RecordInfo label='산책시간' value={recordedTime} containerStyle='flex-1' />
         </div>
       </div>
-    </Link>
+    </NativeLink>
   );
 }
 export default RecordWalkItem;

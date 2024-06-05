@@ -8,6 +8,8 @@ import { useRecordWalkDetail } from '@/services/walk';
 import { WalkRole } from '@/types/walk';
 import { formatDate, formatTime } from '@/utils/date';
 
+import { HeaderNavigation } from '@/components/HeaderNavigation';
+
 interface UserRecordWalkDetailProps {
   params: {
     id: string;
@@ -20,6 +22,9 @@ function UserRecordWalkDetail({ params: { id } }: UserRecordWalkDetailProps) {
 
   return (
     <section id='record-walk-detail' className='flex flex-col items-center '>
+      <HeaderNavigation.Container>
+        <HeaderNavigation.Title text='산책 일지 상세' />
+      </HeaderNavigation.Container>
       <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>산책 일지 상세</h1>
 
       <div className='container bg-white p-4  min-h-[100vh]'>
