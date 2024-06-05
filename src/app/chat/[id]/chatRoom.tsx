@@ -145,6 +145,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
       message => message.user_id !== user?.id && !message.is_read,
     );
 
+    if (messagesData.messages.length > 20) return;
     if (lastOtherMessage) return;
     messageRef.current?.scrollTo({
       top: messageRef.current?.scrollHeight,
@@ -153,7 +154,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
 
   return (
     <div className='relative h-screen flex flex-col'>
-      <HeaderNavigation.Container />
+      <HeaderNavigation.Container className='bg-bg-blue' />
       <NativeLink href={`/posts/${post?.id}`} className='flex px-4 py-3 border-b-[1px]'>
         <div className='flex-[1_0_50px]'>
           {post && post.pet && <PetProfile className='!bg-gray-200' pet={post.pet} width={50} height={50} />}
