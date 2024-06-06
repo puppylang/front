@@ -9,7 +9,7 @@ import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { getMessages } from '@/services/chat';
 import { MESSAGE_POST_KEY, getPostPetDetail } from '@/services/post';
 import { useUserQuery } from '@/services/user';
-import { Message, Message as MessageType, SocketData } from '@/types/chat';
+import { Message as MessageType, SocketData } from '@/types/chat';
 import { Post } from '@/types/post';
 import { formatAge } from '@/utils/date';
 
@@ -28,7 +28,7 @@ interface ChatRoomProps {
 interface MessageData {
   showsLastMessage: boolean;
   showsFirstMessage: boolean;
-  messages: Message[];
+  messages: MessageType[];
 }
 
 export default function ChatRoom({ id, postId }: ChatRoomProps) {
@@ -221,7 +221,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
 
 interface MessageProps {
   isMyChat: boolean;
-  message: Message;
+  message: MessageType;
   isSameDate: boolean;
   isSameMinutes: boolean;
   isSameUserLastChat: boolean;

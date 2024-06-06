@@ -48,3 +48,7 @@ export interface Center {
   lat: number;
   lng: number;
 }
+
+export interface TotalDistance {
+  total_distance: number;
+}
