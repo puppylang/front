@@ -14,7 +14,6 @@ export default function Home() {
     Kakao.Auth.authorize({
       redirectUri: process.env.NEXT_PUBLIC_REDIRECT_URI,
     });
-    // console.log(process.env.NEXT_PUBLIC_REDIRECT_URI);
   };
 
   return (
@@ -92,7 +91,7 @@ function AppleLoginButtn() {
   const onClickAppleBtn = (event: MouseEvent) => {
     event.preventDefault();
     const CLIENT_ID = process.env.NODE_ENV === 'development' ? 'com.test.puppylang' : 'com.puppylang';
-    window.location.href = `https://appleid.apple.com/auth/authorize?client_id=${CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_URI}&response_mode=fragment&response_type=code id_token`;
+    window.location.href = `https://appleid.apple.com/auth/authorize?client_id=${CLIENT_ID}&redirect_uri=https://7efc-211-222-98-23.ngrok-free.app/login/success&response_mode=fragment&response_type=code id_token`;
   };
 
   return (
