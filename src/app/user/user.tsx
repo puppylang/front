@@ -4,20 +4,21 @@ import { QueryErrorResetBoundary, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { FaUserCircle } from 'react-icons/fa';
-import { MdArrowForwardIos } from 'react-icons/md';
 
+import MyPageSkeleton from '@/components/SkeletonUI/MyPageSkeleton';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
-import { deleteUser, logoutUser, useUserQuery } from '@/services/user';
+import { deleteUser, logoutUser, useRecordWalkCount, useRecordWalkDistance, useUserQuery } from '@/services/user';
 
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
 import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
+import { Section } from '@/components/Section';
+import UserActivity from '@/components/UserActivity';
 
 import ApiErrorFallback from './error';
-import EditProfile from '../../../public/edit_profile.png';
+import { IconCaretRight, IconEdit, IconUserDefault } from '../../../public/assets/svgs';
 
 export default function UserComponent() {
   return (
@@ -36,8 +37,12 @@ export default function UserComponent() {
 function User() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { data: pets } = usePetQuery();
-  const { data: user } = useUserQuery();
+  const { data: pets, isLoading: isPetLoading } = usePetQuery();
+  const { data: user, isLoading: isUserLoading } = useUserQuery();
+  const { data: recordWalks, isLoading: isRecordWalkKLoading } = useRecordWalkCount();
+  const { data: totalDistance, isLoading: isDistanceLoading } = useRecordWalkDistance();
+
+  const isLoading = isPetLoading && isUserLoading && isRecordWalkKLoading && isDistanceLoading;
 
   const router = useNativeRouter();
   const queryClient = useQueryClient();
@@ -65,23 +70,27 @@ function User() {
     }
   };
 
+  if (isLoading) return <MyPageSkeleton />;
+
   return (
     <>
       <section className='flex flex-col items-center'>
-        <div className='container bg-white'>
-          <div className='flex w-full items-center justify-between p-4'>
+        <Section.Container className='bg-white'>
+          <div className='flex w-full items-center justify-between'>
             <div className='flex items-center gap-x-4'>
               <div className='image-container'>
                 {user && user.image ? (
                   <Image
-                    className='w-[70px] h-[70px] rounded-full'
+                    className='rounded-full w-[60px] h-[60px] object-cover'
                     src={user.image}
                     alt='profile'
-                    width={70}
-                    height={70}
+                    width={60}
+                    height={60}
                   />
                 ) : (
-                  <FaUserCircle color='#dee1e4' className='w-[70px] h-[70px]' />
+                  <div className='flex items-center justify-center w-[60px] h-[60px] bg-gray-4 rounded-full overflow-hidden'>
+                    <IconUserDefault width='30' height='30' />
+                  </div>
                 )}
               </div>
               <div className='font-semibold'>
@@ -97,61 +106,67 @@ function User() {
               <NativeLink
                 href='/user/edit'
                 webviewPushPage='detail'
-                className='flex items-center border border-gray-2 text-text-2 text-[12px] px-4 py-2 rounded-xl'
+                className='flex items-center gap-x-1 border border-gray-2 text-text-2 text-[12px] px-3 py-[7px] rounded-xl'
               >
-                <Image src={EditProfile} alt='edit profile' className='w-[16px] h-[16px]' />
-                <p className='pl-1'>프로필 수정</p>
+                <IconEdit />
+
+                <p>프로필 수정</p>
               </NativeLink>
             </div>
           </div>
-        </div>
+        </Section.Container>
       </section>
 
       <section className='flex flex-col items-center border-t border-t-1 border-gray-3 w-full'>
-        <div className='container bg-white p-4 flex flex-col gap-y-4'>
-          <p className='font-semibold text-text-2'>나의 반려견 🐾</p>
+        <Section.Container className='bg-white flex flex-col'>
+          <Section.Title title='나의 반려견 🐾' />
           <PetCardList showsAddCard pets={pets} type='slide' onClick={onClickPetCard} />
-        </div>
+        </Section.Container>
       </section>
 
       <section className='flex flex-col items-center mt-4'>
-        <div className='container bg-white p-4'>
-          <h3 className='text-text-2 font-semibold text-sm pb-3'>나의 활동</h3>
-          <ul className='text-text-1'>
+        <Section.Container className='bg-white'>
+          <Section.Title title='나의 활동' />
+
+          <UserActivity totalDistance={totalDistance?.total_distance} walkCount={recordWalks} />
+
+          <ul className='text-text-1 mt-4'>
             <ProfileLinkList text='내 게시글' href='/user/posts' />
             <ProfileLinkList text='좋아요 목록' href='/user/liked-posts' />
             <ProfileLinkList text='산책 신청목록' href='/' />
             <ProfileLinkList text='산책 일지' href='/user/record-walks' border='none' />
           </ul>
-        </div>
+        </Section.Container>
       </section>
 
       <section className='flex flex-col items-center mt-4'>
-        <div className='container bg-white p-4'>
-          <h3 className='text-text-2 font-semibold text-sm pb-3'>기타</h3>
-          <ul className='text-text-1'>
+        <Section.Container className='bg-white'>
+          <Section.Title title='기타' />
+
+          <ul className='text-text-1 text-sm '>
             <ProfileLinkList text='내 동네 설정' href='/user/region' />
-            <li className='border-b border-b-gray-3 text-sm '>
-              <button type='button' className='text-left py-3 w-full' onClick={onClickLogoutBtn}>
+            <li className='border-b border-b-gray-3'>
+              <button type='button' className='text-left w-full py-3' onClick={onClickLogoutBtn}>
                 로그아웃
               </button>
             </li>
             <li className='text-sm'>
-              <button type='button' className='text-left py-3 w-full' onClick={() => setIsOpen(true)}>
+              <button type='button' className='text-left w-full py-3' onClick={() => setIsOpen(true)}>
                 회원탈퇴
               </button>
             </li>
-            <Alert
-              title='정말 탈퇴하시겠어요?'
-              message='계정은 삭제되며 복구되지 않습니다.'
-              isOpen={isOpen}
-              buttonText='탈퇴'
-              onClick={onClickAlertBtn}
-              onClose={() => setIsOpen(false)}
-            />
           </ul>
-        </div>
+        </Section.Container>
       </section>
+
+      <Alert
+        title='정말 탈퇴하시겠어요?'
+        message='계정은 삭제되며 복구되지 않습니다.'
+        isOpen={isOpen}
+        buttonText='탈퇴'
+        onClick={onClickAlertBtn}
+        onClose={() => setIsOpen(false)}
+      />
     </>
   );
 }
@@ -172,7 +187,7 @@ function ProfileLinkList({ text, href, border }: ProfileLinkListProps) {
         } text-sm py-3`}
       >
         {text}
-        <MdArrowForwardIos />
+        <IconCaretRight />
       </NativeLink>
     </li>
   );

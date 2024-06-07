@@ -3,6 +3,7 @@ export const getToken = () => {
   if (isWebview()) {
     token = localStorage.getItem('token') || '';
   }
+
   if (!isWebview()) {
     const cookie = document.cookie.split('; ').find(row => row.startsWith('token'));
     token = cookie ? cookie.split('=')[1] : '';
@@ -14,6 +15,7 @@ export const getToken = () => {
 export const saveToken = (token: string) => {
   if (isWebview()) {
     localStorage.setItem('token', token);
+    document.cookie = `token=${token};path=/; SameSite=None; Secure`;
   }
 
   if (!isWebview()) {
@@ -22,12 +24,16 @@ export const saveToken = (token: string) => {
     if (cookie) {
       deleteCookie('token');
     }
-    document.cookie = `token=${token};path=/`;
+    document.cookie = `token=${token};path=/; SameSite=None; Secure;`;
   }
 };
 
 export const isWebview = () => {
-  return window && !window.document.cookie;
+  const { userAgent } = navigator;
+  const isMobile = /Mobi|Android/i.test(userAgent);
+  const isTablet = /Tablet|iPad/i.test(userAgent);
+
+  return isMobile || isTablet;
 };
 
 export const deleteCookie = (cookieName: string) => {
