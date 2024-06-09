@@ -110,10 +110,10 @@ export default function UserRegion() {
 
   return (
     <>
-      <section className='container pt-4 px-4'>
-        <HeaderNavigation.Container>
-          <HeaderNavigation.Title text='내 동네 설정' />
-        </HeaderNavigation.Container>
+      <HeaderNavigation.Container className='bg-bg-blue'>
+        <HeaderNavigation.Title text='내 동네 설정' />
+      </HeaderNavigation.Container>
+      <section className='container pt-2 px-4'>
         <div className='mb-3'>
           <div className='mb-1 flex items-center'>
             <span className='text-sm'>내 동네</span>
