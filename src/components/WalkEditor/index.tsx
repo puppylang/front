@@ -57,7 +57,7 @@ export function WalkEditor({ defaultCautions, pet }: WalkFormProps) {
       <TrackMap />
 
       <div
-        className={`container p-4 fixed left-[50%] bottom-0 translate-x-[-50%] w-full flex flex-col items-center gap-y-4 bg-white z-[45] rounded-tl-[16px] rounded-tr-[16px]
+        className={`container p-4 pb-8 fixed left-[50%] bottom-0 translate-x-[-50%] w-full flex flex-col items-center gap-y-4 bg-white z-[45] rounded-tl-[16px] rounded-tr-[16px]
           ${isExpanded && 'translate-y-[calc(100%-56px)]'} transition-transform`}
       >
         <div className='arrow w-full'>
