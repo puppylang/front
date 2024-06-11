@@ -54,6 +54,7 @@ function WalkSuccess({ type, data }: WalkSuccessProps) {
 
               <NativeLink
                 href='/posts'
+                webviewPushPage='home'
                 className='block w-full mt-4 bg-main-2 text-sm text-white text-center h-[45px] leading-[45px] rounded-[10px]'
               >
                 둘러보러 가기
