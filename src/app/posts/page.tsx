@@ -129,7 +129,6 @@ function Post() {
               글쓰기
             </button>
           </div>
-          {/* </div> */}
 
           {posts?.length > 0 ? (
             <ul className='post-list flex flex-col gap-4 animation-load'>
