@@ -5,6 +5,7 @@ import Image from 'next/image';
 import UserProfileSkeleton from '@/components/SkeletonUI/UserProfileSkeleton';
 import { usePetQuery } from '@/services/pet';
 
+import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
 import { Section } from '@/components/Section';
@@ -28,6 +29,9 @@ export default function UserProfile({ id }: UserProfileProps) {
 
   return user ? (
     <>
+      <HeaderNavigation.Container>
+        <HeaderNavigation.Title text='프로필' />
+      </HeaderNavigation.Container>
       <section id='user-info-container' className='flex flex-col items-center animation-show'>
         <Section.Container className='bg-white'>
           <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>퍼피랑 사용자 프로필 화면</h1>
