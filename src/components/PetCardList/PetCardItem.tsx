@@ -1,7 +1,7 @@
 import { Gender, Pet } from '@/types/pet';
 import { formatAge } from '@/utils/date';
 
-import PetProfile from '../PetProfile';
+import { Profile } from '../Profile';
 
 interface PetCardItemProps {
   pet: Pet;
@@ -30,7 +30,7 @@ export function PetCardItem({ pet }: PetCardItemProps) {
         )}
       </div>
 
-      <PetProfile pet={pet} width={80} height={80} />
+      <Profile.Pet pet={pet} width={80} height={80} />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import Image from 'next/image';
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { MdSend } from 'react-icons/md';
 
@@ -15,10 +14,8 @@ import { formatAge } from '@/utils/date';
 
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
-import PetProfile from '@/components/PetProfile';
 import PostStatusBadge from '@/components/PostStatusBadge';
-
-import { IconUserDefault } from '../../../../public/assets/svgs';
+import { Profile } from '@/components/Profile';
 
 interface ChatRoomProps {
   id: string;
@@ -157,7 +154,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
       <HeaderNavigation.Container className='bg-bg-blue' />
       <NativeLink href={`/posts/${post?.id}`} className='flex px-4 py-3 border-b-[1px]'>
         <div className='flex-[1_0_50px]'>
-          {post && post.pet && <PetProfile className='!bg-gray-200' pet={post.pet} width={50} height={50} />}
+          {post && post.pet && <Profile.Pet className='!bg-gray-200' pet={post.pet} width={50} height={50} />}
         </div>
         <div className='flex pl-4 w-full items-center'>
           <div className='w-full'>
@@ -292,19 +289,12 @@ const Message = React.memo(
         )}
         {!isSameDate && <p className='text-xs text-text-2 text-center'>{getFullYear(message.time)}</p>}
         <div className={`flex w-full mb-3 ${isMyChat && 'flex-row-reverse'}`} ref={messageRef}>
-          {message.user_image ? (
-            <Image
-              width={50}
-              height={50}
-              src={message.user_image}
-              alt='example'
-              className='rounded-full self-start w-[50px] h-[50px]'
-            />
-          ) : (
-            <div className='bg-gray-200 rounded-full w-[50px] h-[50px] flex justify-center items-center'>
-              <IconUserDefault className='w-[35px] h-[35px]' />
-            </div>
-          )}
+          <Profile.User
+            image={message.user_image}
+            alt={message.user_id}
+            imageClassName='!w-[50px] !h-[50px]'
+            defaultUserDivClassName='!w-[50px] !h-[50px]'
+          />
           <div className='flex self-end relative'>
             {isMyChat && !isSameMinutes && isSameUserLastChat && (
               <p className='text-[10px] self-end text-text-2'>{getCurrentTime(message.time)}</p>

@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 
 import { useChatQuery } from '@/services/chat';
@@ -9,11 +8,10 @@ import { RouterMethod } from '@/types/route';
 import { formatDiffTime } from '@/utils/date';
 
 import NativeLink from '@/components/NativeLink';
-import PetProfile from '@/components/PetProfile';
+import { Profile } from '@/components/Profile';
 import { PuppyError } from '@/components/PuppyError';
 
 import { ChatSkelectonUI, TabSkelectonUI } from './chatSkeletionUI';
-import { IconUserDefault } from '../../../public/assets/svgs';
 
 export default function Chat() {
   const [selectedType, setSelectedType] = useState<ChatWritterType>(ChatWritterType.Author);
@@ -110,20 +108,12 @@ function ChatRoomList({ chatRoom, type }: ChatRoomListProps) {
         type={RouterMethod.Push}
       >
         <div className='relative flex justify-end'>
-          {userImage ? (
-            <Image
-              className='absolute top-[-10px] left-0 rounded-full'
-              src={userImage}
-              alt='guest image'
-              width={50}
-              height={50}
-            />
-          ) : (
-            <div className='absolute top-[-10px] left-0 bg-gray-200 rounded-full h-[50px] w-[50px] flex justify-center items-center'>
-              <IconUserDefault alt='default user image' width={35} height={35} />
-            </div>
-          )}
-          <PetProfile pet={post.pet} height={60} width={60} className='z-10 !bg-gray-200 w-[60px]' />
+          <Profile.User
+            image={userImage || ''}
+            imageClassName='absolute top-[-10px] left-0'
+            defaultUserDivClassName='absolute top-[-10px] left-0'
+          />
+          <Profile.Pet pet={post.pet} height={60} width={60} className='z-10 !bg-gray-200 w-[60px]' />
         </div>
         <div className='flex flex-col justify-center pr-2 pl-4'>
           <div className='flex items-center'>

@@ -18,7 +18,7 @@ import {
   IconCheckboxFill,
   IconCurrentLocation,
 } from '../../../public/assets/svgs';
-import PetProfile from '../PetProfile';
+import { Profile } from '../Profile';
 
 interface WalkFormProps {
   defaultCautions?: Caution[];
@@ -80,7 +80,7 @@ export function WalkEditor({ defaultCautions, pet }: WalkFormProps) {
 
         <div className='info w-full flex flex-col gap-y-4 mt-4'>
           <div className='puppy-info flex items-center gap-x-2'>
-            <PetProfile pet={pet} width={32} height={32} />
+            <Profile.Pet pet={pet} width={32} height={32} />
 
             <p className='text-text-1 text-sm font-semibold'>
               {pet.name}와(과) {isRunning ? '산책 중입니다!' : '산책을 시작해볼까요?'}

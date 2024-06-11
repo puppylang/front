@@ -3,8 +3,8 @@ import { Post, PostStatus } from '@/types/post';
 import { formatAge, formatDate } from '@/utils/date';
 
 import NativeLink from '@/components/NativeLink';
-import PetProfile from '@/components/PetProfile';
 import PostStatusBadge from '@/components/PostStatusBadge';
+import { Profile } from '@/components/Profile';
 
 interface PostItemProps {
   post: Post;
@@ -14,7 +14,7 @@ export function PostItem({ post }: PostItemProps) {
   return (
     <li className='bg-white rounded-[10px] shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'>
       <NativeLink href={`/posts/${post.id}`} className='flex flex-row justify-between gap-x-3 p-4'>
-        {post.pet && <PetProfile pet={post.pet} width={80} height={80} minW={80} />}
+        {post.pet && <Profile.Pet pet={post.pet} width={80} height={80} minW={80} />}
 
         <div className='post-info flex flex-col gap-y-2 w-full'>
           <p className='text-base text-text-1 line-clamp-1'>{post.title}</p>

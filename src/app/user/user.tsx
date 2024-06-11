@@ -1,7 +1,6 @@
 'use client';
 
 import { QueryErrorResetBoundary, useQueryClient } from '@tanstack/react-query';
-import Image from 'next/image';
 import { Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -14,11 +13,12 @@ import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
 import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
+import { Profile } from '@/components/Profile';
 import { Section } from '@/components/Section';
 import UserActivity from '@/components/UserActivity';
 
 import ApiErrorFallback from './error';
-import { IconCaretRight, IconEdit, IconUserDefault } from '../../../public/assets/svgs';
+import { IconCaretRight, IconEdit } from '../../../public/assets/svgs';
 
 export default function UserComponent() {
   return (
@@ -79,19 +79,7 @@ function User() {
           <div className='flex w-full items-center justify-between'>
             <div className='flex items-center gap-x-4'>
               <div className='image-container'>
-                {user && user.image ? (
-                  <Image
-                    className='rounded-full w-[60px] h-[60px] object-cover'
-                    src={user.image}
-                    alt='profile'
-                    width={60}
-                    height={60}
-                  />
-                ) : (
-                  <div className='flex items-center justify-center w-[60px] h-[60px] bg-gray-4 rounded-full overflow-hidden'>
-                    <IconUserDefault width='30' height='30' />
-                  </div>
-                )}
+                <Profile.User image={user && user.image ? user.image : ''} />
               </div>
               <div className='font-semibold'>
                 <h2 className='text-base text-text-2'>

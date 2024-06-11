@@ -1,18 +1,16 @@
 'use client';
 
-import Image from 'next/image';
-
 import UserProfileSkeleton from '@/components/SkeletonUI/UserProfileSkeleton';
 import { usePetQuery } from '@/services/pet';
 
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
+import { Profile } from '@/components/Profile';
 import { Section } from '@/components/Section';
 import UserActivity from '@/components/UserActivity';
 import UserPostList from '@/components/UserPostList';
 
-import { IconUserDefault } from '../../../../public/assets/svgs';
 import { useOthersQuery, useRecordWalkCount, useRecordWalkDistance } from '../../../services/user';
 
 interface UserProfileProps {
@@ -38,19 +36,7 @@ export default function UserProfile({ id }: UserProfileProps) {
 
           <div className='flex items-center gap-x-4'>
             <div className='image-container'>
-              {user.image ? (
-                <Image
-                  className='rounded-full w-[60px] h-[60px] object-cover'
-                  src={user.image}
-                  alt='profile'
-                  width={60}
-                  height={60}
-                />
-              ) : (
-                <div className='flex items-center justify-center w-[60px] h-[60px] bg-gray-4 rounded-full overflow-hidden'>
-                  <IconUserDefault width='30' height='30' />
-                </div>
-              )}
+              <Profile.User image={user.image || ''} defaultUserImageClassName='' />
             </div>
 
             <div className='user-info flex flex-col'>
