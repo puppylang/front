@@ -142,7 +142,11 @@ export default function Resume({ id, onClose }: ResumeProps) {
             ) : (
               <div className='h-full flex items-center flex-col justify-center'>
                 <p className='text-xs'>등록된 산책 기록이 없어요.</p>
-                <NativeLink href='/walk-role' className='bg-main-3 text-white-1 rounded-lg text-xs px-2 py-1 mt-1'>
+                <NativeLink
+                  href='/walk-role'
+                  webviewPushPage='home'
+                  className='bg-main-3 text-white-1 rounded-lg text-xs px-2 py-1 mt-1'
+                >
                   산책하러 가기
                 </NativeLink>
               </div>

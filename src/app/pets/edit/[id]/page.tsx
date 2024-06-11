@@ -82,7 +82,6 @@ export default function EditPet({ params: { id } }: DynamicRouteParams) {
   const onSubmitPetForm = (event: FormEvent) => {
     event.preventDefault();
     if (!user) return;
-    setFormState(DEFAULT_PET_FORM);
     petUpdateMutation.mutate({ ...formState, user_id: user.id, id: Number(id) });
   };
 
@@ -123,13 +122,16 @@ export default function EditPet({ params: { id } }: DynamicRouteParams) {
 
   useEffect(() => {
     if (!petUpdateMutation.isSuccess) return;
-    router.push('/user');
+    router.push('/user', {
+      webviewPushPage: 'home',
+    });
   }, [petUpdateMutation.isSuccess]);
 
   useEffect(() => {
     if (!petDeleteMutaion.isSuccess) return;
-    setFormState(DEFAULT_PET_FORM);
-    router.push('/user');
+    router.push('/user', {
+      webviewPushPage: 'home',
+    });
   }, [petDeleteMutaion.isSuccess]);
 
   return (

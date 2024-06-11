@@ -70,7 +70,7 @@ function WalkRolePicker() {
               <div>신청 내역에서 선택하는 UI</div>
             ) : (
               <div className='flex flex-col justify-center items-center h-[112px] rounded-[10px] border-2 border-main-5'>
-                <NativeLink href='/posts' className=''>
+                <NativeLink href='/posts' webviewPushPage='home' className=''>
                   <p className='text-center text-sm text-text-2 leading-[20px]'>
                     신청 내역이 없습니다.
                     <br />

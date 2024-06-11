@@ -74,7 +74,11 @@ export default function UserProfile({ id }: UserProfileProps) {
     <section id='user' className='animation-show'>
       <Section.Container className='bg-white flex flex-col gap-y-4 items-center justify-center min-h-[100vh]'>
         <h2 className='font-Jalnan text-text-1'>해당 유저가 존재하지 않습니다.</h2>
-        <NativeLink href='/posts' className='bg-main-2 text-white text-sm px-6 py-2 rounded-[10px]'>
+        <NativeLink
+          href='/posts'
+          webviewPushPage='home'
+          className='bg-main-2 text-white text-sm px-6 py-2 rounded-[10px]'
+        >
           홈으로 가기
         </NativeLink>
       </Section.Container>

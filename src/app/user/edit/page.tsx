@@ -95,7 +95,9 @@ export default function Edit() {
 
   useEffect(() => {
     if (!userMutation.isSuccess) return;
-    router.push('/user');
+    router.push('/user', {
+      webviewPushPage: 'home',
+    });
   }, [userMutation.isSuccess, router]);
 
   return (

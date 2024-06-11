@@ -75,7 +75,9 @@ export default function NewPet() {
 
   useEffect(() => {
     if (!petMutation.isSuccess) return;
-    router.push('/user');
+    router.push('/user', {
+      webviewPushPage: 'home',
+    });
   }, [petMutation.isSuccess, router]);
 
   return (

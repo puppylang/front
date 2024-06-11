@@ -18,7 +18,7 @@ interface WalkSuccessProps {
 function WalkSuccess({ type, data }: WalkSuccessProps) {
   const router = useNativeRouter();
 
-  const handleGoTO = () => router.push('/posts');
+  const handleGoTO = () => router.push('/posts', { webviewPushPage: 'home' });
 
   return (
     <section id='walkSuccessForm' className='flex flex-col items-center bg-white w-full'>
