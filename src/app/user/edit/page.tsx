@@ -198,17 +198,6 @@ export default function Edit() {
           </div>
         </div>
 
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-
         <div className='fixed bottom-0 w-full bg-white-1'>
           <button type='submit' className='w-full bg-main-1 text-white-1 text-[14px] py-3'>
             수정
