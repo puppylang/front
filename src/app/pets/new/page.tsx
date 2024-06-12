@@ -179,7 +179,7 @@ export default function NewPet() {
         <div className='fixed bottom-0 w-full bg-white-1'>
           <button
             type='submit'
-            className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white-1 text-[14px] py-3 `}
+            className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white-1 pt-3 pb-7`}
             disabled={isInvalidForm}
           >
             등록

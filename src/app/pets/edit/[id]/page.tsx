@@ -227,12 +227,12 @@ export default function EditPet({ params: { id } }: DynamicRouteParams) {
         </div>
 
         <div className='fixed grid grid-cols-2  bottom-0 w-full bg-white-1'>
-          <button type='button' className='text-white-1 bg-red-400' onClick={() => setIsAlertOpen(true)}>
+          <button type='button' className='text-white-1 bg-red-400 pt-3 pb-7' onClick={() => setIsAlertOpen(true)}>
             삭제
           </button>
           <button
             type='submit'
-            className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white-1 text-[14px] py-3 `}
+            className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white-1 text-[14px] pt-3 pb-7`}
             disabled={isInvalidForm}
           >
             수정

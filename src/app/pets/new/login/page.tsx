@@ -170,17 +170,17 @@ export default function NewLoginPet() {
           />
         </div>
 
-        <div className='grid grid-cols-2 gap-2 fixed bottom-0 w-full px-6 bg-white-1 pt-4 pb-3'>
+        <div className='grid grid-cols-2 gap-2 fixed bottom-0 w-full px-6 bg-white-1'>
           <button
             type='button'
             onClick={onClickSkipButton}
-            className='text-[14px] border border-main-1 text-main-1 py-3 rounded-[9px]'
+            className='border border-main-1 text-main-1 pt-3 pb-7 rounded-[9px]'
           >
             건너뛰기
           </button>
           <button
             type='submit'
-            className={`${isInvalidForm && ' opacity-40'} bg-main-1 text-white-1 text-[14px]  py-3 rounded-[9px]`}
+            className={`${isInvalidForm && ' opacity-40'} bg-main-1 text-white-1 pt-3 pb-7 rounded-[9px]`}
             disabled={isInvalidForm}
           >
             등록
