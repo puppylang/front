@@ -196,7 +196,7 @@ function SubmittedResumeUI({ id }: { id: string }) {
           )}
         </ul>
       </section>
-      <Popup.Container isOpen={showsPopup}>
+      <Popup.Container isOpen={showsPopup} className='pb-0'>
         <Popup.CloseButton onClose={() => setShowsPopup(false)} />
         {clickedResume && (
           <ResumeInfoPopup

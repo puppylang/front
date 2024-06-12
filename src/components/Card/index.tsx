@@ -21,8 +21,10 @@ function CardImageContainer({
   alt?: string;
 }) {
   return (
-    <div className={`rounded-full w-[70px] h-[70px] overflow-hidden flex justify-center items-center ${className}`}>
-      {src && <Image className='rounded-full' src={src} alt={alt} width={70} height={70} />}
+    <div
+      className={`rounded-full w-[70px] h-[70px] overflow-hidden flex justify-center items-center object-cover ${className}`}
+    >
+      {src && <Image className='rounded-full w-[70px] h-[70px]' src={src} alt={alt} width={70} height={70} />}
       {!src && type === 'USER' ? <IconUserDefault alt='default user' width={35} height={35} /> : <IconDog />}
     </div>
   );
