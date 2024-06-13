@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { useChatQuery } from '@/services/chat';
 import { ChatWritterType, ChatRoom } from '@/types/chat';
+import { BOTTOM_NAVIGATION_HEIGHT } from '@/types/post';
 import { RouterMethod } from '@/types/route';
 import { formatDiffTime } from '@/utils/date';
 
@@ -73,7 +74,7 @@ export default function Chat() {
               </button>
             </li>
           </ul>
-          <ul>
+          <ul className={`pb-[${BOTTOM_NAVIGATION_HEIGHT}px]`}>
             {chatRooms.map(chatRoom => (
               <ChatRoomList key={chatRoom.id} chatRoom={chatRoom} type={selectedType} />
             ))}

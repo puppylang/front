@@ -184,7 +184,7 @@ export default function Resume({ id, onClose }: ResumeProps) {
         <div className='fixed bottom-0 left-0 w-full bg-white-1'>
           <button
             type='submit'
-            className={`w-full bg-main-1 text-white-1 text-[14px] py-3 ${isDisabledSubmitBtn && 'opacity-40'}`}
+            className={`w-full bg-main-1 text-white-1 pt-3 py-7 ${isDisabledSubmitBtn && 'opacity-40'}`}
             disabled={isDisabledSubmitBtn}
           >
             등록

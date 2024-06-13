@@ -151,10 +151,12 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
 
   return (
     <div className='relative h-screen flex flex-col'>
-      <HeaderNavigation.Container className='bg-bg-blue' />
+      <HeaderNavigation.Container className='!bg-bg-blue'>
+        <HeaderNavigation.Title text='채팅방' />
+      </HeaderNavigation.Container>
       <NativeLink href={`/posts/${post?.id}`} className='flex px-4 py-3 border-b-[1px]'>
         <div className='flex-[1_0_50px]'>
-          {post && post.pet && <Profile.Pet className='!bg-gray-200' pet={post.pet} width={50} height={50} />}
+          {post && post.pet && <Profile.Pet className='!bg-bg-blue' pet={post.pet} width={50} height={50} />}
         </div>
         <div className='flex pl-4 w-full items-center'>
           <div className='w-full'>
@@ -200,7 +202,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
           })}
         </div>
       </div>
-      <form className='fixed bottom-0 w-full p-2 h-[60px] py-3 flex bg-bg-blue' onSubmit={onSubmitChat}>
+      <form className='fixed bottom-0 w-full p-2  px-3 pb-7 flex bg-bg-blue' onSubmit={onSubmitChat}>
         <input
           type='text'
           placeholder='메시지 보내기'
@@ -287,7 +289,7 @@ const Message = React.memo(
             여기까지 읽었습니다.
           </span>
         )}
-        {!isSameDate && <p className='text-xs text-text-2 text-center'>{getFullYear(message.time)}</p>}
+        {!isSameDate && <p className='text-xs text-text-2 text-center mb-4'>{getFullYear(message.time)}</p>}
         <div className={`flex w-full mb-3 ${isMyChat && 'flex-row-reverse'}`} ref={messageRef}>
           <Profile.User
             image={message.user_image}

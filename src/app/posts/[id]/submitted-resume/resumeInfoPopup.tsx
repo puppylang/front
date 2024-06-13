@@ -31,61 +31,62 @@ export default function ResumeInfoPopup({
   const { data: walkList, isLoading } = useRecordWalkByUser(resume.user_id, WalkRole.PetOwner);
 
   return (
-    <section className='px-4 pt-4'>
-      <h2 className='text-center font-Jalnan py-2 text-lg'>{resume.name}님의 지원서</h2>
+    <section>
+      <div className='px-4 pt-4'>
+        <h2 className='text-center font-Jalnan py-2 text-lg'>{resume.name}님의 지원서</h2>
 
-      <div className='flex justify-center mb-[30px]'>
-        <ImageUpload defaultURL={resume.image} onChangeFileInput={() => {}} disabled />
-      </div>
-
-      <Form.String title='이름' value={resume.name || ''} onChange={() => {}} disabled />
-
-      <Form.Number title='태어난 연도' value={resume.birth_year} onChange={() => {}} disabled />
-
-      <Form.Radio
-        title='성별'
-        onChange={() => {}}
-        disabled
-        firstInput={{ value: Gender.Male, id: 'male', title: '남성' }}
-        secondInput={{ value: Gender.Female, id: 'female', title: '여성' }}
-        activedValue={resume.gender}
-      />
-
-      <Form.Radio
-        title='반려견 부양 여부'
-        // eslint-disable-next-line
-        activedValue={resume.has_puppy === null ? '' : resume.has_puppy ? '부양' : '미부양'}
-        onChange={() => {}}
-        disabled
-        firstInput={{ value: '부양', id: '부양', title: '예' }}
-        secondInput={{ value: '미부양', id: '미부양', title: '아니요' }}
-      />
-
-      <Form.Title title='산책 경험'>
-        <p className='text-xs mb-2 text-text-1'>앱에 등록된 최신 산책 기록 10개를 불러옵니다.</p>
-        <div className='bg-gray-3 w-full p-2 py-3 rounded-xl px-3 h-[200px] overflow-y-scroll flex flex-col gap-y-3'>
-          {!isLoading && walkList && walkList.length ? (
-            walkList.map(walk => (
-              <RecordWalkItem
-                key={walk.id}
-                className='drop-shadow-sm bg-white-1 rounded-xl'
-                walk={walk}
-                role={WalkRole.PetOwner}
-              />
-            ))
-          ) : (
-            <div className='h-full flex items-center flex-col justify-center'>
-              <p className='text-xs'>등록된 산책 기록이 없어요.</p>
-            </div>
-          )}
+        <div className='flex justify-center mb-[30px]'>
+          <ImageUpload defaultURL={resume.image} onChangeFileInput={() => {}} disabled />
         </div>
-      </Form.Title>
 
-      <Form.Number title='연락처' value={resume.phone_number} onChange={() => {}} disabled />
+        <Form.String title='이름' value={resume.name || ''} onChange={() => {}} disabled />
 
-      <Form.Textarea disabled title='간단 자기소개' value={resume.introduction} onChange={() => {}} />
+        <Form.Number title='태어난 연도' value={resume.birth_year} onChange={() => {}} disabled />
 
-      <div className='grid grid-cols-2 gap-x-3 text-sm sticky bottom-0 bg-white left-0 py-4'>
+        <Form.Radio
+          title='성별'
+          onChange={() => {}}
+          disabled
+          firstInput={{ value: Gender.Male, id: 'male', title: '남성' }}
+          secondInput={{ value: Gender.Female, id: 'female', title: '여성' }}
+          activedValue={resume.gender}
+        />
+
+        <Form.Radio
+          title='반려견 부양 여부'
+          // eslint-disable-next-line
+          activedValue={resume.has_puppy === null ? '' : resume.has_puppy ? '부양' : '미부양'}
+          onChange={() => {}}
+          disabled
+          firstInput={{ value: '부양', id: '부양', title: '예' }}
+          secondInput={{ value: '미부양', id: '미부양', title: '아니요' }}
+        />
+
+        <Form.Title title='산책 경험'>
+          <p className='text-xs mb-2 text-text-1'>앱에 등록된 최신 산책 기록 10개를 불러옵니다.</p>
+          <div className='bg-gray-3 w-full p-2 py-3 rounded-xl px-3 h-[200px] overflow-y-scroll flex flex-col gap-y-3'>
+            {!isLoading && walkList && walkList.length ? (
+              walkList.map(walk => (
+                <RecordWalkItem
+                  key={walk.id}
+                  className='drop-shadow-sm bg-white-1 rounded-xl'
+                  walk={walk}
+                  role={WalkRole.PetOwner}
+                />
+              ))
+            ) : (
+              <div className='h-full flex items-center flex-col justify-center'>
+                <p className='text-xs'>등록된 산책 기록이 없어요.</p>
+              </div>
+            )}
+          </div>
+        </Form.Title>
+
+        <Form.Number title='연락처' value={resume.phone_number} onChange={() => {}} disabled />
+
+        <Form.Textarea disabled title='간단 자기소개' value={resume.introduction} onChange={() => {}} />
+      </div>
+      <div className='w-screen grid grid-cols-2 gap-x-3 text-sm sticky bottom-0 bg-white left-0 pt-4 px-4 pb-7'>
         <button
           type='button'
           className={`${
