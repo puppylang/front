@@ -8,6 +8,7 @@ import MyPageSkeleton from '@/components/SkeletonUI/MyPageSkeleton';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 import { deleteUser, logoutUser, useRecordWalkCount, useRecordWalkDistance, useUserQuery } from '@/services/user';
+import { BOTTOM_NAVIGATION_HEIGHT } from '@/types/post';
 
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
@@ -127,7 +128,7 @@ function User() {
         </Section.Container>
       </section>
 
-      <section className='flex flex-col items-center mt-4'>
+      <section className={`flex flex-col items-center mt-4 pb-[${BOTTOM_NAVIGATION_HEIGHT}px]`}>
         <Section.Container className='bg-white'>
           <Section.Title title='기타' />
 

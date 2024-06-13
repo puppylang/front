@@ -8,7 +8,7 @@ import { PostItem } from '@/app/posts/PostItem';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 import { getPostsWithPaging } from '@/services/post';
-import { Post as IPost } from '@/types/post';
+import { BOTTOM_NAVIGATION_HEIGHT, Post as IPost } from '@/types/post';
 
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
@@ -116,7 +116,7 @@ function Post() {
         <div className='' />
       </section>
 
-      <section className='post-container flex flex-col items-center'>
+      <section className={`post-container flex flex-col items-center pb-[${BOTTOM_NAVIGATION_HEIGHT}px]`}>
         <Section.Container className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <Section.Title title='산책해주실 분을 구하고 있어요 ! :)' className='mb-[0px]' />
