@@ -255,7 +255,7 @@ interface FormTitleProps {
   isRequired?: boolean;
 }
 
-function FormTitle({ divClassName, title, children, isRequired }: FormTitleProps) {
+function FormTitle({ divClassName = '', title, children, isRequired }: FormTitleProps) {
   return (
     <div className={`mb-6 ${divClassName || ''}`}>
       <div className='flex text-text-3 text-[12px] mb-1 items-center'>

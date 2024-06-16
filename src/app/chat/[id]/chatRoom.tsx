@@ -4,18 +4,24 @@ import { useQuery } from '@tanstack/react-query';
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { MdSend } from 'react-icons/md';
 
+import Report from '@/app/report/page';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import { getMessages } from '@/services/chat';
+import { getMessages, useChatDetailQuery } from '@/services/chat';
 import { MESSAGE_POST_KEY, getPostPetDetail } from '@/services/post';
+import { useCancelBlockMutation, useCreateBlockMutation } from '@/services/report';
 import { useUserQuery } from '@/services/user';
-import { Message as MessageType, SocketData } from '@/types/chat';
+import { Message as MessageType, OBJECTIONABLE_TEXT, SocketData } from '@/types/chat';
 import { Post } from '@/types/post';
 import { formatAge } from '@/utils/date';
 
+import Alert from '@/components/Alert';
+import { BottomSheet, BottomSheetButton } from '@/components/BottomSheet';
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
+import { Popup } from '@/components/Popup';
 import PostStatusBadge from '@/components/PostStatusBadge';
 import { Profile } from '@/components/Profile';
+import Toast from '@/components/Toast';
 
 interface ChatRoomProps {
   id: string;
@@ -32,6 +38,11 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   const [text, setText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isReceivedSocketData, setIsReceivedSocketData] = useState(false);
+  const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
+  const [isOpenToast, setIsOpenToast] = useState(false);
+  const [isOpenPopup, setIsOpenPopup] = useState(false);
+  const [isOpenAlert, setIsOpenAlert] = useState(false);
+  const [toastDescription, setToastDescription] = useState('');
   const [messagesData, setMessagesData] = useState<MessageData>({
     showsFirstMessage: false,
     showsLastMessage: false,
@@ -43,19 +54,30 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   const topMessageRef = useRef<HTMLDivElement>(null);
 
   const isInTopMessageView = useIntersectionObserver(topMessageRef);
+  const createBlockMutation = useCreateBlockMutation();
+  const cancelBlockMutation = useCancelBlockMutation();
 
   const { data: post } = useQuery<Post>({
     queryKey: [MESSAGE_POST_KEY, postId],
     queryFn: () => getPostPetDetail(postId),
   });
+  const { data: chat } = useChatDetailQuery(id);
   const { data: user } = useUserQuery();
 
+  const otherUser = chat && user && user.id === chat.author_id ? chat.guest_id : chat?.author_id;
   const firstNotReadedMessage = messagesData.messages.find(message => message.user_id !== user?.id && !message.is_read);
+  const isBlockedUser = user && Boolean(user.blocker.find(blockedUser => blockedUser.blocked_id === otherUser));
 
   const onSubmitChat = (event: FormEvent) => {
     event.preventDefault();
     if (!text) return;
     if (!webSocket.current) return;
+    const objectionableText = OBJECTIONABLE_TEXT.find(content => text.includes(content));
+    if (objectionableText) {
+      setIsOpenToast(true);
+      setToastDescription('불쾌감을 주는 언어가 포함되어 있습니다.');
+      return;
+    }
     webSocket.current.send(
       JSON.stringify({ type: 'MESSAGE', data: { text, chat_id: id, user_id: user?.id, user_image: user?.image } }),
     );
@@ -83,6 +105,38 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
 
   const updateReadMessage = (messageId: number) => {
     webSocket.current?.send(JSON.stringify({ type: 'READ', data: { id: messageId, chat_id: id, user_id: user?.id } }));
+  };
+
+  const onClickAlertBlockBtn = () => {
+    if (!user || !otherUser) return;
+
+    createBlockMutation.mutate({
+      blockerId: user.id,
+      blockedId: otherUser,
+    });
+
+    setToastDescription('사용자가 차단되었어요.');
+    setIsOpenToast(true);
+    setIsOpenAlert(false);
+  };
+
+  const onClickBottomSheetBlockBtn = () => {
+    if (!user || !otherUser) return;
+
+    setIsOpenBottomSheet(false);
+
+    if (isBlockedUser) {
+      cancelBlockMutation.mutate({
+        blockerId: user.id,
+        blockedId: otherUser,
+      });
+
+      setToastDescription('사용자 차단이 해제되었어요.');
+      setIsOpenToast(true);
+      return;
+    }
+
+    setIsOpenAlert(true);
   };
 
   useEffect(() => {
@@ -153,7 +207,9 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
     <div className='relative h-screen flex flex-col'>
       <HeaderNavigation.Container className='!bg-bg-blue'>
         <HeaderNavigation.Title text='채팅방' />
+        <HeaderNavigation.DotBtn onClick={() => setIsOpenBottomSheet(true)} />
       </HeaderNavigation.Container>
+
       <NativeLink href={`/posts/${post?.id}`} className='flex px-4 py-3 border-b-[1px]'>
         <div className='flex-[1_0_50px]'>
           {post && post.pet && <Profile.Pet className='!bg-bg-blue' pet={post.pet} width={50} height={50} />}
@@ -202,7 +258,8 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
           })}
         </div>
       </div>
-      <form className='fixed bottom-0 w-full p-2  px-3 pb-7 flex bg-bg-blue' onSubmit={onSubmitChat}>
+
+      <form className='fixed bottom-0 w-full p-2 px-3 pb-7 flex bg-bg-blue' onSubmit={onSubmitChat}>
         <input
           type='text'
           placeholder='메시지 보내기'
@@ -214,6 +271,43 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
           <MdSend className={`w-[20px] h-[20px] ${text ? 'text-text-3' : 'opacity-20'}`} />
         </button>
       </form>
+
+      <BottomSheet isOpen={isOpenBottomSheet} onClose={() => setIsOpenBottomSheet(false)}>
+        <NativeLink
+          href={`/report?id=${chat?.author_id === user?.id ? chat?.guest_id : chat?.author_id}`}
+          className='py-[10px] text-main-1 border-b-[1px] text-center'
+        >
+          신고하기
+        </NativeLink>
+        <BottomSheetButton onClick={onClickBottomSheetBlockBtn}>
+          {isBlockedUser ? '차단 해체하기' : '차단하기'}
+        </BottomSheetButton>
+        <BottomSheetButton onClick={() => console.log(123)}>채팅방 나가기</BottomSheetButton>
+      </BottomSheet>
+
+      <Alert
+        buttonText='차단하기'
+        message='차단시 서로의 게시글 확인하거나 채팅을 할 수 없어요. 정말 차단하실래요?'
+        isOpen={isOpenAlert}
+        onClose={() => setIsOpenAlert(false)}
+        onClick={onClickAlertBlockBtn}
+      />
+
+      <Toast
+        status='error'
+        onClose={() => setIsOpenToast(false)}
+        isInvisible={isOpenToast}
+        position='CENTER'
+        description={toastDescription}
+      />
+
+      <Popup.Container isOpen={isOpenPopup}>
+        <Popup.CloseButton onClose={() => setIsOpenPopup(false)} className='border-b-0 text-center justify-center'>
+          <p className='text-center font-bold'>신고하기</p>
+        </Popup.CloseButton>
+
+        <Report />
+      </Popup.Container>
     </div>
   );
 }

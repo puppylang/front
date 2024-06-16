@@ -12,7 +12,7 @@ import { useUserQuery } from '@/services/user';
 import { BottomSheetType, PostStatus } from '@/types/post';
 import { formatDate } from '@/utils/date';
 
-import BottomSheet from '@/components/BottomSheet';
+import { BottomSheet } from '@/components/BottomSheet';
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Loading from '@/components/Loading';
 import NativeLink from '@/components/NativeLink';
@@ -88,10 +88,9 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
     }
   };
 
-  const handleChangeStatus = (e: React.MouseEvent<HTMLElement>) => {
+  const handleChangeStatus = (e: React.MouseEvent<HTMLButtonElement>) => {
     const { status } = e.currentTarget.dataset;
     postStatusMutation.mutate({ id, status: status as PostStatus });
-
     handleCloseBottomSheet();
   };
 
@@ -253,12 +252,8 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
       />
 
       <BottomSheet isOpen={isShowBottomMenu} onClose={() => setIsShowBottomMenu(false)}>
-        {bottomSheetType === 'POST_UPDATE' && (
-          <PostUpdateBottomSheet id={id} onDelete={handleDeletePost} onClose={handleCloseBottomSheet} />
-        )}
-        {bottomSheetType === 'POST_STATUS_UPDATE' && (
-          <PostStatusUpdateBottomSheet onChange={handleChangeStatus} onClose={handleCloseBottomSheet} />
-        )}
+        {bottomSheetType === 'POST_UPDATE' && <PostUpdateBottomSheet id={id} onDelete={handleDeletePost} />}
+        {bottomSheetType === 'POST_STATUS_UPDATE' && <PostStatusUpdateBottomSheet onChange={handleChangeStatus} />}
       </BottomSheet>
 
       <Popup.Container isOpen={isOpenPopup}>
