@@ -15,7 +15,6 @@ export const getToken = () => {
 export const saveToken = (token: string) => {
   if (isWebview()) {
     localStorage.setItem('token', token);
-    document.cookie = `token=${token};path=/; SameSite=None; Secure`;
   }
 
   if (!isWebview()) {
@@ -24,7 +23,10 @@ export const saveToken = (token: string) => {
     if (cookie) {
       deleteCookie('token');
     }
-    document.cookie = `token=${token};path=/; SameSite=None; Secure;`;
+    document.cookie =
+      process.env.NODE_ENV === 'development'
+        ? `token=${token};path=/;`
+        : `token=${token};path=/; SameSite=None; Secure;`;
   }
 };
 
