@@ -9,13 +9,12 @@ import { Profile } from '../Profile';
 interface PostProps {
   posts: PostType[];
   className?: string;
-  itemClassName?: string;
 }
 
-function PostList({ posts, className, itemClassName }: PostProps) {
+function PostList({ posts, className }: PostProps) {
   return (
     <ul className={`post-list flex flex-col gap-4 ${className || ''}`}>
-      {posts?.map(post => <PostItem key={post.id} post={post} itemClassName={itemClassName} />)}
+      {posts?.map(post => <PostItem key={post.id} post={post} />)}
     </ul>
   );
 }
@@ -26,12 +25,11 @@ function PostSlide() {
 
 interface PostItemProps {
   post: PostType;
-  itemClassName?: string;
 }
 
-function PostItem({ post, itemClassName }: PostItemProps) {
+function PostItem({ post }: PostItemProps) {
   return (
-    <li className={`bg-white rounded-[10px] ${itemClassName || ''}`}>
+    <li className='bg-white rounded-[10px] shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'>
       <NativeLink href={`/posts/${post.id}`} className='flex flex-row justify-between gap-x-3 p-4'>
         {post.pet && <Profile.Pet pet={post.pet} width={80} height={80} minW={80} />}
 
