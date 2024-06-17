@@ -258,7 +258,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
 
       <Popup.Container isOpen={isOpenPopup}>
         <Popup.CloseButton onClose={() => setIsOpenPopup(false)} />
-        <Resume id={Number(id)} onClose={onSubmitResume} />
+        <Resume id={Number(id)} onClose={() => setIsOpenPopup(false)} onSubmit={onSubmitResume} />
       </Popup.Container>
     </>
   );
