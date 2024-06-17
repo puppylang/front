@@ -7,11 +7,11 @@ import { TfiAngleRight } from 'react-icons/tfi';
 
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { createChatRoom } from '@/services/chat';
-import { POST_KEY, updatePost } from '@/services/post';
+import { POST_KEY, useMatchPost } from '@/services/post';
 import { RESUMES_KEY, updateResume } from '@/services/resume';
 import { USER_QUERY_KEY } from '@/services/user';
 import { CreateChatType } from '@/types/chat';
-import { Post, PostStatus } from '@/types/post';
+import { Post } from '@/types/post';
 import { Resume } from '@/types/resume';
 import { DynamicParamTypes } from '@/types/route';
 import { UserType } from '@/types/user';
@@ -74,6 +74,8 @@ function SubmittedResumeUI({ id }: { id: string }) {
     },
   });
 
+  const postMutation = useMatchPost(id);
+
   const onClickResume = (id: number) => {
     setClickedResumeId(id);
     setShowsPopup(true);
@@ -105,21 +107,23 @@ function SubmittedResumeUI({ id }: { id: string }) {
       guest_image: resume.image,
     };
 
-    if (isSelected) {
+    if (isSelected && postDetail.is_matched) {
       resumeMutation.mutate({ ...resume, is_selected: !resume.is_selected });
+      postMutation.mutate({ id, matched_user_id: null });
+
       return;
     }
 
     const { status: resumeStatus } = await updateResume({ ...resume, is_selected: !resume.is_selected });
     const chatId = await createChatRoom(data);
-    const updatedPost = await updatePost(id, { ...postDetail, status: PostStatus.FINISHED });
-    if (!chatId && resumeStatus !== 200 && !updatedPost) return;
+    postMutation.mutate({ id, matched_user_id: resume.user_id });
+    if (!chatId && resumeStatus !== 200) return;
 
     router.push(`/chat/${chatId}?postId=${id}`);
   };
 
-  const getSelectBtnText = (isLoading: boolean, isSelected: boolean): string | JSX.Element => {
-    if (isSelected && !isLoading) {
+  const getSelectBtnText = (isLoading: boolean, user_id: string): string | JSX.Element => {
+    if (postDetail.is_matched && postDetail.matched_user_id === user_id && !isLoading) {
       return '취소하기';
     }
 
@@ -173,12 +177,14 @@ function SubmittedResumeUI({ id }: { id: string }) {
                   <button
                     type='button'
                     className={`${
-                      resume.is_selected ? 'bg-[#f66969]' : 'bg-main-1'
+                      postDetail.is_matched && postDetail.matched_user_id === resume.user_id
+                        ? 'bg-[#f66969]'
+                        : 'bg-main-1'
                     } text-white-1 rounded-lg h-[30px] flex justify-center items-center `}
                     onClick={() => onClickSelectBtn(resume)}
                     disabled={isSelectLoading}
                   >
-                    {getSelectBtnText(isSelectLoading, resume.is_selected)}
+                    {getSelectBtnText(isSelectLoading, resume.user_id)}
                   </button>
                   <button
                     type='button'

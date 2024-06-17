@@ -25,7 +25,14 @@ function CardImageContainer({
       className={`rounded-full w-[70px] h-[70px] overflow-hidden flex justify-center items-center object-cover ${className}`}
     >
       {src && (
-        <Image className='rounded-full w-[70px] h-[70px] object-cover' src={src} alt={alt} width={70} height={70} />
+        <Image
+          className='rounded-full w-[70px] h-[70px] object-cover'
+          src={src}
+          alt={alt}
+          width={70}
+          height={70}
+          priority
+        />
       )}
       {!src && (type === 'USER' ? <IconUserDefault alt='default user' width={35} height={35} /> : <IconDog />)}
     </div>

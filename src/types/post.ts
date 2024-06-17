@@ -19,6 +19,8 @@ export interface Post {
   view_count?: number;
   created_at: string | null;
   updated_at: string | null;
+  is_matched?: boolean;
+  matched_user_id?: string | null;
 }
 
 export interface Caution {
