@@ -147,7 +147,7 @@ function SubmittedResumeUI({ id }: { id: string }) {
         {postDetail && (
           <section id='post-info'>
             <ul>
-              <PostSection.Item post={postDetail} />
+              <PostSection.Item post={postDetail} className='shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]' />
             </ul>
           </section>
         )}

@@ -96,7 +96,11 @@ export default function UserPostList({ authorId }: UserPostListProps) {
 
       <div className='post-list p-4'>
         {postData.length ? (
-          <PostSection.List posts={postData} className='animation-load' />
+          <PostSection.List
+            posts={postData}
+            className='animation-load'
+            itemClassName='shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'
+          />
         ) : (
           <div className='flex justify-center items-center h-[500px]'>
             <p className='text-text-2'>

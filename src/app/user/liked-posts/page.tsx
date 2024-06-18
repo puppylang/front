@@ -69,7 +69,11 @@ export default function UserFavorites() {
 
         <div className='post-list p-4'>
           {likedPosts.length ? (
-            <PostSection.List posts={likedPosts} className='animation-load' />
+            <PostSection.List
+              posts={likedPosts}
+              className='animation-load'
+              itemClassName='shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'
+            />
           ) : (
             <div className='flex justify-center items-center h-[500px]'>
               <p className='text-text-2'>좋아요한 게시글이 없습니다.</p>
