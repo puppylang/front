@@ -1,12 +1,15 @@
 import { Pet } from './pet';
 import { UserType } from './user';
 
-export interface Post {
+export interface Schedule {
+  start_at: string | null;
+  end_at: string | null;
+}
+
+export interface Post extends Schedule {
   id: number | null;
   title: string;
   content: string;
-  start_at: string | null;
-  end_at: string | null;
   status: PostStatus;
   preferred_walk_location: string;
   proposed_fee: number;
@@ -19,12 +22,14 @@ export interface Post {
   view_count?: number;
   created_at: string | null;
   updated_at: string | null;
+  is_matched?: boolean;
+  matched_user_id?: string | null;
 }
 
 export interface Caution {
   id: number | null;
   content: string;
-  is_completed: boolean;
+  is_completed?: boolean;
   created_at?: string;
   updated_at?: string;
 }

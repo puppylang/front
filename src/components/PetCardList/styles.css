@@ -1,12 +1,12 @@
-.pet-card-list .swiper-pagination.swiper-pagination-bullets {
+.swiper-pagination.swiper-pagination-bullets {
 	bottom: 0 !important;
 }
-.pet-card-list .swiper-pagination-bullet {
+.swiper-pagination-bullet {
 	width: 6px;
 	height: 6px;
 	margin: 0 2px !important;
 }
-.pet-card-list .swiper-pagination-bullet-active {
+.swiper-pagination-bullet-active {
 	width: 15px;
 	height: 6px;
 	background: #74b2cb;

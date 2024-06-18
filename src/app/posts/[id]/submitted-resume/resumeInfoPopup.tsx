@@ -16,7 +16,7 @@ interface ResumeInfoPopupProps {
   onClickChatBtn: (userId: string) => void;
   onClickSelectBtn: (resume: Resume) => void;
   isSelectLoading: boolean;
-  getSelectBtnText: (isLoading: boolean, isSelected: boolean) => string | JSX.Element;
+  getSelectBtnText: (isLoading: boolean, user_id: string) => string | JSX.Element;
   isChatLoading: boolean;
 }
 
@@ -95,7 +95,7 @@ export default function ResumeInfoPopup({
           onClick={() => onClickSelectBtn(resume)}
           disabled={isSelectLoading}
         >
-          {getSelectBtnText(isSelectLoading, resume.is_selected)}
+          {getSelectBtnText(isSelectLoading, resume.user_id)}
         </button>
         <button
           type='button'

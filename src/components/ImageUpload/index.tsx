@@ -52,7 +52,13 @@ export default function ImageUpload({ defaultURL, onChangeFileInput, disabled }:
       {uploadedImage && (
         <div className='w-[120px] h-[120px] rounded-full bg-gray-3 flex items-center justify-center relative'>
           <div className='overflow-hidden w-full h-full rounded-full'>
-            <Image src={uploadedImage} alt={uploadedImage} width={120} height={120} className='w-[120px] h-[120px]' />
+            <Image
+              src={uploadedImage}
+              alt={uploadedImage}
+              width={120}
+              height={120}
+              className='w-[120px] h-[120px] object-cover'
+            />
           </div>
           <button
             onClick={() => imageUploadRef.current?.click()}

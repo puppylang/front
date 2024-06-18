@@ -4,7 +4,6 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { PostItem } from '@/app/posts/PostItem';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 import { getPostsWithPaging } from '@/services/post';
@@ -13,6 +12,7 @@ import { BOTTOM_NAVIGATION_HEIGHT, Post as IPost } from '@/types/post';
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
 import { PetCardList } from '@/components/PetCardList';
+import { PostSection } from '@/components/Post';
 import { Section } from '@/components/Section';
 
 import ApiErrorFallback from '../user/error';
@@ -131,9 +131,11 @@ function Post() {
           </div>
 
           {posts?.length > 0 ? (
-            <ul className='post-list flex flex-col gap-4 animation-load'>
-              {posts?.map(postItem => <PostItem key={postItem.id} post={postItem} />)}
-            </ul>
+            <PostSection.List
+              posts={posts}
+              className='animation-load'
+              itemClassName='shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'
+            />
           ) : (
             <div className='flex justify-center items-center h-[300px]'>
               <p className='text-text-2'>등록된 구인 게시글이 없습니다.</p>
