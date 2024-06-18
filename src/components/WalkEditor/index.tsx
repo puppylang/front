@@ -7,7 +7,7 @@ import TrackMap from '@/components/WalkEditor/TrackMap';
 import { WalkInfoContainer } from '@/components/WalkEditor/WalkInfoContainer';
 import { mapIsClicked, recordedCautions, stopWatchState } from '@/recoil/atoms/walkAtom';
 import { Pet } from '@/types/pet';
-import { Caution } from '@/types/post';
+import { Caution, Schedule } from '@/types/post';
 import { formatDateTime } from '@/utils/date';
 
 import RecordAction from './RecordAction';
@@ -22,10 +22,11 @@ import { Profile } from '../Profile';
 
 interface WalkFormProps {
   defaultCautions?: Caution[];
+  schedule?: Schedule;
   pet: Pet;
 }
 
-export function WalkEditor({ defaultCautions, pet }: WalkFormProps) {
+export function WalkEditor({ defaultCautions, schedule, pet }: WalkFormProps) {
   const [cautions, setCautions] = useRecoilState(recordedCautions);
   const [isExpanded, setIsExpanded] = useState(false);
   const { isRunning } = useRecoilValue(stopWatchState);
@@ -35,11 +36,11 @@ export function WalkEditor({ defaultCautions, pet }: WalkFormProps) {
 
   const handleChangeCurrentLocation = () => setIsChangedCenter(false);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, targetId: number) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>, changedIndex: number) => {
     const { checked } = e.currentTarget;
 
-    const updatedCautions = cautions.map(caution => {
-      if (caution.id === targetId) {
+    const updatedCautions = cautions.map((caution, index) => {
+      if (index === changedIndex) {
         return { ...caution, is_completed: checked };
       }
       return caution;
@@ -51,6 +52,8 @@ export function WalkEditor({ defaultCautions, pet }: WalkFormProps) {
   useEffect(() => {
     if (defaultCautions) return setCautions(defaultCautions);
   }, [defaultCautions, setCautions]);
+
+  const hasSchedule = schedule && schedule.start_at && schedule.end_at;
 
   return (
     <div className='container relative'>
@@ -87,14 +90,13 @@ export function WalkEditor({ defaultCautions, pet }: WalkFormProps) {
             </p>
           </div>
 
-          {/* TODO PetSitter 하게 되면서 수정 필요 */}
-          {defaultCautions && (
+          {hasSchedule && (
             <div className='scheduled-walk-time-container'>
               <WalkInfoContainer label='산책 예정 시간'>
                 <div className='flex gap-x-2 text-sm text-text-1 font-light'>
-                  <span>{formatDateTime('2024-03-15T03:30:00.000Z')}</span>
+                  {schedule.start_at && <span>{formatDateTime(schedule.start_at)}</span>}
                   <span>-</span>
-                  <span>{formatDateTime('2024-03-15T03:30:00.000Z')}</span>
+                  {schedule.end_at && <span>{formatDateTime(schedule.end_at)}</span>}
                 </div>
               </WalkInfoContainer>
             </div>
@@ -104,25 +106,28 @@ export function WalkEditor({ defaultCautions, pet }: WalkFormProps) {
             <div className='caution-container'>
               <WalkInfoContainer label='산책시 주의사항'>
                 <ul className='flex flex-col gap-y-2'>
-                  {cautions.map(({ id, content, is_completed }) => (
-                    <li className='text-text-1 text-sm font-light' key={id}>
-                      <label htmlFor={`caution-${id}`}>
-                        <input
-                          type='checkbox'
-                          id={`caution-${id}`}
-                          checked={is_completed}
-                          className='hidden'
-                          onChange={e => id && handleChange(e, id)}
-                        />
-                        {is_completed ? (
-                          <IconCheckboxFill className='inline-block mr-2' />
-                        ) : (
-                          <IconCheckbox className='inline-block mr-2' />
-                        )}
-                        <span>{content}</span>
-                      </label>
-                    </li>
-                  ))}
+                  {cautions.map(({ content, is_completed }, index) => {
+                    const key = `caution-${index}`;
+                    return (
+                      <li className='text-text-1 text-sm font-light' key={key}>
+                        <label htmlFor={`caution-${index}`}>
+                          <input
+                            type='checkbox'
+                            id={`caution-${index}`}
+                            checked={is_completed}
+                            className='hidden'
+                            onChange={e => handleChange(e, index)}
+                          />
+                          {is_completed ? (
+                            <IconCheckboxFill className='inline-block mr-2' />
+                          ) : (
+                            <IconCheckbox className='inline-block mr-2' />
+                          )}
+                          <span>{content}</span>
+                        </label>
+                      </li>
+                    );
+                  })}
                 </ul>
               </WalkInfoContainer>
             </div>

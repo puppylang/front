@@ -1,5 +1,5 @@
 import { Pet } from './pet';
-import { Caution } from './post';
+import { Caution, Schedule } from './post';
 
 export interface Location {
   latitude: number;
@@ -31,11 +31,9 @@ export interface WalkForm {
   cautions?: Caution[];
 }
 
-export interface StopWatch {
+export interface StopWatch extends Schedule {
   isRunning: boolean;
   isPaused: boolean;
-  start_at: string | null;
-  end_at: string | null;
   time: number;
 }
 
