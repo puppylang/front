@@ -23,11 +23,9 @@ export const saveToken = (token: string) => {
     if (cookie) {
       deleteCookie('token');
     }
-    document.cookie =
-      process.env.NODE_ENV === 'development'
-        ? `token=${token};path=/;`
-        : `token=${token};path=/; SameSite=None; Secure;`;
   }
+  document.cookie =
+    process.env.NODE_ENV === 'development' ? `token=${token};path=/;` : `token=${token};path=/; SameSite=None; Secure;`;
 };
 
 export const isWebview = () => {
