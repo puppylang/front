@@ -168,3 +168,10 @@ export const unMatchPost = async (id: string) => {
     }
   }
 };
+
+export const useMatchedPosts = (user_id: string | undefined) => {
+  return useQuery({
+    queryKey: [POST_KEY, user_id],
+    queryFn: () => (user_id ? fetcherWithToken<Post[]>(`${POST_KEY}/matched?user_id=${user_id}`) : null),
+  });
+};
