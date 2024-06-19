@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { PostItem } from '@/app/posts/PostItem';
 import { getPostsByUserAndStatus } from '@/services/user';
 import { Post, PostStatus } from '@/types/post';
 
 import Loading from '../Loading';
+import { PostSection } from '../Post';
 
 interface UserPostListProps {
   authorId: string;
@@ -96,11 +96,11 @@ export default function UserPostList({ authorId }: UserPostListProps) {
 
       <div className='post-list p-4'>
         {postData.length ? (
-          <ul className='flex flex-col gap-y-4 animation-load'>
-            {postData.map(postItem => (
-              <PostItem key={postItem.id} post={postItem} />
-            ))}
-          </ul>
+          <PostSection.List
+            posts={postData}
+            className='animation-load'
+            itemClassName='shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'
+          />
         ) : (
           <div className='flex justify-center items-center h-[500px]'>
             <p className='text-text-2'>

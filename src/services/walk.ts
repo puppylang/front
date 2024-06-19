@@ -20,6 +20,19 @@ export const createPetWalkRecord = async (payload: WalkForm) => {
   }
 };
 
+export const createPetSitterWalkRecord = async (payload: WalkForm) => {
+  try {
+    const data = await fetcherWithToken<WalkForm>(SITTER_WALK_RECORD_KEY, {
+      method: 'POST',
+      data: payload,
+    });
+
+    if (data) return data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export const useCalendarWalks = ({ from, to, role }: { from: string | null; to: string | null; role: WalkRole }) => {
   return useQuery({
     queryKey: [RECORD_WALK_QUERY_KEY, from, to, role],

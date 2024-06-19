@@ -11,7 +11,7 @@ interface PopupProps {
   className?: string;
 }
 
-function PopupConatiner({ isOpen, children, className }: PopupProps) {
+function PopupContainer({ isOpen, children, className }: PopupProps) {
   const [isMounted, setIsMounted] = useState(false);
 
   const nodeRef = useRef(null);
@@ -72,6 +72,6 @@ function PopupCloseButton({ onClose, className = '', children }: PopupCloseButto
 }
 
 export const Popup = {
-  Container: PopupConatiner,
+  Container: PopupContainer,
   CloseButton: PopupCloseButton,
 };

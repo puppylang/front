@@ -1,4 +1,5 @@
 import { Pet } from './pet';
+import { UserType } from './user';
 
 export interface ChatRoom {
   id: number;
@@ -22,6 +23,12 @@ export interface ChatRoom {
   notReadedMessageCount: number;
 }
 
+export interface ChatRoomDetail extends ChatRoom {
+  user: UserType;
+  guest: UserType;
+  is_author: boolean;
+}
+
 export interface Message {
   user_id: string;
   text: string;
@@ -29,11 +36,23 @@ export interface Message {
   id: number;
   is_read: boolean;
   user_image?: string;
+  is_blocked_other: boolean;
 }
 
 export enum ChatWritterType {
   Author = 'AUTHOR',
   Guest = 'GUEST',
+}
+
+export enum ChatAlertStatus {
+  Block = 'BLOCK',
+  Exit = 'EXIT',
+}
+
+export interface ChatAlertType {
+  isOpen: boolean;
+  description: string;
+  status: ChatAlertStatus | null;
 }
 
 export interface CreateChatType {
@@ -51,3 +70,34 @@ export interface SocketData {
         id: string;
       };
 }
+
+export const OBJECTIONABLE_TEXT = [
+  '저주',
+  'kill',
+  '등신',
+  '개소리',
+  '대가리',
+  '또라이',
+  'ㅅㅂ',
+  '망할년',
+  '시발',
+  '태러',
+  '미친',
+  '씨발',
+  'ㅆㅂ',
+  '지랄',
+  '새끼',
+  '개새끼',
+  '아가리',
+  '썅',
+  '미친놈',
+  '미친년',
+  '닥쳐',
+  '꺼져',
+  '병신',
+  'fuck',
+  'fuck you',
+  'idiot',
+  '씹',
+  '련',
+];

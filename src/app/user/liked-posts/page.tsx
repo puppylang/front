@@ -2,12 +2,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { PostItem } from '@/app/posts/PostItem';
 import { getPostsByLike } from '@/services/user';
 import { Post } from '@/types/post';
 
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Loading from '@/components/Loading';
+import { PostSection } from '@/components/Post';
 
 export default function UserFavorites() {
   const [likedPosts, setLikedPosts] = useState<Post[]>([]);
@@ -69,11 +69,11 @@ export default function UserFavorites() {
 
         <div className='post-list p-4'>
           {likedPosts.length ? (
-            <ul className='flex flex-col gap-y-4 animation-load'>
-              {likedPosts.map(postItem => (
-                <PostItem key={postItem.id} post={postItem} />
-              ))}
-            </ul>
+            <PostSection.List
+              posts={likedPosts}
+              className='animation-load'
+              itemClassName='shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'
+            />
           ) : (
             <div className='flex justify-center items-center h-[500px]'>
               <p className='text-text-2'>좋아요한 게시글이 없습니다.</p>

@@ -1,16 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { ChatRoom, ChatWritterType, CreateChatType, Message } from '@/types/chat';
-import { fetcherWithToken } from '@/utils/request';
+import { ChatRoomDetail, ChatRoom, ChatWritterType, CreateChatType, Message } from '@/types/chat';
+import { fetcherStatusWithToken, fetcherWithToken } from '@/utils/request';
 
+const CHATS_QUERY_KEY = '/chats';
 const CHAT_QUERY_KEY = '/chat';
 const MESSAGE_QUERY_KEY = '/chat/message';
 const POST_QUERY_KEY = '/chat/post';
 
-export const useChatQuery = (type: ChatWritterType) => {
+export const useChatsQuery = (type: ChatWritterType) => {
   return useQuery({
-    queryKey: [CHAT_QUERY_KEY, type],
-    queryFn: () => fetcherWithToken<ChatRoom[]>(`${CHAT_QUERY_KEY}?type=${type}`),
+    queryKey: [CHATS_QUERY_KEY, type],
+    queryFn: () => fetcherWithToken<ChatRoom[]>(`${CHATS_QUERY_KEY}?type=${type}`),
+    staleTime: 0,
+  });
+};
+
+export const useChatDetailQuery = (id: string) => {
+  return useQuery({
+    queryKey: [CHAT_QUERY_KEY, id],
+    queryFn: () => fetcherWithToken<ChatRoomDetail>(`${CHAT_QUERY_KEY}?id=${id}`),
   });
 };
 
@@ -40,4 +49,11 @@ export const getMessages = (id: string, offset?: number, direction?: 'NEXT' | 'P
   const getOffset = offset ? `&offset=${offset}` : '';
 
   return fetcherWithToken<Message[]>(`/chat/message/${id}${getDirection}${getOffset}`);
+};
+
+export const deleteChat = (id: string) => {
+  return fetcherStatusWithToken<{ id: string }>(CHAT_QUERY_KEY, {
+    method: 'DELETE',
+    data: { id },
+  });
 };

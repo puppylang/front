@@ -1,29 +1,18 @@
-import { FaPencilAlt, FaTrash } from 'react-icons/fa';
-import { TfiClose } from 'react-icons/tfi';
-
+import { BottomSheetButton } from '@/components/BottomSheet';
 import NativeLink from '@/components/NativeLink';
 
 interface PostUpdateBottomSheetProps {
   id: string;
   onDelete: () => void;
-  onClose: () => void;
 }
 
-function PostUpdateBottomSheet({ id, onDelete, onClose }: PostUpdateBottomSheetProps) {
+function PostUpdateBottomSheet({ id, onDelete }: PostUpdateBottomSheetProps) {
   return (
     <>
-      <NativeLink href={`/posts/${id}/edit`} className='w-full py-2 px-6 text-left flex items-center text-text-1 '>
-        <FaPencilAlt className='mr-3' />
+      <NativeLink href={`/posts/${id}/edit`} className='text-center py-[10px] text-main-1 border-b-[1px]'>
         수정하기
       </NativeLink>
-      <button onClick={onDelete} type='button' className='w-full py-2 px-6 text-left flex items-center text-text-1 '>
-        <FaTrash className='mr-3' />
-        삭제하기
-      </button>
-      <button type='button' className='w-full py-2 px-6 text-left flex items-center text-text-1 ' onClick={onClose}>
-        <TfiClose className='mr-3' />
-        닫기
-      </button>
+      <BottomSheetButton onClick={onDelete}>삭제하기</BottomSheetButton>
     </>
   );
 }
