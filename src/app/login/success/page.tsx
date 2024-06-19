@@ -19,7 +19,6 @@ export default function LoginSuccess() {
       const { token, is_first_login } =
         social === LoggedFrom.Kakao ? await getKakaoAuth(code) : await getNaverAuth(code);
       saveToken(token);
-
       setIsFirstLogin(is_first_login);
 
       return;

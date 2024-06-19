@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { ChatRoom, ChatWritterType, CreateChatType, Message } from '@/types/chat';
+import { ChatRoomDetail, ChatRoom, ChatWritterType, CreateChatType, Message } from '@/types/chat';
 import { fetcherWithToken } from '@/utils/request';
 
 const CHATS_QUERY_KEY = '/chats';
@@ -18,7 +18,7 @@ export const useChatsQuery = (type: ChatWritterType) => {
 export const useChatDetailQuery = (id: string) => {
   return useQuery({
     queryKey: [CHAT_QUERY_KEY, id],
-    queryFn: () => fetcherWithToken<ChatRoom>(`${CHAT_QUERY_KEY}?id=${id}`),
+    queryFn: () => fetcherWithToken<ChatRoomDetail>(`${CHAT_QUERY_KEY}?id=${id}`),
   });
 };
 

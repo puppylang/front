@@ -60,7 +60,7 @@ function UserProfile({
     <Image
       width={60}
       height={60}
-      className={`rounded-full w-[70px] h-[70px] object-cover ${imageClassName}`}
+      className={`border-[1px] rounded-full w-[70px] h-[70px] object-cover ${imageClassName}`}
       src={image}
       alt={alt || 'profile'}
     />

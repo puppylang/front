@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 
 import { IConErrorBox, IconCheckedBox } from '../../../public/assets/svgs';
 
-type ToastStatus = 'error' | 'success';
+export type ToastStatus = 'error' | 'success';
 type ToastPosition = 'TOP' | 'BOTTOM' | 'CENTER';
 
 interface ToastProps {

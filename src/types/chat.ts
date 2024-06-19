@@ -1,4 +1,5 @@
 import { Pet } from './pet';
+import { UserType } from './user';
 
 export interface ChatRoom {
   id: number;
@@ -22,6 +23,12 @@ export interface ChatRoom {
   notReadedMessageCount: number;
 }
 
+export interface ChatRoomDetail extends ChatRoom {
+  user: UserType;
+  guest: UserType;
+  is_author: boolean;
+}
+
 export interface Message {
   user_id: string;
   text: string;
@@ -29,6 +36,7 @@ export interface Message {
   id: number;
   is_read: boolean;
   user_image?: string;
+  is_blocked_other: boolean;
 }
 
 export enum ChatWritterType {

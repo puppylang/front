@@ -21,7 +21,7 @@ import NativeLink from '@/components/NativeLink';
 import { Popup } from '@/components/Popup';
 import PostStatusBadge from '@/components/PostStatusBadge';
 import { Profile } from '@/components/Profile';
-import Toast from '@/components/Toast';
+import Toast, { ToastStatus } from '@/components/Toast';
 
 interface ChatRoomProps {
   id: string;
@@ -39,10 +39,13 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isReceivedSocketData, setIsReceivedSocketData] = useState(false);
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
-  const [isOpenToast, setIsOpenToast] = useState(false);
   const [isOpenPopup, setIsOpenPopup] = useState(false);
   const [isOpenAlert, setIsOpenAlert] = useState(false);
-  const [toastDescription, setToastDescription] = useState('');
+  const [toastDetail, setToastDetail] = useState({
+    isOpen: false,
+    status: '',
+    description: '',
+  });
   const [messagesData, setMessagesData] = useState<MessageData>({
     showsFirstMessage: false,
     showsLastMessage: false,
@@ -64,7 +67,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   const { data: chat } = useChatDetailQuery(id);
   const { data: user } = useUserQuery();
 
-  const otherUser = chat && user && user.id === chat.author_id ? chat.guest_id : chat?.author_id;
+  const otherUser = chat && chat.is_author ? chat.guest_id : chat?.author_id;
   const firstNotReadedMessage = messagesData.messages.find(message => message.user_id !== user?.id && !message.is_read);
   const isBlockedUser = user && Boolean(user.blocker.find(blockedUser => blockedUser.blocked_id === otherUser));
 
@@ -74,12 +77,28 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
     if (!webSocket.current) return;
     const objectionableText = OBJECTIONABLE_TEXT.find(content => text.includes(content));
     if (objectionableText) {
-      setIsOpenToast(true);
-      setToastDescription('불쾌감을 주는 언어가 포함되어 있습니다.');
+      setToastDetail({
+        isOpen: true,
+        description: '불쾌감을 주는 언어가 포함되어 있습니다.',
+        status: 'error',
+      });
       return;
     }
+
+    if (isBlockedUser) {
+      setToastDetail({
+        isOpen: true,
+        description: '차단한 유저에게 메시지를 보낼 수 없어요.',
+        status: 'error',
+      });
+      return;
+    }
+
     webSocket.current.send(
-      JSON.stringify({ type: 'MESSAGE', data: { text, chat_id: id, user_id: user?.id, user_image: user?.image } }),
+      JSON.stringify({
+        type: 'MESSAGE',
+        data: { text, chat_id: id, user, other_user_id: otherUser },
+      }),
     );
 
     setText('');
@@ -115,8 +134,11 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
       blockedId: otherUser,
     });
 
-    setToastDescription('사용자가 차단되었어요.');
-    setIsOpenToast(true);
+    setToastDetail({
+      isOpen: true,
+      description: '사용자가 차단되었어요.',
+      status: 'success',
+    });
     setIsOpenAlert(false);
   };
 
@@ -131,8 +153,12 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
         blockedId: otherUser,
       });
 
-      setToastDescription('사용자 차단이 해제되었어요.');
-      setIsOpenToast(true);
+      setToastDetail({
+        isOpen: true,
+        description: '사용자가 차단이 해제되었어요.',
+        status: 'success',
+      });
+
       return;
     }
 
@@ -203,6 +229,10 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
     });
   }, [messagesData.messages, user]);
 
+  const filteredBlockedMessage = messagesData.messages.filter(
+    message => message.user_id === user?.id || !message.is_blocked_other,
+  );
+
   return (
     <div className='relative h-screen flex flex-col'>
       <HeaderNavigation.Container className='!bg-bg-blue'>
@@ -229,7 +259,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
         <div ref={topMessageRef} />
 
         <div>
-          {messagesData.messages.map((message, index) => {
+          {filteredBlockedMessage.map((message, index) => {
             const previousChatting = messagesData.messages[index - 1];
             const isMyChat = user?.id === message.user_id;
             const nextChatting = messagesData.messages[index + 1];
@@ -242,6 +272,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
                 key={message.id}
                 updateReadMessage={updateReadMessage}
                 message={message}
+                image={message.user_id === chat?.guest_id ? chat.guest.image : chat?.user.image}
                 isSameUserLastChat={isSameUserLastChat}
                 isSameDate={previousChatting ? isSameDay(message.time, previousChatting.time) : false}
                 isSameMinutes={
@@ -294,11 +325,11 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
       />
 
       <Toast
-        status='error'
-        onClose={() => setIsOpenToast(false)}
-        isInvisible={isOpenToast}
+        status={toastDetail.status as ToastStatus}
+        onClose={() => setToastDetail(prev => ({ ...prev, isOpen: false }))}
+        isInvisible={toastDetail.isOpen}
         position='CENTER'
-        description={toastDescription}
+        description={toastDetail.description}
       />
 
       <Popup.Container isOpen={isOpenPopup}>
@@ -315,6 +346,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
 interface MessageProps {
   isMyChat: boolean;
   message: MessageType;
+  image?: string | null;
   isSameDate: boolean;
   isSameMinutes: boolean;
   isSameUserLastChat: boolean;
@@ -330,6 +362,7 @@ const Message = React.memo(
     isMyChat,
     updateReadMessage,
     isSameDate,
+    image,
     isSameMinutes,
     isSameUserLastChat,
     isNotReadedFirstMessage,
@@ -384,9 +417,9 @@ const Message = React.memo(
           </span>
         )}
         {!isSameDate && <p className='text-xs text-text-2 text-center mb-4'>{getFullYear(message.time)}</p>}
-        <div className={`flex w-full mb-3 ${isMyChat && 'flex-row-reverse'}`} ref={messageRef}>
+        <div className={`flex w-full mb-6 ${isMyChat && 'flex-row-reverse'}`} ref={messageRef}>
           <Profile.User
-            image={message.user_image}
+            image={image || ''}
             alt={message.user_id}
             imageClassName='!w-[50px] !h-[50px]'
             defaultUserDivClassName='!w-[50px] !h-[50px]'
