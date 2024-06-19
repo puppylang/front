@@ -12,6 +12,7 @@ import { useUserQuery } from '@/services/user';
 import { BottomSheetType, PostStatus } from '@/types/post';
 import { formatDate } from '@/utils/date';
 
+import Alert from '@/components/Alert';
 import { BottomSheet } from '@/components/BottomSheet';
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Loading from '@/components/Loading';
@@ -24,9 +25,11 @@ import Toast from '@/components/Toast';
 
 import PostStatusUpdateBottomSheet from './PostBottomSheet/PostStatusUpdateBottomSheet';
 import PostUpdateBottomSheet from './PostBottomSheet/PostUpdateBottomSheet';
+import PostUserBlockBottomSheet from './PostBottomSheet/PostUserBlockBottomSheet';
 import Resume from './resume';
 import { IconHeartOutline, IconView, IconHeartFill } from '../../../../public/assets/svgs';
 import { PostInfo } from '../../../components/PostInfo';
+import { useCancelBlockMutation, useCreateBlockMutation } from '../../../services/report';
 
 interface PostDetailProps {
   params: {
@@ -41,6 +44,8 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
   const likePostMutation = useLikePostMutation(id);
   const likeCancelMutation = useLikeCancelMutation(id);
   const postStatusMutation = useUpdatePostStatus(id);
+  const createBlockMutation = useCreateBlockMutation();
+  const cancelBlockMutation = useCancelBlockMutation();
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isShowToast, setIsShowToast] = useState(false);
@@ -48,6 +53,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
   const [isOpenPopup, setIsOpenPopup] = useState(false);
   const [isShowSuccessToast, setIsShowSuccessToast] = useState(false);
   const [isShowBottomMenu, setIsShowBottomMenu] = useState(false);
+  const [isShowAlert, setIsShowAlert] = useState(false);
   const [bottomSheetType, setBottomSheetType] = useState<BottomSheetType>(null);
 
   const router = useNativeRouter();
@@ -55,6 +61,8 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
   const isShowPost = !isLoading && postData;
   const isMyPost = user && postData && user.id === postData.author?.id;
   const filteredMyResume = resumes && user ? resumes.filter(resume => resume.user_id === user.id) : [];
+  const isBlockedAuthor =
+    !isMyPost && Boolean(user?.blocker.find(blocker => blocker.blocked_id === postData?.author?.id));
 
   const handleDeletePost = () => {
     setIsDeleting(true);
@@ -101,9 +109,9 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
     setToastDescription('견주에게 정보를 전달했어요!');
   };
 
-  const handleClickDotBtn = () => {
+  const handleClickDotBtn = (status: BottomSheetType) => {
     setIsShowBottomMenu(true);
-    setBottomSheetType('POST_UPDATE');
+    setBottomSheetType(status);
   };
 
   const handleClickStatusBtn = () => {
@@ -114,6 +122,37 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
   const handleCloseBottomSheet = () => {
     setIsShowBottomMenu(false);
     setBottomSheetType(null);
+  };
+
+  const handleClickUserBlock = (isBlocked: boolean) => {
+    if (!user || !postData || !postData.author) return;
+    if (isBlocked) {
+      setIsShowBottomMenu(false);
+      setBottomSheetType(null);
+      cancelBlockMutation.mutate({
+        blockerId: user.id,
+        blockedId: postData.author.id,
+      });
+      setIsShowToast(true);
+      setToastDescription('차단이 해제되었습니다.');
+      return;
+    }
+
+    setIsShowBottomMenu(false);
+    setBottomSheetType(null);
+    setIsShowAlert(true);
+  };
+
+  const handleClickAlertUserBlock = () => {
+    if (!user || !postData || !postData.author) return;
+    createBlockMutation.mutate({
+      blockerId: user.id,
+      blockedId: postData.author.id,
+    });
+
+    setIsShowToast(true);
+    setToastDescription('사용자가 차단되었습니다.');
+    setIsShowAlert(false);
   };
 
   return (
@@ -127,7 +166,9 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
 
             <div className='container'>
               <HeaderNavigation.Container className='flex justify-between'>
-                {isMyPost && <HeaderNavigation.DotBtn onClick={handleClickDotBtn} />}
+                <HeaderNavigation.DotBtn
+                  onClick={() => handleClickDotBtn(isMyPost ? 'POST_UPDATE' : 'POST_USER_BLOCK')}
+                />
               </HeaderNavigation.Container>
 
               <Section.Container className='post-info-container bg-white p-[0px]'>
@@ -254,12 +295,27 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
       <BottomSheet isOpen={isShowBottomMenu} onClose={() => setIsShowBottomMenu(false)}>
         {bottomSheetType === 'POST_UPDATE' && <PostUpdateBottomSheet id={id} onDelete={handleDeletePost} />}
         {bottomSheetType === 'POST_STATUS_UPDATE' && <PostStatusUpdateBottomSheet onChange={handleChangeStatus} />}
+        {bottomSheetType === 'POST_USER_BLOCK' && (
+          <PostUserBlockBottomSheet
+            isBlocked={isBlockedAuthor}
+            href={`/report?id=${postData?.author?.id}`}
+            onClickBlockButton={handleClickUserBlock}
+          />
+        )}
       </BottomSheet>
 
       <Popup.Container isOpen={isOpenPopup}>
         <Popup.CloseButton onClose={() => setIsOpenPopup(false)} />
         <Resume id={Number(id)} onClose={() => setIsOpenPopup(false)} onSubmit={onSubmitResume} />
       </Popup.Container>
+
+      <Alert
+        buttonText='차단하기'
+        message='차단시 서로의 게시글 확인하거나 채팅을 할 수 없어요. 정말 차단하실래요?'
+        isOpen={isShowAlert}
+        onClose={() => setIsShowAlert(false)}
+        onClick={handleClickAlertUserBlock}
+      />
     </>
   );
 }

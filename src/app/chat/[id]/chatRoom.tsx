@@ -6,11 +6,12 @@ import { MdSend } from 'react-icons/md';
 
 import Report from '@/app/report/page';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import { getMessages, useChatDetailQuery } from '@/services/chat';
+import useNativeRouter from '@/hooks/useNativeRouter';
+import { deleteChat, getMessages, useChatDetailQuery } from '@/services/chat';
 import { MESSAGE_POST_KEY, getPostPetDetail } from '@/services/post';
 import { useCancelBlockMutation, useCreateBlockMutation } from '@/services/report';
 import { useUserQuery } from '@/services/user';
-import { Message as MessageType, OBJECTIONABLE_TEXT, SocketData } from '@/types/chat';
+import { ChatAlertStatus, ChatAlertType, Message as MessageType, OBJECTIONABLE_TEXT, SocketData } from '@/types/chat';
 import { Post } from '@/types/post';
 import { formatAge } from '@/utils/date';
 
@@ -40,7 +41,11 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   const [isReceivedSocketData, setIsReceivedSocketData] = useState(false);
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
   const [isOpenPopup, setIsOpenPopup] = useState(false);
-  const [isOpenAlert, setIsOpenAlert] = useState(false);
+  const [alertDetail, setAlertDetail] = useState<ChatAlertType>({
+    description: '',
+    isOpen: false,
+    status: null,
+  });
   const [toastDetail, setToastDetail] = useState({
     isOpen: false,
     status: '',
@@ -59,6 +64,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   const isInTopMessageView = useIntersectionObserver(topMessageRef);
   const createBlockMutation = useCreateBlockMutation();
   const cancelBlockMutation = useCancelBlockMutation();
+  const router = useNativeRouter();
 
   const { data: post } = useQuery<Post>({
     queryKey: [MESSAGE_POST_KEY, postId],
@@ -139,7 +145,12 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
       description: '사용자가 차단되었어요.',
       status: 'success',
     });
-    setIsOpenAlert(false);
+
+    setAlertDetail({
+      isOpen: false,
+      description: '',
+      status: null,
+    });
   };
 
   const onClickBottomSheetBlockBtn = () => {
@@ -162,7 +173,28 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
       return;
     }
 
-    setIsOpenAlert(true);
+    setAlertDetail({
+      isOpen: true,
+      status: ChatAlertStatus.Block,
+      description: '차단시 서로의 게시글 확인하거나 채팅을 할 수 없어요. 정말 차단하실래요?',
+    });
+  };
+
+  const onClickExitBtn = () => {
+    setAlertDetail({
+      isOpen: true,
+      status: ChatAlertStatus.Exit,
+      description: '채팅방을 나가면 채팅 목록 및 대화 내용이 삭제되고 복구할 수 없어요. 채팅방을 나가시겠어요?',
+    });
+  };
+
+  const onClickAlertExitBtn = async () => {
+    setIsLoading(true);
+    const { status } = await deleteChat(id);
+    if (status === 201) {
+      setIsLoading(false);
+      router.back();
+    }
   };
 
   useEffect(() => {
@@ -313,15 +345,15 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
         <BottomSheetButton onClick={onClickBottomSheetBlockBtn}>
           {isBlockedUser ? '차단 해체하기' : '차단하기'}
         </BottomSheetButton>
-        <BottomSheetButton onClick={() => console.log(123)}>채팅방 나가기</BottomSheetButton>
+        <BottomSheetButton onClick={onClickExitBtn}>채팅방 나가기</BottomSheetButton>
       </BottomSheet>
 
       <Alert
-        buttonText='차단하기'
-        message='차단시 서로의 게시글 확인하거나 채팅을 할 수 없어요. 정말 차단하실래요?'
-        isOpen={isOpenAlert}
-        onClose={() => setIsOpenAlert(false)}
-        onClick={onClickAlertBlockBtn}
+        buttonText={alertDetail.status === ChatAlertStatus.Block ? '차단하기' : '나가기'}
+        message={alertDetail.description}
+        isOpen={alertDetail.isOpen}
+        onClose={() => setAlertDetail({ isOpen: false, description: '', status: null })}
+        onClick={alertDetail.status === ChatAlertStatus.Block ? onClickAlertBlockBtn : onClickAlertExitBtn}
       />
 
       <Toast

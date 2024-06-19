@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { ChatRoomDetail, ChatRoom, ChatWritterType, CreateChatType, Message } from '@/types/chat';
-import { fetcherWithToken } from '@/utils/request';
+import { fetcherStatusWithToken, fetcherWithToken } from '@/utils/request';
 
 const CHATS_QUERY_KEY = '/chats';
 const CHAT_QUERY_KEY = '/chat';
@@ -12,6 +12,7 @@ export const useChatsQuery = (type: ChatWritterType) => {
   return useQuery({
     queryKey: [CHATS_QUERY_KEY, type],
     queryFn: () => fetcherWithToken<ChatRoom[]>(`${CHATS_QUERY_KEY}?type=${type}`),
+    staleTime: 0,
   });
 };
 
@@ -48,4 +49,11 @@ export const getMessages = (id: string, offset?: number, direction?: 'NEXT' | 'P
   const getOffset = offset ? `&offset=${offset}` : '';
 
   return fetcherWithToken<Message[]>(`/chat/message/${id}${getDirection}${getOffset}`);
+};
+
+export const deleteChat = (id: string) => {
+  return fetcherStatusWithToken<{ id: string }>(CHAT_QUERY_KEY, {
+    method: 'DELETE',
+    data: { id },
+  });
 };

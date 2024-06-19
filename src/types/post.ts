@@ -47,4 +47,4 @@ export interface PageParams {
 
 export const BOTTOM_NAVIGATION_HEIGHT = 68;
 
-export type BottomSheetType = 'POST_UPDATE' | 'POST_STATUS_UPDATE' | null;
+export type BottomSheetType = 'POST_UPDATE' | 'POST_STATUS_UPDATE' | 'POST_USER_BLOCK' | null;

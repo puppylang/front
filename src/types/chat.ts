@@ -44,6 +44,17 @@ export enum ChatWritterType {
   Guest = 'GUEST',
 }
 
+export enum ChatAlertStatus {
+  Block = 'BLOCK',
+  Exit = 'EXIT',
+}
+
+export interface ChatAlertType {
+  isOpen: boolean;
+  description: string;
+  status: ChatAlertStatus | null;
+}
+
 export interface CreateChatType {
   post_id: string;
   author_id: string;

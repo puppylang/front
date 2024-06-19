@@ -81,6 +81,7 @@ export default function Report() {
           onChange={value => setFormState(prev => ({ ...prev, detail: value }))}
         >
           <p className='mb-2 text-xs text-text-2'>신고가 접수되면, 검토까지는 최대 24시간이 걸려요.</p>
+          <p className='mb-2 text-xs text-text-2'>궁금한 사항은 sksp4334@naver.com로 문의해주세요.</p>
         </Form.Textarea>
 
         <div className='fixed bottom-0 w-screen'>
