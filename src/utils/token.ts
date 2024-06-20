@@ -21,7 +21,7 @@ export const saveToken = (token: string) => {
     const cookie = document.cookie.split('; ').find(row => row.startsWith('token'));
 
     if (cookie) {
-      deleteCookie('token');
+      deleteCookie();
     }
   }
   document.cookie =
@@ -36,8 +36,9 @@ export const isWebview = () => {
   return isMobile || isTablet;
 };
 
-export const deleteCookie = (cookieName: string) => {
+export const deleteCookie = () => {
   const pastDate = new Date();
+  const cookieName = getToken();
   pastDate.setFullYear(pastDate.getFullYear() - 1);
 
   document.cookie = `${cookieName}=; expires=${pastDate.toUTCString()}; path=/`;
