@@ -8,6 +8,7 @@ import MyPageSkeleton from '@/components/SkeletonUI/MyPageSkeleton';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 import { deleteUser, logoutUser, useRecordWalkCount, useRecordWalkDistance, useUserQuery } from '@/services/user';
+import { deleteCookie } from '@/utils/token';
 
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
@@ -20,7 +21,7 @@ import UserActivity from '@/components/UserActivity';
 import ApiErrorFallback from './error';
 import { IconCaretRight, IconEdit } from '../../../public/assets/svgs';
 
-export default function UserComponent() {
+export default function zUserComponent() {
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (
@@ -50,6 +51,7 @@ function User() {
   const onClickLogoutBtn = async () => {
     if (!user) return;
     const status = await logoutUser(user.id, user.logged_from);
+    deleteCookie();
 
     if (status === 201) {
       queryClient.clear();
@@ -65,6 +67,7 @@ function User() {
     if (!user) return;
     const status = await deleteUser(user.id, user.logged_from);
     if (status === 201) {
+      deleteCookie();
       queryClient.clear();
       router.replace('/');
     }
