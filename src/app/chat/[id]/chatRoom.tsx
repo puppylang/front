@@ -11,7 +11,14 @@ import { deleteChat, getMessages, useChatDetailQuery } from '@/services/chat';
 import { MESSAGE_POST_KEY, getPostPetDetail } from '@/services/post';
 import { useCancelBlockMutation, useCreateBlockMutation } from '@/services/report';
 import { useUserQuery } from '@/services/user';
-import { ChatAlertStatus, ChatAlertType, Message as MessageType, OBJECTIONABLE_TEXT, SocketData } from '@/types/chat';
+import {
+  CHAT_SERVER_URL,
+  ChatAlertStatus,
+  ChatAlertType,
+  Message as MessageType,
+  OBJECTIONABLE_TEXT,
+  SocketData,
+} from '@/types/chat';
 import { Post } from '@/types/post';
 import { formatAge } from '@/utils/date';
 
@@ -198,7 +205,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   };
 
   useEffect(() => {
-    webSocket.current = new WebSocket('ws://localhost:8000/chat/ws');
+    webSocket.current = new WebSocket(CHAT_SERVER_URL);
     if (!webSocket || !user) return;
     webSocket.current.onopen = () => {
       if (webSocket.current?.readyState === 1) {
