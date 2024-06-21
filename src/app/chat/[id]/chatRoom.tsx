@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { MdSend } from 'react-icons/md';
 
-import Report from '@/app/report/page';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { deleteChat, getMessages, useChatDetailQuery } from '@/services/chat';
@@ -26,10 +25,11 @@ import Alert from '@/components/Alert';
 import { BottomSheet, BottomSheetButton } from '@/components/BottomSheet';
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
-import { Popup } from '@/components/Popup';
 import PostStatusBadge from '@/components/PostStatusBadge';
 import { Profile } from '@/components/Profile';
 import Toast, { ToastStatus } from '@/components/Toast';
+
+import ChatPopup from './chatPopup';
 
 interface ChatRoomProps {
   id: string;
@@ -47,7 +47,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isReceivedSocketData, setIsReceivedSocketData] = useState(false);
   const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
-  const [isOpenPopup, setIsOpenPopup] = useState(false);
+  const [isOpenPopup, setIsOpenPopup] = useState(true);
   const [alertDetail, setAlertDetail] = useState<ChatAlertType>({
     description: '',
     isOpen: false,
@@ -294,8 +294,10 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
           {post && <PostStatusBadge status={post?.status} className='text-sm flex-[1_0_80px]' />}
         </div>
       </NativeLink>
-      <div className='p-4 pb-[60px] bg-bg-blue overflow-y-scroll' ref={messageRef}>
+      <div className='p-4 pb-[60px] bg-bg-blue overflow-y-scroll relative' ref={messageRef}>
         <div ref={topMessageRef} />
+
+        {isOpenPopup && <ChatPopup onClose={() => setIsOpenPopup(false)} />}
 
         <div>
           {filteredBlockedMessage.map((message, index) => {
@@ -370,14 +372,6 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
         position='CENTER'
         description={toastDetail.description}
       />
-
-      <Popup.Container isOpen={isOpenPopup}>
-        <Popup.CloseButton onClose={() => setIsOpenPopup(false)} className='border-b-0 text-center justify-center'>
-          <p className='text-center font-bold'>신고하기</p>
-        </Popup.CloseButton>
-
-        <Report />
-      </Popup.Container>
     </div>
   );
 }
