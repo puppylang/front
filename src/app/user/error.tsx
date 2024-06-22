@@ -7,6 +7,8 @@ import { RouterMethod } from '@/types/route';
 
 import NativeLink from '@/components/NativeLink';
 
+import { StackPushRoute } from '../../types/route';
+
 export default function ApiErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   useEffect(() => {
     // eslint-disable-next-line
@@ -33,6 +35,7 @@ export default function ApiErrorFallback({ error, resetErrorBoundary }: Fallback
         </button>
         <NativeLink
           href='/'
+          webviewPushPage={StackPushRoute.Login}
           type={RouterMethod.Replace}
           className='py-2 w-[120px] text-sm text-white  border border-main-1 bg-main-1 text-center rounded-[10px]'
         >

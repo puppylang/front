@@ -451,12 +451,14 @@ const Message = React.memo(
         )}
         {!isSameDate && <p className='text-xs text-text-2 text-center mb-4'>{getFullYear(message.time)}</p>}
         <div className={`flex w-full mb-6 ${isMyChat && 'flex-row-reverse'}`} ref={messageRef}>
-          <Profile.User
-            image={image || ''}
-            alt={message.user_id}
-            imageClassName='!w-[50px] !h-[50px]'
-            defaultUserDivClassName='!w-[50px] !h-[50px]'
-          />
+          <NativeLink href={`/user/${message.user_id}`}>
+            <Profile.User
+              image={image || ''}
+              alt={message.user_id}
+              imageClassName='!w-[50px] !h-[50px]'
+              defaultUserDivClassName='!w-[50px] !h-[50px]'
+            />
+          </NativeLink>
           <div className='flex self-end relative'>
             {isMyChat && !isSameMinutes && isSameUserLastChat && (
               <p className='text-[10px] self-end text-text-2'>{getCurrentTime(message.time)}</p>

@@ -190,25 +190,17 @@ export default function Resume({ id, onClose, onSubmit }: ResumeProps) {
           </div>
         </Form.Title>
 
-        <div className='fixed bottom-0 left-0 w-full bg-white-1 p-4 pb-[68px]'>
-          <div className='flex gap-x-2'>
-            <button
-              type='button'
-              className='flex-1 rounded-[10px] border border-main-1 text-main-1 h-[50px] leading-[50px]'
-              onClick={onClose}
-            >
-              취소
-            </button>
-            <button
-              type='submit'
-              className={`flex-1 rounded-[10px] bg-main-1 text-white-1 h-[50px] leading-[50px] ${
-                isDisabledSubmitBtn && 'opacity-40'
-              }`}
-              disabled={isDisabledSubmitBtn}
-            >
-              등록
-            </button>
-          </div>
+        <div className='bg-white-1 fixed bottom-0 left-0 w-full pb-7 grid grid-cols-2 gap-2 px-4 pt-3 border-t text-sm'>
+          <button type='button' className='py-2 rounded-[9px] border border-main-1 text-main-1' onClick={onClose}>
+            취소
+          </button>
+          <button
+            className={`py-2 rounded-[9px] bg-main-1 text-white-1 ${isDisabledSubmitBtn && 'opacity-40'}`}
+            type='submit'
+            disabled={isDisabledSubmitBtn}
+          >
+            등록
+          </button>
         </div>
       </form>
     </>

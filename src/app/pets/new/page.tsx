@@ -153,8 +153,8 @@ export default function NewPet() {
           <Form.Radio
             title='성별'
             onChange={value => setFormState(prev => ({ ...prev, gender: value as Gender }))}
-            firstInput={{ value: Gender.Male, id: 'male', title: '남성' }}
-            secondInput={{ value: Gender.Female, id: 'female', title: '여성' }}
+            firstInput={{ value: Gender.Male, id: 'male', title: '남아' }}
+            secondInput={{ value: Gender.Female, id: 'female', title: '여아' }}
             activedValue={formState.gender || ''}
           />
 

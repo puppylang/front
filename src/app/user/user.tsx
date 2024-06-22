@@ -50,27 +50,22 @@ function User() {
 
   const onClickLogoutBtn = async () => {
     if (!user) return;
-    const status = await logoutUser(user.id, user.logged_from);
+    queryClient.clear();
+    router.replace('/', { webviewPushPage: 'index' });
     deleteCookie();
-
-    if (status === 201) {
-      queryClient.clear();
-      router.replace('/');
-    }
+    await logoutUser(user.id, user.logged_from);
   };
 
   const onClickPetCard = (id: number) => {
     router.push(`/pets/edit/${id}`);
   };
 
-  const onClickAlertBtn = async () => {
+  const onClickUserDeleteBtn = async () => {
     if (!user) return;
-    const status = await deleteUser(user.id, user.logged_from);
-    if (status === 201) {
-      deleteCookie();
-      queryClient.clear();
-      router.replace('/');
-    }
+    deleteCookie();
+    queryClient.clear();
+    router.replace('/', { webviewPushPage: 'index' });
+    await deleteUser(user.id, user.logged_from);
   };
 
   if (isLoading) return <MyPageSkeleton />;
@@ -155,7 +150,7 @@ function User() {
         message='계정은 삭제되며 복구되지 않습니다.'
         isOpen={isOpen}
         buttonText='탈퇴'
-        onClick={onClickAlertBtn}
+        onClick={onClickUserDeleteBtn}
         onClose={() => setIsOpen(false)}
       />
     </>

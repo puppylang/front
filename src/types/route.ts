@@ -26,3 +26,11 @@ export interface DynamicParamTypes {
     id: string;
   };
 }
+
+export enum StackPushRoute {
+  Login = 'index',
+  Posts = '(tabs)',
+  Chat = 'chat',
+  Walk = 'walk',
+  User = 'user',
+}

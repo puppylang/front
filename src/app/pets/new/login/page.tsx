@@ -8,6 +8,7 @@ import useNativeRouter from '@/hooks/useNativeRouter';
 import { PET_QUERY_KEY } from '@/services/pet';
 import { useUserQuery } from '@/services/user';
 import { CreatePetFormType, DogBreed, Gender, Neuter, PetFormType } from '@/types/pet';
+import { StackPushRoute } from '@/types/route';
 import { fetcherStatusWithToken } from '@/utils/request';
 
 import Breed from '@/components/Breed';
@@ -47,7 +48,7 @@ export default function NewLoginPet() {
   ].every(Boolean);
 
   const onClickSkipButton = () => {
-    router.push('/posts');
+    router.push('/posts', { webviewPushPage: StackPushRoute.Posts });
     setFormState(DEFAULT_PET_FORM);
   };
 
@@ -170,17 +171,17 @@ export default function NewLoginPet() {
           />
         </div>
 
-        <div className='grid grid-cols-2 gap-2 fixed bottom-0 w-full px-6 pb-7 bg-white-1'>
+        <div className='fixed bottom-0 w-full bg-white-1 pb-7 grid grid-cols-2 gap-2 px-4 pt-3 border-t text-sm'>
           <button
             type='button'
             onClick={onClickSkipButton}
-            className='border border-main-1 text-main-1 py-2 rounded-[9px]'
+            className='border border-main-1 text-main-1 py-2 rounded-[7px]'
           >
             건너뛰기
           </button>
           <button
             type='submit'
-            className={`${isInvalidForm && ' opacity-40'} bg-main-1 text-white-1 py-2 rounded-[9px]`}
+            className={`${isInvalidForm && ' opacity-40'} bg-main-1 text-white-1 py-2 rounded-[7px]`}
             disabled={isInvalidForm}
           >
             등록

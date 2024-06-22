@@ -203,8 +203,8 @@ export default function EditPet({ params: { id } }: DynamicRouteParams) {
           <Form.Radio
             title='성별'
             onChange={value => setFormState(prev => ({ ...prev, gender: value as Gender }))}
-            firstInput={{ value: Gender.Male, id: 'male', title: '남성' }}
-            secondInput={{ value: Gender.Female, id: 'female', title: '여성' }}
+            firstInput={{ value: Gender.Male, id: 'male', title: '남아' }}
+            secondInput={{ value: Gender.Female, id: 'female', title: '여아' }}
             activedValue={formState.gender || ''}
           />
 
@@ -226,13 +226,17 @@ export default function EditPet({ params: { id } }: DynamicRouteParams) {
           />
         </div>
 
-        <div className='fixed grid grid-cols-2  bottom-0 w-full bg-white-1'>
-          <button type='button' className='text-white-1 bg-red-400 pt-3 pb-7' onClick={() => setIsAlertOpen(true)}>
+        <div className='fixed bottom-0 w-full bg-white-1 pb-7 grid grid-cols-2 gap-2 px-4 pt-3 border-t text-sm'>
+          <button
+            type='button'
+            className='w-full text-white-1 bg-red-400 py-[9px] rounded-[7px]'
+            onClick={() => setIsAlertOpen(true)}
+          >
             삭제
           </button>
           <button
             type='submit'
-            className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white-1 text-[14px] pt-3 pb-7`}
+            className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white-1 py-[9px] rounded-[7px]`}
             disabled={isInvalidForm}
           >
             수정
