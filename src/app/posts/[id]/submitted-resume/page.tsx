@@ -93,6 +93,7 @@ function SubmittedResumeUI({ id }: { id: string }) {
 
     const chatId = await createChatRoom(data);
     if (!chatId) return;
+    setIsChatLoading(false);
     router.push(`/chat/${chatId}?postId=${id}`);
   };
 
