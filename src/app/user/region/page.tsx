@@ -1,10 +1,11 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useDeferredValue, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { CgSpinner } from 'react-icons/cg';
 import { IoCloseCircle, IoCloseOutline, IoSearch } from 'react-icons/io5';
 
+import useDebounce from '@/hooks/useDebounce';
 import {
   USER_QUERY_KEY,
   createUserRegion,
@@ -19,21 +20,21 @@ import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Toast from '@/components/Toast';
 
 export default function UserRegion() {
-  const [value, setValue] = useState('');
-  const [activedGeo, setActivedGeo] = useState('');
-  const [position, setPostion] = useState({
-    x: '',
-    y: '',
-  });
+  const [searchValue, setSearchValue] = useState('');
+  const [activeRegion, setActiveRegion] = useState('');
+  const [position, setPosition] = useState({ x: '', y: '' });
   const [showsToast, setShowsToast] = useState(false);
   const [toastDescription, setDescription] = useState('');
   const [updatingActivedRegion, setUpdatingActivedRegion] = useState('');
 
-  const defferedValue = useDeferredValue(value);
+  const debounceSearchValue = useDebounce(searchValue, 300);
+  const deferredValue = useDeferredValue(debounceSearchValue);
 
-  const { data: regionInfos } = useRegionQuery(defferedValue || position);
+  const { data: regionInfos } = useRegionQuery(deferredValue || position);
   const { data: user } = useUserQuery();
   const queryClient = useQueryClient();
+
+  const regions = useMemo(() => user?.region, [user]);
 
   const createRegionMutation = useMutation({
     mutationFn: (region: string) => createUserRegion(region),
@@ -72,9 +73,9 @@ export default function UserRegion() {
   });
 
   const onClickCurrentPositionBtn = () => {
-    setValue('');
+    setSearchValue('');
     navigator.geolocation.getCurrentPosition(({ coords }) => {
-      setPostion({ x: String(coords.longitude), y: String(coords.latitude) });
+      setPosition({ x: String(coords.longitude), y: String(coords.latitude) });
     });
   };
 
@@ -91,8 +92,8 @@ export default function UserRegion() {
       return;
     }
 
-    if (!activedGeo) {
-      setActivedGeo(address);
+    if (!activeRegion) {
+      setActiveRegion(address);
     }
     createRegionMutation.mutate(address);
   };
@@ -103,75 +104,94 @@ export default function UserRegion() {
   };
 
   const onClickGeoBtn = async (address: string) => {
-    setActivedGeo(address);
+    setActiveRegion(address);
     setUpdatingActivedRegion(address);
     updateReigonMutation.mutate(address);
   };
 
   return (
     <>
-      <HeaderNavigation.Container className='bg-bg-blue'>
-        <HeaderNavigation.Title text='내 동네 설정' />
-      </HeaderNavigation.Container>
-      <section className='container pt-2 px-4'>
-        <div className='mb-3'>
-          <div className='mb-1 flex items-center'>
-            <span className='text-sm'>내 동네</span>
-            <span className='ml-2 text-[10px] text-text-3'>동네는 최대 2개까지 설정할 수 있습니다.</span>
-          </div>
-          <div className='grid grid-cols-2 gap-3'>
-            {user &&
-              user.region.map(geo => (
-                <RegisterLocationList
-                  isActived={user.actived_region === geo}
-                  address={geo}
-                  key={geo}
-                  isLoading={updatingActivedRegion === geo}
-                  onClickRegionBtn={onClickGeoBtn}
-                  onClickDeleteBtn={onClickDeleteRegionBtn}
+      <section id='region' className='flex flex-col items-center min-h-[100vh] bg-white'>
+        <div className='container'>
+          <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>내 동네 설정 페이지</h1>
+
+          <HeaderNavigation.Container>
+            <HeaderNavigation.Title text='내 동네 설정' />
+          </HeaderNavigation.Container>
+
+          <div className='bg-white flex flex-col gap-y-4 p-4 pt-0'>
+            <div className='my-region-container flex flex-col gap-y-4'>
+              <div className='flex items-center gap-x-2'>
+                <span className='text-sm text-text-2 font-bold'>내 동네</span>
+                <span className='text-[12px] text-text-3'>동네는 최대 2개까지 설정할 수 있습니다.</span>
+              </div>
+
+              {regions && user && (
+                <ul className='flex gap-x-2'>
+                  {regions.map(region => (
+                    <RegisterLocationList
+                      key={region}
+                      isActived={user.actived_region === region}
+                      address={region}
+                      isLoading={updatingActivedRegion === region}
+                      onClickRegionBtn={onClickGeoBtn}
+                      onClickDeleteBtn={onClickDeleteRegionBtn}
+                    />
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className='flex flex-col gap-y-4'>
+              <p className='text-sm text-text-2 font-bold'>동네 검색</p>
+              <div className='flex items-center relative'>
+                <IoSearch color='#E5E5E5' className='absolute left-4' />
+                <input
+                  className='border border-gray-2 w-full rounded-[10px] px-10 py-[10px] text-sm text-text-2'
+                  type='text'
+                  placeholder='지역을 입력해 주세요.'
+                  value={searchValue}
+                  onChange={({ target }) => setSearchValue(target.value)}
                 />
-              ))}
-          </div>
-        </div>
-        <div>
-          <p className='mb-1 text-sm'>동네 검색</p>
-          <div className='flex items-center relative'>
-            <IoSearch color='#E5E5E5' className='absolute left-2.5' />
-            <input
-              className='border border-gray-1 w-full rounded-md px-8 py-2 text-[13px] text-text-1'
-              type='text'
-              placeholder='지역을 입력해 주세요.'
-              value={value}
-              onChange={({ target }) => setValue(target.value)}
-            />
-            <button type='button' className='absolute right-3' onClick={() => setValue('')}>
-              <IoCloseCircle color='#E5E5E5' />
-            </button>
-          </div>
-          <button
-            onClick={onClickCurrentPositionBtn}
-            type='button'
-            className='block rounded-md py-1.5 w-full bg-main-2 text-white my-3 text-sm'
-          >
-            현재 위치로 찾기
-          </button>
-        </div>
-        <ul>
-          {regionInfos?.length === 0 && <div className='text-[14px]'>등록된 동네가 없어요.</div>}
-          {regionInfos &&
-            regionInfos.map(region => (
-              <li key={region.address_name}>
-                <button
-                  type='button'
-                  onClick={() => onClickAddRegionBtn(region.address_name)}
-                  className='block w-full text-left border-b border-gray-1 py-2 text-[14px]'
-                >
-                  <span className='text-text-1'>{region.address_name}</span>
+                <button type='button' className='absolute right-4' onClick={() => setSearchValue('')}>
+                  <IoCloseCircle color='#E5E5E5' />
                 </button>
-              </li>
-            ))}
-        </ul>
+              </div>
+
+              <button
+                onClick={onClickCurrentPositionBtn}
+                type='button'
+                className='block rounded-[10px] py-[10px] w-full bg-main-2 text-white text-sm'
+              >
+                현재 위치로 찾기
+              </button>
+
+              {regionInfos && (
+                <div className='region-info-container'>
+                  {regionInfos.length === 0 ? (
+                    <p className='text-[14px] text-text-2'>등록된 동네가 없어요.</p>
+                  ) : (
+                    <ul>
+                      {regionInfos.map(region => (
+                        <li key={region.address_name}>
+                          <button
+                            type='button'
+                            onClick={() => onClickAddRegionBtn(region.address_name)}
+                            className='block w-full text-left border-b border-gray-2 py-[13px] text-[14px]'
+                          >
+                            <span className='text-text-1 text-[14px]'>{region.address_name}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </section>
+
       <Toast
         position='CENTER'
         status='error'
@@ -201,18 +221,28 @@ function RegisterLocationList({
   isLoading,
 }: RegisterLocationListProps) {
   return (
-    <div className={`${isActived ? 'bg-text-3 text-white-1' : 'bg-gray-1  text-text-1'} rounded-md flex`}>
-      <button
-        type='button'
-        disabled={isLoading}
-        className='pl-4 w-full py-2 text-left text-sm'
-        onClick={() => onClickRegionBtn(address)}
-      >
-        {isLoading ? <CgSpinner className='text-text-2  animate-spin w-5 h-5 m-[0_auto]' /> : address.split(' ')[2]}
-      </button>
-      <button type='button' className='py-2 pr-3' onClick={() => onClickDeleteBtn(address)}>
-        <IoCloseOutline />
-      </button>
-    </div>
+    <li
+      className={`${
+        isActived ? 'bg-main-5 text-text-3' : 'border border-gray-2 text-text-2'
+      } rounded-[10px] flex flex-1 justify-between px-4 py-3`}
+    >
+      {isLoading ? (
+        <CgSpinner className='text-text-2 animate-spin w-5 h-5 m-[0_auto]' />
+      ) : (
+        <>
+          <button
+            type='button'
+            disabled={isLoading}
+            className='text-sm p-0 m-0 w-[100%] text-left'
+            onClick={() => onClickRegionBtn(address)}
+          >
+            {address.split(' ')[2]}
+          </button>
+          <button type='button' onClick={() => onClickDeleteBtn(address)}>
+            <IoCloseOutline />
+          </button>
+        </>
+      )}
+    </li>
   );
 }
