@@ -1,12 +1,13 @@
 'use client';
 
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 import { getPostsWithPaging } from '@/services/post';
+import { useUserQuery } from '@/services/user';
 import { BOTTOM_NAVIGATION_HEIGHT, Post as IPost } from '@/types/post';
 
 import Alert from '@/components/Alert';
@@ -33,6 +34,7 @@ export default function PostComponent() {
 
 function Post() {
   const router = useNativeRouter();
+  const { data: user } = useUserQuery();
   const { data: pets } = usePetQuery();
 
   const [posts, setPosts] = useState<IPost[]>([]);
@@ -40,8 +42,9 @@ function Post() {
   const [last, setLast] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [observeTarget, setObserveTarget] = useState<Element | null>(null);
-
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  const regions = useMemo(() => user?.region, [user]);
 
   const fetchPostData = useCallback(async () => {
     setIsLoading(true);
@@ -91,6 +94,10 @@ function Post() {
     router.push('/posts/write');
   };
 
+  const handleClickRegionButton = () => {
+    console.log(regions);
+  };
+
   return (
     <>
       <section className='flex flex-col items-center'>
@@ -101,9 +108,23 @@ function Post() {
 
           <div className='head flex justify-between items-center py-[24px]'>
             <h2 className='logo font-Jalnan text-xl text-main-3'>퍼피랑</h2>
-            <button type='button' className='text-sm bg-main-1 text-white w-[80px] py-2 rounded-[10px]'>
-              내 동네
-            </button>
+            {user?.actived_region ? (
+              <button
+                type='button'
+                className='text-sm bg-main-1 text-white w-[80px] py-2 rounded-[10px]'
+                onClick={handleClickRegionButton}
+              >
+                {user.actived_region.split(' ')[2]}
+              </button>
+            ) : (
+              <button
+                type='button'
+                onClick={handleClickRegionButton}
+                className='text-sm bg-main-1 text-white w-[80px] py-2 rounded-[10px]'
+              >
+                동네 설정
+              </button>
+            )}
           </div>
         </Section.Container>
       </section>
