@@ -90,6 +90,32 @@ input {
 		transform 400ms ease-in-out;
 }
 
+.topSheet-enter {
+	transform: scale(0);
+	transform-origin: center;
+}
+
+.topSheet-enter-active {
+	transform: scale(1);
+	transform-origin: center;
+	transition: transform 300ms ease-in-out;
+}
+
+.topSheet-exit {
+	transform: scale(1);
+	transform-origin: center;
+	opacity: 1;
+}
+
+.topSheet-exit-active {
+	transform: scale(0);
+	transform-origin: center;
+	opacity: 0;
+	transition:
+		opacity 400ms ease-in-out,
+		transform 400ms ease-in-out;
+}
+
 @keyframes animation-toast {
 	0% {
 		opacity: 0;

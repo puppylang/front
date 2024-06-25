@@ -22,7 +22,7 @@ import { Post } from '@/types/post';
 import { formatAge } from '@/utils/date';
 
 import Alert from '@/components/Alert';
-import { BottomSheet, BottomSheetButton } from '@/components/BottomSheet';
+import { BottomSheet, SheetButton } from '@/components/BottomSheet';
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
 import PostStatusBadge from '@/components/PostStatusBadge';
@@ -351,10 +351,8 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
         >
           신고하기
         </NativeLink>
-        <BottomSheetButton onClick={onClickBottomSheetBlockBtn}>
-          {isBlockedUser ? '차단 해체하기' : '차단하기'}
-        </BottomSheetButton>
-        <BottomSheetButton onClick={onClickExitBtn}>채팅방 나가기</BottomSheetButton>
+        <SheetButton onClick={onClickBottomSheetBlockBtn}>{isBlockedUser ? '차단 해체하기' : '차단하기'}</SheetButton>
+        <SheetButton onClick={onClickExitBtn}>채팅방 나가기</SheetButton>
       </BottomSheet>
 
       <Alert

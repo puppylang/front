@@ -1,15 +1,6 @@
 import { Gender } from './pet';
 import { BlockerType } from './report';
 
-export interface UserFormType {
-  email: string;
-  name: string;
-  password: string;
-  gender: string;
-  phone_number: string;
-  birthday: string;
-}
-
 export interface UserType {
   id: string;
   name: string;

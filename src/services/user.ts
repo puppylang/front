@@ -96,8 +96,18 @@ export const editUserInfo = (editUser: UserEditForm) => {
 export const useValidateUserName = (name: string) => {
   return useQuery({
     queryKey: [`${VALIDATE_USER_NAME_QUERY_KEY}/${name}`],
-    queryFn: () => (name !== '' ? fetcherWithToken<boolean>(`${VALIDATE_USER_NAME_QUERY_KEY}?name=${name}`) : null),
+    queryFn: () => fetcherWithToken<boolean>(`${VALIDATE_USER_NAME_QUERY_KEY}?name=${name}`),
+    enabled: name.length >= 2 && name.length <= 10,
   });
+};
+
+export const getIsExistedUserName = async (name: string) => {
+  if (name.length <= 1 || name.length >= 11) {
+    return;
+  }
+
+  const response = fetcherWithToken<boolean>(`${VALIDATE_USER_NAME_QUERY_KEY}?name=${name}`);
+  return response;
 };
 
 export const logoutUser = async (userId: string, loggedFrom: LoggedFrom) => {
