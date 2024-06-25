@@ -1,14 +1,16 @@
 'use client';
 
-import { QueryErrorResetBoundary } from '@tanstack/react-query';
+import { QueryErrorResetBoundary, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { CgSpinner } from 'react-icons/cg';
 
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 import { getPostsWithPaging } from '@/services/post';
-import { useUserQuery } from '@/services/user';
+import { USER_QUERY_KEY, updateUserActivedRegion, useUserQuery } from '@/services/user';
 import { BOTTOM_NAVIGATION_HEIGHT, Post as IPost } from '@/types/post';
+import { UserType } from '@/types/user';
 
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
@@ -16,6 +18,7 @@ import { PetCardList } from '@/components/PetCardList';
 import { PostSection } from '@/components/Post';
 import { Section } from '@/components/Section';
 
+import UserActivedRegionSheet from './UserActivedRegionSheet';
 import ApiErrorFallback from '../user/error';
 
 export default function PostComponent() {
@@ -34,6 +37,8 @@ export default function PostComponent() {
 
 function Post() {
   const router = useNativeRouter();
+  const queryClient = useQueryClient();
+
   const { data: user } = useUserQuery();
   const { data: pets } = usePetQuery();
 
@@ -43,8 +48,35 @@ function Post() {
   const [isLoading, setIsLoading] = useState(false);
   const [observeTarget, setObserveTarget] = useState<Element | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [isActivedRegionLoading, setIsActivedRegionLoading] = useState(false);
+  const [isTopSheetOpen, setIsTopSheetOpen] = useState(false);
 
-  const regions = useMemo(() => user?.region, [user]);
+  const updateActivedReigonMutation = useMutation({
+    mutationFn: (region: string) => updateUserActivedRegion(region),
+    mutationKey: [USER_QUERY_KEY],
+    onSuccess: (_, variable) => {
+      queryClient.setQueryData([USER_QUERY_KEY], (oldData: UserType) => {
+        return { ...oldData, actived_region: variable };
+      });
+      setIsActivedRegionLoading(false);
+    },
+  });
+
+  const regions = useMemo(() => {
+    if (!user) return [];
+
+    const sortedRegion = user.region.sort((a, b) => {
+      if (a === user.actived_region) {
+        return -1;
+      }
+      if (b === user.actived_region) {
+        return 1;
+      }
+      return a.localeCompare(b);
+    });
+
+    return sortedRegion;
+  }, [user]);
 
   const fetchPostData = useCallback(async () => {
     setIsLoading(true);
@@ -94,8 +126,12 @@ function Post() {
     router.push('/posts/write');
   };
 
-  const handleClickRegionButton = () => {
-    console.log(regions);
+  const handleTopSheet = () => setIsTopSheetOpen(prev => !prev);
+
+  const handleUpdateActivedRegion = (address: string) => {
+    updateActivedReigonMutation.mutate(address);
+    handleTopSheet();
+    setIsActivedRegionLoading(true);
   };
 
   return (
@@ -108,22 +144,19 @@ function Post() {
 
           <div className='head flex justify-between items-center py-[24px]'>
             <h2 className='logo font-Jalnan text-xl text-main-3'>퍼피랑</h2>
-            {user?.actived_region ? (
+
+            {user && !isActivedRegionLoading ? (
               <button
                 type='button'
                 className='text-sm bg-main-1 text-white w-[80px] py-2 rounded-[10px]'
-                onClick={handleClickRegionButton}
+                onClick={handleTopSheet}
               >
-                {user.actived_region.split(' ')[2]}
+                {user.actived_region ? user.actived_region.split(' ')[2] : '동네 설정'}
               </button>
             ) : (
-              <button
-                type='button'
-                onClick={handleClickRegionButton}
-                className='text-sm bg-main-1 text-white w-[80px] py-2 rounded-[10px]'
-              >
-                동네 설정
-              </button>
+              <div className='flex items-center justify-center text-sm bg-main-1 text-white w-[80px] h-[36px] py-2 rounded-[10px]'>
+                <CgSpinner className='text-white animate-spin w-5 h-5' />
+              </div>
             )}
           </div>
         </Section.Container>
@@ -174,6 +207,16 @@ function Post() {
         onClick={() => router.push('/pets/new')}
         onClose={() => setIsAlertOpen(false)}
       />
+
+      {user && regions && (
+        <UserActivedRegionSheet
+          isOpen={isTopSheetOpen}
+          regions={regions}
+          activedRegion={user.actived_region}
+          onClick={handleUpdateActivedRegion}
+          onClose={handleTopSheet}
+        />
+      )}
     </>
   );
 }
