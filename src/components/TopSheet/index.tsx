@@ -48,9 +48,9 @@ export function TopSheet({ isOpen, children, onClose, className }: TopSheetProps
           className={`fixed top-0 h-auto w-full opacity-1 flex flex-col items-end p-4 ${className || ''}`}
           ref={topSheetRef}
         >
-          <div className='bg-white flex flex-col rounded-[10px] opacity-85 text-sm text-left w-full max-w-[250px]'>
+          <div className='bg-white flex flex-col rounded-[10px] opacity-85 text-sm text-left w-full max-w-[200px]'>
             {children}
-            <button type='button' className='px-4 py-4 text-text-2 text-sm ' onClick={onClose}>
+            <button type='button' className='px-4 py-[10px] text-text-2 text-sm text-left' onClick={onClose}>
               닫기
             </button>
           </div>

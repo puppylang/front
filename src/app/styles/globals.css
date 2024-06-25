@@ -91,21 +91,25 @@ input {
 }
 
 .topSheet-enter {
-	transform: translateX(40%);
+	transform: scale(0);
+	transform-origin: center;
 }
 
 .topSheet-enter-active {
-	transform: translateX(0%);
+	transform: scale(1);
+	transform-origin: center;
 	transition: transform 300ms ease-in-out;
 }
 
 .topSheet-exit {
-	transform: translateX(0%);
+	transform: scale(1);
+	transform-origin: center;
 	opacity: 1;
 }
 
 .topSheet-exit-active {
-	transform: translateX(40%);
+	transform: scale(0);
+	transform-origin: center;
 	opacity: 0;
 	transition:
 		opacity 400ms ease-in-out,
