@@ -61,13 +61,13 @@ export function BottomSheet({ isOpen, children, onClose, className }: BottomShee
   );
 }
 
-interface BottomSheetButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface SheetButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
   children: ReactNode;
 }
 
-export function BottomSheetButton({ className = '', onClick, children, ...props }: BottomSheetButtonProps) {
+export function SheetButton({ className = '', onClick, children, ...props }: SheetButtonProps) {
   return (
     <button type='button' className={`py-[10px] text-main-1 border-b-[1px] ${className}`} onClick={onClick} {...props}>
       {children}
