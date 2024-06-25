@@ -6,7 +6,7 @@ import useNativeRouter from '@/hooks/useNativeRouter';
 import { createReport } from '@/services/report';
 import { useUserQuery } from '@/services/user';
 
-import { BottomSheet, BottomSheetButton } from '@/components/BottomSheet';
+import { BottomSheet, SheetButton } from '@/components/BottomSheet';
 import { Form } from '@/components/Form';
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Loading from '@/components/Loading';
@@ -97,7 +97,7 @@ export default function Report() {
 
       <BottomSheet isOpen={isOpenBottomSheet} onClose={() => setIsOpenBottomSheet(false)}>
         {REPORT_TITLE.map(title => (
-          <BottomSheetButton
+          <SheetButton
             key={title}
             onClick={() => {
               setIsOpenBottomSheet(false);
@@ -105,7 +105,7 @@ export default function Report() {
             }}
           >
             {title}
-          </BottomSheetButton>
+          </SheetButton>
         ))}
       </BottomSheet>
     </section>
