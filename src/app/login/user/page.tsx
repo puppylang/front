@@ -174,7 +174,7 @@ export default function LoginUser() {
         <div className='w-full px-6 pb-10'>
           <button
             type='submit'
-            className={`${isInvalidForm && ' opacity-40'} text-sm w-full bg-main-1 text-white-1 py-2 rounded-md`}
+            className={`${isInvalidForm && ' opacity-40'} text-sm w-full bg-main-1 text-white-1 py-3 rounded-md`}
             disabled={isInvalidForm}
           >
             등록
