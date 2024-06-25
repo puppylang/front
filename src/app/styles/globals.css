@@ -90,6 +90,28 @@ input {
 		transform 400ms ease-in-out;
 }
 
+.topSheet-enter {
+	transform: translateX(40%);
+}
+
+.topSheet-enter-active {
+	transform: translateX(0%);
+	transition: transform 300ms ease-in-out;
+}
+
+.topSheet-exit {
+	transform: translateX(0%);
+	opacity: 1;
+}
+
+.topSheet-exit-active {
+	transform: translateX(40%);
+	opacity: 0;
+	transition:
+		opacity 400ms ease-in-out,
+		transform 400ms ease-in-out;
+}
+
 @keyframes animation-toast {
 	0% {
 		opacity: 0;
