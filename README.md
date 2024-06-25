@@ -13,4 +13,7 @@
 
 사용 중 문의사항이나 지원이 필요하신 경우, 아래 이메일로 연락해 주세요.
 
-Email: [sksp4334@naver.com](mailto:sksp4334@naver.com)
+### Email
+
+- [sksp4334@naver.com](mailto:sksp4334@naver.com)
+- [rkddbs1031@gmail.com](mailto:rkddbs1031@gmail.com)
