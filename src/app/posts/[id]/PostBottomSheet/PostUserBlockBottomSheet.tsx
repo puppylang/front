@@ -1,4 +1,4 @@
-import { BottomSheetButton } from '@/components/BottomSheet';
+import { SheetButton } from '@/components/BottomSheet';
 import NativeLink from '@/components/NativeLink';
 
 interface PostUserBlockBottomSheetProps {
@@ -17,9 +17,9 @@ export default function PostUserBlockBottomSheet({
       <NativeLink className='text-center py-[10px] text-main-1 border-b-[1px]' href={href}>
         신고하기
       </NativeLink>
-      <BottomSheetButton onClick={() => onClickBlockButton(isBlocked)}>
+      <SheetButton onClick={() => onClickBlockButton(isBlocked)}>
         {isBlocked ? '차단 해제하기' : '차단하기'}
-      </BottomSheetButton>
+      </SheetButton>
     </>
   );
 }
