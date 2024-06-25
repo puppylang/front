@@ -62,7 +62,7 @@ export default function LoginSuccess() {
   useEffect(() => {
     if (isFirstLogin === undefined) return;
     if (isFirstLogin) {
-      router.replace('/pets/new/login', { token: accessToken });
+      router.replace('/login/user', { token: accessToken });
       return;
     }
     router.replace('/posts', {
