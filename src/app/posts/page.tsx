@@ -8,9 +8,14 @@ import { CgSpinner } from 'react-icons/cg';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 import { getPostsWithPaging } from '@/services/post';
-import { USER_QUERY_KEY, updateUserActivedRegion, useUserQuery } from '@/services/user';
+import {
+  ACTIVED_REGION_QUERY_KEY,
+  updateActivedRegion,
+  useActiveRegionQuery,
+  useUserRegionQuery,
+} from '@/services/region';
+import { useUserQuery } from '@/services/user';
 import { BOTTOM_NAVIGATION_HEIGHT, Post as IPost } from '@/types/post';
-import { UserType } from '@/types/user';
 
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
@@ -41,6 +46,8 @@ function Post() {
 
   const { data: user } = useUserQuery();
   const { data: pets } = usePetQuery();
+  const { data: userRegions } = useUserRegionQuery();
+  const { data: activedRegion } = useActiveRegionQuery();
 
   const [posts, setPosts] = useState<IPost[]>([]);
   const [page, setPage] = useState(0);
@@ -51,32 +58,39 @@ function Post() {
   const [isActivedRegionLoading, setIsActivedRegionLoading] = useState(false);
   const [isTopSheetOpen, setIsTopSheetOpen] = useState(false);
 
-  const updateActivedReigonMutation = useMutation({
-    mutationFn: (region: string) => updateUserActivedRegion(region),
-    mutationKey: [USER_QUERY_KEY],
-    onSuccess: (_, variable) => {
-      queryClient.setQueryData([USER_QUERY_KEY], (oldData: UserType) => {
-        return { ...oldData, actived_region: variable };
-      });
+  const updateActivedRegionMutation = useMutation({
+    mutationFn: (regionId: number) => updateActivedRegion(regionId),
+    mutationKey: [ACTIVED_REGION_QUERY_KEY],
+    onSuccess: data => {
       setIsActivedRegionLoading(false);
+
+      queryClient.setQueryData([ACTIVED_REGION_QUERY_KEY], () => {
+        return data;
+      });
     },
   });
 
   const regions = useMemo(() => {
-    if (!user) return [];
+    if (!userRegions) return [];
 
-    const sortedRegion = user.region.sort((a, b) => {
-      if (a === user.actived_region) {
+    const sortedRegion = userRegions.sort((a, b) => {
+      if (!activedRegion) {
+        return 0;
+      }
+      if (a.id === activedRegion?.region_id) {
         return -1;
       }
-      if (b === user.actived_region) {
+      if (b.id === activedRegion?.region_id) {
         return 1;
       }
-      return a.localeCompare(b);
+      return 0;
     });
 
     return sortedRegion;
-  }, [user]);
+  }, [user, activedRegion]);
+
+  const currentActivedRegion =
+    regions && activedRegion && regions.find(region => region.id === activedRegion.region_id);
 
   const fetchPostData = useCallback(async () => {
     setIsLoading(true);
@@ -128,8 +142,8 @@ function Post() {
 
   const handleTopSheet = () => setIsTopSheetOpen(prev => !prev);
 
-  const handleUpdateActivedRegion = (address: string) => {
-    updateActivedReigonMutation.mutate(address);
+  const handleUpdateActivedRegion = (id: number) => {
+    updateActivedRegionMutation.mutate(id);
     handleTopSheet();
     setIsActivedRegionLoading(true);
   };
@@ -151,7 +165,7 @@ function Post() {
                 className='text-sm bg-main-1 text-white w-[80px] py-2 rounded-[10px]'
                 onClick={handleTopSheet}
               >
-                {user.actived_region ? user.actived_region.split(' ')[2] : '동네 설정'}
+                {currentActivedRegion ? currentActivedRegion.region.split(' ')[2] : '동네 설정'}
               </button>
             ) : (
               <div className='flex items-center justify-center text-sm bg-main-1 text-white w-[80px] h-[36px] py-2 rounded-[10px]'>
@@ -208,11 +222,11 @@ function Post() {
         onClose={() => setIsAlertOpen(false)}
       />
 
-      {user && regions && (
+      {user && regions && activedRegion && (
         <UserActivedRegionSheet
           isOpen={isTopSheetOpen}
           regions={regions}
-          activedRegion={user.actived_region}
+          activedRegion={activedRegion}
           onClick={handleUpdateActivedRegion}
           onClose={handleTopSheet}
         />
