@@ -155,7 +155,7 @@ export default function Region() {
                 <input
                   className='border border-gray-2 w-full rounded-[10px] px-10 py-[10px] text-sm text-text-2'
                   type='text'
-                  placeholder='지역을 입력해 주세요.'
+                  placeholder='동명(읍,면)으로 검색(ex. 작전동)'
                   value={searchValue}
                   onChange={({ target }) => setSearchValue(target.value)}
                 />
@@ -172,20 +172,25 @@ export default function Region() {
                 현재 위치로 찾기
               </button>
 
+              {searchValue.length >= 1 && <p className='font-bold text-sm text-text-2'>`{searchValue}` 검색 결과</p>}
+
               {regionInfos && (
                 <div className='region-info-container'>
-                  {regionInfos.length === 0 ? (
-                    <p className='text-[14px] text-text-2'>등록된 동네가 없어요.</p>
+                  {regionInfos.status === 'NOT_FOUND' ? (
+                    <div className='text-sm text-text-2 flex flex-col items-center justify-center pt-5 gap-1'>
+                      {searchValue.length === 1 && <p>정확한 검색을 위해 2글자 이상 입력해주세요.</p>}
+                      <p>검색 결과가 존재하지 않아요.</p>
+                    </div>
                   ) : (
                     <ul>
-                      {regionInfos.map(region => (
-                        <li key={region.address_name}>
+                      {regionInfos.regions.map(region => (
+                        <li key={region.title}>
                           <button
                             type='button'
-                            onClick={() => onClickAddRegionBtn(region.address_name)}
+                            onClick={() => onClickAddRegionBtn(region.title)}
                             className='block w-full text-left border-b border-gray-2 py-[13px] text-[14px]'
                           >
-                            <span className='text-text-1 text-[14px]'>{region.address_name}</span>
+                            <span className='text-text-1 text-[14px]'>{region.title}</span>
                           </button>
                         </li>
                       ))}

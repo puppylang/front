@@ -14,9 +14,9 @@ export const useRegionQuery = (query: string | { x: string; y: string }) => {
     queryKey: [REGION_QUERY_KEY, isStringTypeQuery, query],
     queryFn: () => {
       if (isStringTypeQuery) {
-        return fetcherWithToken<Region[]>(`${REGION_QUERY_KEY}?text=${query}`);
+        return fetcherWithToken<Region>(`${REGION_QUERY_KEY}?text=${query}`);
       }
-      return fetcherWithToken<Region[]>(`${REGION_QUERY_KEY}?x=${query.x}&y=${query.y}`);
+      return fetcherWithToken<Region>(`${REGION_QUERY_KEY}?x=${query.x}&y=${query.y}`);
     },
     enabled: isStringTypeQuery || (Boolean(query.x) && Boolean(query.y)),
   });
