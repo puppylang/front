@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useState } from 'react';
 
 import useNativeRouter from '@/hooks/useNativeRouter';
@@ -10,6 +10,7 @@ import { UserEditForm } from '@/types/user';
 
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import ImageUpload from '@/components/ImageUpload';
+import Loading from '@/components/Loading';
 
 const DEFAULT_CHARACTER_TEXTAREA_HEIGHT = 78;
 
@@ -28,12 +29,20 @@ export default function Edit() {
   const [isNameChanging, setIsNameChanging] = useState(false);
 
   const router = useNativeRouter();
+  const queryClient = useQueryClient();
+
   const { data: user } = useUserQuery();
   const { data: isInvalidName } = useValidateUserName(formState.name);
+
   const userMutation = useMutation({
     mutationKey: [USER_QUERY_KEY],
     mutationFn: (editUser: UserEditForm) => {
       return editUserInfo(editUser);
+    },
+    onSuccess: (_, variable) => {
+      return queryClient.setQueryData([USER_QUERY_KEY], () => {
+        return variable;
+      });
     },
   });
 
@@ -106,11 +115,7 @@ export default function Edit() {
         <HeaderNavigation.Title text='회원정보수정' />
       </HeaderNavigation.Container>
       <form className='h-full min-h-screen bg-white-1 py-4 pb-14' onSubmit={onSubmitForm}>
-        {userMutation.isPending && (
-          <section className='w-screen min-h-screen bg-text-1 fixed z-10 opacity-50 flex justify-center items-center'>
-            <div className='border-[8px] border-[#f1f1f1] border-t-main-1 rounded-full w-16 h-16 animate-spin' />
-          </section>
-        )}
+        {userMutation.isPending && <Loading />}
         <div className='px-4'>
           <div className='flex justify-center items-center py-5'>
             <ImageUpload defaultURL={formState.image || undefined} onChangeFileInput={onChangeFileInput} />

@@ -1,13 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { ResumeFormType } from '@/types/resume';
-import { Resume } from '@/types/resume';
+import { CreateResumeType, Resume } from '@/types/resume';
 import { fetcherStatusWithToken, fetcherWithToken } from '@/utils/request';
-
-interface CreateResumeType extends ResumeFormType {
-  user_id: string;
-  post_id: number;
-}
 
 const RESUME_KEY = '/resume';
 export const RESUMES_KEY = '/resumes';

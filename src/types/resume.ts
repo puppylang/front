@@ -27,3 +27,8 @@ export interface Resume {
   post_id: number;
   user_id: string;
 }
+
+export interface CreateResumeType extends ResumeFormType {
+  user_id: string;
+  post_id: number;
+}

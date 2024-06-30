@@ -55,6 +55,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
   const [isShowBottomMenu, setIsShowBottomMenu] = useState(false);
   const [isShowAlert, setIsShowAlert] = useState(false);
   const [bottomSheetType, setBottomSheetType] = useState<BottomSheetType>(null);
+  const [isSubmittedResume, setIsSubmittedResume] = useState(false);
 
   const router = useNativeRouter();
 
@@ -106,6 +107,8 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
     setIsOpenPopup(false);
     setIsShowSuccessToast(true);
     setIsShowToast(true);
+    setIsSubmittedResume(true);
+
     setToastDescription('견주에게 정보를 전달했어요!');
   };
 
@@ -266,7 +269,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
                   onClick={() => setIsOpenPopup(true)}
                   disabled={Boolean(filteredMyResume.length)}
                 >
-                  {filteredMyResume.length ? '신청완료' : '신청하기'}
+                  {filteredMyResume.length || isSubmittedResume ? '신청완료' : '신청하기'}
                 </button>
               )}
             </div>

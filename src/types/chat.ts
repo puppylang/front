@@ -105,4 +105,4 @@ export const OBJECTIONABLE_TEXT = [
 export const CHAT_SERVER_URL =
   process.env.NODE_ENV === 'development'
     ? 'ws://localhost:8000/chat/ws'
-    : 'ws://mass-bonnie-puppylang-server-accb847f.koyeb.app/chat/ws';
+    : 'wss://mass-bonnie-puppylang-server-accb847f.koyeb.app/chat/ws';

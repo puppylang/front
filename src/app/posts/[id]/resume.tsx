@@ -1,13 +1,14 @@
 'use client';
 
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormEvent, useEffect, useState } from 'react';
 
 import RecordWalkItem from '@/components/RecordWalkList/RecordWalkItem';
-import { createResume } from '@/services/resume';
+import { RESUMES_KEY, createResume } from '@/services/resume';
 import { useUserQuery } from '@/services/user';
 import { useCalendarWalks } from '@/services/walk';
 import { Gender } from '@/types/pet';
-import { ResumeFormType } from '@/types/resume';
+import { CreateResumeType, Resume, ResumeFormType } from '@/types/resume';
 import { WalkRole } from '@/types/walk';
 
 import { Form } from '@/components/Form';
@@ -42,6 +43,20 @@ export default function Resume({ id, onClose, onSubmit }: ResumeProps) {
     to: '2024-05-31T14:59:59.999Z',
     role: WalkRole.PetOwner,
   });
+  const queryClient = useQueryClient();
+
+  const submitResumeMutation = useMutation({
+    mutationKey: [RESUMES_KEY, id],
+    mutationFn: (data: CreateResumeType) => createResume(data),
+    onSuccess: (_, variables) => {
+      setIsLoading(false);
+      onSubmit();
+
+      queryClient.setQueryData([RESUMES_KEY, id], (oldData: Resume[]) => {
+        return oldData.length ? [...oldData, variables] : [variables];
+      });
+    },
+  });
 
   const isDisabledSubmitBtn =
     formState.birth_year.length !== 4 ||
@@ -51,16 +66,13 @@ export default function Resume({ id, onClose, onSubmit }: ResumeProps) {
 
   const sendResume = async () => {
     if (!user) return;
-    const { status } = await createResume({
+
+    submitResumeMutation.mutate({
       ...formState,
       user_id: user.id,
       post_id: id,
       has_walk_record: Boolean(walkList?.length),
     });
-    if (status === 201) {
-      setIsLoading(false);
-      onSubmit();
-    }
   };
 
   const onSubmitResume = (event: FormEvent) => {
