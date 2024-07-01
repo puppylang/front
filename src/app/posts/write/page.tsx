@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { createPost } from '@/services/post';
+import { useActiveRegionQuery } from '@/services/region';
 import { useUserQuery } from '@/services/user';
 import { Post } from '@/types/post';
 
@@ -13,6 +14,7 @@ import PostEditor from '@/components/PostEditor';
 function PostWrite() {
   const router = useNativeRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { data: activedRegion } = useActiveRegionQuery();
 
   const { data: user } = useUserQuery();
 
@@ -24,7 +26,7 @@ function PostWrite() {
 
     setIsLoading(true);
 
-    createPost(postData)
+    createPost({ ...postData, region_id: activedRegion?.region_id })
       .then(res => {
         if (res) router.push('/posts', { webviewPushPage: 'home' });
       })
