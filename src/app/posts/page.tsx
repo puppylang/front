@@ -46,8 +46,8 @@ function Post() {
 
   const { data: user } = useUserQuery();
   const { data: pets } = usePetQuery();
-  const { data: userRegions } = useUserRegionQuery();
-  const { data: activedRegion } = useActiveRegionQuery();
+  const { data: regions } = useUserRegionQuery(); // 유저가 선택한 동네 리스트
+  const { data: activedRegion } = useActiveRegionQuery(); // 유저가 선택한 대표 동네
 
   const [posts, setPosts] = useState<IPost[]>([]);
   const [page, setPage] = useState(0);
@@ -70,27 +70,29 @@ function Post() {
     },
   });
 
-  const regions = useMemo(() => {
-    if (!userRegions) return [];
+  const userActivedRegion = useMemo(() => activedRegion || null, [activedRegion]);
 
-    const sortedRegion = userRegions.sort((a, b) => {
-      if (!activedRegion) {
+  const userRegions = useMemo(() => {
+    if (!regions || regions.length < 1) return [];
+
+    const sortedRegion = regions.sort((a, b) => {
+      if (!userActivedRegion) {
         return 0;
       }
-      if (a.id === activedRegion?.region_id) {
+      if (a.id === userActivedRegion?.region_id) {
         return -1;
       }
-      if (b.id === activedRegion?.region_id) {
+      if (b.id === userActivedRegion?.region_id) {
         return 1;
       }
       return 0;
     });
 
     return sortedRegion;
-  }, [user, activedRegion]);
+  }, [regions, userActivedRegion]);
 
   const currentActivedRegion =
-    regions && activedRegion && regions.find(region => region.id === activedRegion.region_id);
+    userActivedRegion && userRegions.find(region => region.id === userActivedRegion.region_id);
 
   const fetchPostData = useCallback(async () => {
     setIsLoading(true);
@@ -222,11 +224,11 @@ function Post() {
         onClose={() => setIsAlertOpen(false)}
       />
 
-      {user && regions && activedRegion && (
+      {user && userRegions && (
         <UserActivedRegionSheet
           isOpen={isTopSheetOpen}
-          regions={regions}
-          activedRegion={activedRegion}
+          regions={userRegions}
+          activedRegion={userActivedRegion}
           onClick={handleUpdateActivedRegion}
           onClose={handleTopSheet}
         />
