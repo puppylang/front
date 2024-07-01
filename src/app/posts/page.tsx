@@ -147,7 +147,7 @@ function Post() {
 
   const handleClickWrite = () => {
     if (!userActivedRegion) {
-      setAlertConfig({
+      return setAlertConfig({
         type: 'REGION',
         isOpen: true,
         title: '아직 등록된 대표동네가 없습니다.',
@@ -156,7 +156,7 @@ function Post() {
     }
 
     if (!pets?.length) {
-      setAlertConfig({
+      return setAlertConfig({
         type: 'PET',
         isOpen: true,
         title: '아직 등록된 반려견이 없습니다.',
