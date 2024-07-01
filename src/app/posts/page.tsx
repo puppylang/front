@@ -40,21 +40,30 @@ export default function PostComponent() {
   );
 }
 
+type AlertType = 'PET' | 'REGION';
+
+interface AlertConfig {
+  type: null | AlertType;
+  isOpen: boolean;
+  title: string;
+  message: string;
+}
+
 function Post() {
   const router = useNativeRouter();
   const queryClient = useQueryClient();
 
   const { data: user } = useUserQuery();
   const { data: pets } = usePetQuery();
-  const { data: regions } = useUserRegionQuery(); // 유저가 선택한 동네 리스트
-  const { data: activedRegion } = useActiveRegionQuery(); // 유저가 선택한 대표 동네
+  const { data: regions } = useUserRegionQuery();
+  const { data: activedRegion } = useActiveRegionQuery();
 
   const [posts, setPosts] = useState<IPost[]>([]);
   const [page, setPage] = useState(0);
   const [last, setLast] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [observeTarget, setObserveTarget] = useState<Element | null>(null);
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertConfig, setAlertConfig] = useState<AlertConfig>({ type: null, isOpen: false, title: '', message: '' });
   const [isActivedRegionLoading, setIsActivedRegionLoading] = useState(false);
   const [isTopSheetOpen, setIsTopSheetOpen] = useState(false);
 
@@ -137,7 +146,23 @@ function Post() {
   }, [observeTarget, onIntersect]);
 
   const handleClickWrite = () => {
-    if (!pets?.length) return setIsAlertOpen(true);
+    if (!userActivedRegion) {
+      setAlertConfig({
+        type: 'REGION',
+        isOpen: true,
+        title: '아직 등록된 대표동네가 없습니다.',
+        message: '등록하러 가보실까요?',
+      });
+    }
+
+    if (!pets?.length) {
+      setAlertConfig({
+        type: 'PET',
+        isOpen: true,
+        title: '아직 등록된 반려견이 없습니다.',
+        message: '등록하러 가보실까요?',
+      });
+    }
 
     router.push('/posts/write');
   };
@@ -216,12 +241,12 @@ function Post() {
       </section>
 
       <Alert
-        title='아직 등록된 반려견이 없습니다.'
-        message='등록하러 가보실까요?'
-        isOpen={isAlertOpen}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        isOpen={alertConfig.isOpen}
         buttonText='등록하러가기'
-        onClick={() => router.push('/pets/new')}
-        onClose={() => setIsAlertOpen(false)}
+        onClick={() => router.push(alertConfig.type === 'PET' ? '/pets/new' : '/user/region')}
+        onClose={() => setAlertConfig({ type: null, isOpen: false, title: '', message: '' })}
       />
 
       {user && userRegions && (
