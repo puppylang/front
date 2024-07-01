@@ -11,11 +11,12 @@ import IconClose from './close.svg';
 import IconCurrentLocation from './current_location.svg';
 import IconDog from './dog.svg';
 import IconEdit from './edit.svg';
-import IConErrorBox from './error-box.svg';
 import IconErrorBoxBlue from './error-box-blue.svg';
+import IConErrorBox from './error-box.svg';
 import IconHeartFill from './heart_fill.svg';
 import IconHeartOutline from './heart_outline.svg';
 import IconInfo from './info.svg';
+import IconLocation from './location.svg';
 import IconPause from './pause.svg';
 import IconRun from './run.svg';
 import IconTrash from './trash.svg';
@@ -46,4 +47,5 @@ export {
   IconCheckboxFill,
   IconInfo,
   IconUserDefault,
+  IconLocation,
 };
