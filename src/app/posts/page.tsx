@@ -16,6 +16,7 @@ import {
 } from '@/services/region';
 import { useUserQuery } from '@/services/user';
 import { BOTTOM_NAVIGATION_HEIGHT, Post as IPost } from '@/types/post';
+import { formatRegionTitle } from '@/utils/region';
 
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
@@ -192,7 +193,7 @@ function Post() {
                 className='text-sm bg-main-1 text-white w-[80px] py-2 rounded-[10px]'
                 onClick={handleTopSheet}
               >
-                {currentActivedRegion ? currentActivedRegion.region.split(' ')[2] : '동네 설정'}
+                {currentActivedRegion ? formatRegionTitle(currentActivedRegion.region) : '동네 설정'}
               </button>
             ) : (
               <div className='flex items-center justify-center text-sm bg-main-1 text-white w-[80px] h-[36px] py-2 rounded-[10px]'>
