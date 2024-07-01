@@ -19,6 +19,7 @@ import {
 import { USER_QUERY_KEY } from '@/services/user';
 import { ActivedRegion, UserRegion } from '@/types/region';
 import { UserType } from '@/types/user';
+import { formatRegionTitle } from '@/utils/region';
 
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Toast from '@/components/Toast';
@@ -172,17 +173,19 @@ export default function Region() {
                 현재 위치로 찾기
               </button>
 
-              {searchValue.length >= 1 && <p className='font-bold text-sm text-text-2'>`{searchValue}` 검색 결과</p>}
+              {searchValue.length >= 1 && (
+                <p className='font-semibold text-sm text-text-2'>`{searchValue}` 검색 결과</p>
+              )}
 
               {regionInfos && (
                 <div className='region-info-container'>
                   {regionInfos.status === 'NOT_FOUND' ? (
-                    <div className='text-sm text-text-2 flex flex-col items-center justify-center pt-5 gap-1'>
+                    <div className='h-[200px] text-sm text-text-2 flex flex-col items-center justify-center gap-y-1'>
                       {searchValue.length === 1 && <p>정확한 검색을 위해 2글자 이상 입력해주세요.</p>}
                       <p>검색 결과가 존재하지 않아요.</p>
                     </div>
                   ) : (
-                    <ul>
+                    <ul className='max-h-[320px] overflow-scroll'>
                       {regionInfos.regions.map(region => (
                         <li key={region.title}>
                           <button
@@ -249,7 +252,7 @@ function RegisterLocationList({
             className='text-sm p-0 m-0 w-[100%] text-left'
             onClick={() => onClickRegionBtn(id)}
           >
-            {address.split(' ')[2]}
+            {formatRegionTitle(address)}
           </button>
           <button type='button' onClick={() => onClickDeleteBtn(id)}>
             <IoCloseOutline />
