@@ -1,13 +1,13 @@
 'use client';
 
 import { QueryErrorResetBoundary, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { CgSpinner } from 'react-icons/cg';
 
+import PostListSkeletonUI from '@/components/SkeletonUI/PostListSkeletonUI';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
-import { getPostsWithPaging } from '@/services/post';
 import {
   ACTIVED_REGION_QUERY_KEY,
   updateActivedRegion,
@@ -15,15 +15,16 @@ import {
   useUserRegionQuery,
 } from '@/services/region';
 import { useUserQuery } from '@/services/user';
-import { BOTTOM_NAVIGATION_HEIGHT, Post as IPost } from '@/types/post';
+import { BOTTOM_NAVIGATION_HEIGHT, PostAlertConfig } from '@/types/post';
 import { formatRegionTitle } from '@/utils/region';
 
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
+import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
-import { PostSection } from '@/components/Post';
 import { Section } from '@/components/Section';
 
+import PostList from './PostList';
 import UserActivedRegionSheet from './UserActivedRegionSheet';
 import ApiErrorFallback from '../user/error';
 
@@ -41,15 +42,6 @@ export default function PostComponent() {
   );
 }
 
-type AlertType = 'PET' | 'REGION';
-
-interface AlertConfig {
-  type: null | AlertType;
-  isOpen: boolean;
-  title: string;
-  message: string;
-}
-
 function Post() {
   const router = useNativeRouter();
   const queryClient = useQueryClient();
@@ -57,23 +49,22 @@ function Post() {
   const { data: user } = useUserQuery();
   const { data: pets } = usePetQuery();
   const { data: regions } = useUserRegionQuery();
-  const { data: activedRegion } = useActiveRegionQuery();
+  const { data: activedRegion, isLoading: isActivedRegionLoading } = useActiveRegionQuery();
 
-  const [posts, setPosts] = useState<IPost[]>([]);
-  const [page, setPage] = useState(0);
-  const [last, setLast] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [observeTarget, setObserveTarget] = useState<Element | null>(null);
-  const [alertConfig, setAlertConfig] = useState<AlertConfig>({ type: null, isOpen: false, title: '', message: '' });
-  const [isActivedRegionLoading, setIsActivedRegionLoading] = useState(false);
+  const [alertConfig, setAlertConfig] = useState<PostAlertConfig>({
+    type: null,
+    isOpen: false,
+    title: '',
+    message: '',
+  });
+  const [isEditingActiveRegion, setIsEditingActiveRegion] = useState(false);
   const [isTopSheetOpen, setIsTopSheetOpen] = useState(false);
 
   const updateActivedRegionMutation = useMutation({
     mutationFn: (regionId: number) => updateActivedRegion(regionId),
     mutationKey: [ACTIVED_REGION_QUERY_KEY],
     onSuccess: data => {
-      setIsActivedRegionLoading(false);
-
+      setIsEditingActiveRegion(false);
       queryClient.setQueryData([ACTIVED_REGION_QUERY_KEY], () => {
         return data;
       });
@@ -104,48 +95,6 @@ function Post() {
   const currentActivedRegion =
     userActivedRegion && userRegions.find(region => region.id === userActivedRegion.region_id);
 
-  const fetchPostData = useCallback(async () => {
-    setIsLoading(true);
-
-    if (last) return setIsLoading(false);
-
-    if (!last) {
-      const data = await getPostsWithPaging({ page });
-
-      if (data) {
-        setPosts(prev => [...prev, ...data.content]);
-        setLast(data.last);
-      }
-      setPage(prev => prev + 1);
-      setIsLoading(false);
-    }
-  }, [last, page]);
-
-  const onIntersect: IntersectionObserverCallback = useCallback(
-    ([entry]) => {
-      if (last || isLoading) return;
-
-      if (entry.isIntersecting) {
-        fetchPostData();
-      }
-    },
-    [fetchPostData, isLoading, last],
-  );
-
-  useEffect(() => {
-    if (!observeTarget) return;
-
-    const observe: IntersectionObserver = new IntersectionObserver(onIntersect, {
-      root: null,
-      rootMargin: '0px',
-      threshold: 1,
-    });
-
-    observe.observe(observeTarget);
-
-    return () => observe.unobserve(observeTarget);
-  }, [observeTarget, onIntersect]);
-
   const handleClickWrite = () => {
     if (!userActivedRegion) {
       return setAlertConfig({
@@ -173,7 +122,7 @@ function Post() {
   const handleUpdateActivedRegion = (id: number) => {
     updateActivedRegionMutation.mutate(id);
     handleTopSheet();
-    setIsActivedRegionLoading(true);
+    setIsEditingActiveRegion(true);
   };
 
   return (
@@ -187,7 +136,7 @@ function Post() {
           <div className='head flex justify-between items-center py-[24px]'>
             <h2 className='logo font-Jalnan text-xl text-main-3'>퍼피랑</h2>
 
-            {user && !isActivedRegionLoading ? (
+            {user && !isActivedRegionLoading && !isEditingActiveRegion ? (
               <button
                 type='button'
                 className='text-sm bg-main-1 text-white w-[80px] py-2 rounded-[10px]'
@@ -226,18 +175,22 @@ function Post() {
             </button>
           </div>
 
-          {posts?.length > 0 ? (
-            <PostSection.List
-              posts={posts}
-              className='animation-load'
-              itemClassName='shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'
-            />
-          ) : (
-            <div className='flex justify-center items-center h-[300px]'>
-              <p className='text-text-2'>등록된 구인 게시글이 없습니다.</p>
+          {isActivedRegionLoading && <PostListSkeletonUI />}
+
+          {!isActivedRegionLoading && !userActivedRegion ? (
+            <div className='flex flex-col justify-center items-center gap-y-2 h-[300px]'>
+              <p className='text-text-2 font-Jalnan'>등록된 동네가 없습니다.</p>
+              <NativeLink
+                href='/user/region'
+                webviewPushPage='home'
+                className='bg-main-2 text-white text-xs px-6 py-2 rounded-[10px]'
+              >
+                등록하러가기
+              </NativeLink>
             </div>
+          ) : (
+            currentActivedRegion && <PostList region={currentActivedRegion.region} />
           )}
-          <div ref={setObserveTarget}>{isLoading && <Loading />}</div>
         </Section.Container>
       </section>
 
