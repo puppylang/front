@@ -2,6 +2,7 @@
 
 import UserProfileSkeleton from '@/components/SkeletonUI/UserProfileSkeleton';
 import { usePetQuery } from '@/services/pet';
+import { StackPushRoute } from '@/types/route';
 
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
@@ -76,7 +77,7 @@ export default function UserProfile({ id }: UserProfileProps) {
         <h2 className='font-Jalnan text-text-1'>해당 유저가 존재하지 않습니다.</h2>
         <NativeLink
           href='/posts'
-          webviewPushPage='home'
+          webviewPushPage={StackPushRoute.Posts}
           className='bg-main-2 text-white text-sm px-6 py-2 rounded-[10px]'
         >
           홈으로 가기

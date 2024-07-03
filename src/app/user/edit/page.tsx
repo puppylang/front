@@ -6,6 +6,7 @@ import { ChangeEvent, FormEvent, KeyboardEvent, useEffect, useState } from 'reac
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { USER_QUERY_KEY, editUserInfo, useUserQuery, useValidateUserName } from '@/services/user';
 import { Gender } from '@/types/pet';
+import { StackPushRoute } from '@/types/route';
 import { UserEditForm } from '@/types/user';
 
 import { HeaderNavigation } from '@/components/HeaderNavigation';
@@ -105,7 +106,7 @@ export default function Edit() {
   useEffect(() => {
     if (!userMutation.isSuccess) return;
     router.push('/user', {
-      webviewPushPage: 'home',
+      webviewPushPage: StackPushRoute.User,
     });
   }, [userMutation.isSuccess, router]);
 

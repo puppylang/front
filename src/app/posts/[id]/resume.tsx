@@ -9,6 +9,7 @@ import { useUserQuery } from '@/services/user';
 import { useCalendarWalks } from '@/services/walk';
 import { Gender } from '@/types/pet';
 import { CreateResumeType, Resume, ResumeFormType } from '@/types/resume';
+import { StackPushRoute } from '@/types/route';
 import { WalkRole } from '@/types/walk';
 
 import { Form } from '@/components/Form';
@@ -192,7 +193,7 @@ export default function Resume({ id, onClose, onSubmit }: ResumeProps) {
                 <p className='text-sm'>등록된 산책 기록이 없어요.</p>
                 <NativeLink
                   href='/walk-role'
-                  webviewPushPage='home'
+                  webviewPushPage={StackPushRoute.Walk}
                   className='bg-main-5 text-main-3 rounded-[10px] text-xs px-4 h-7 leading-7'
                 >
                   산책하러 가기

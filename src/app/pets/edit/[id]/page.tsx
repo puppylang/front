@@ -8,6 +8,7 @@ import useNativeRouter from '@/hooks/useNativeRouter';
 import { PET_QUERY_KEY, deletePet, updatePet, usePetQuery } from '@/services/pet';
 import { useUserQuery } from '@/services/user';
 import { DogBreed, Gender, Neuter, Pet, PetFormType, UpdatePetFormType } from '@/types/pet';
+import { StackPushRoute } from '@/types/route';
 
 import Alert from '@/components/Alert';
 import Breed from '@/components/Breed';
@@ -123,16 +124,9 @@ export default function EditPet({ params: { id } }: DynamicRouteParams) {
   useEffect(() => {
     if (!petUpdateMutation.isSuccess) return;
     router.push('/user', {
-      webviewPushPage: 'home',
+      webviewPushPage: StackPushRoute.User,
     });
   }, [petUpdateMutation.isSuccess]);
-
-  useEffect(() => {
-    if (!petDeleteMutaion.isSuccess) return;
-    router.push('/user', {
-      webviewPushPage: 'home',
-    });
-  }, [petDeleteMutaion.isSuccess]);
 
   return (
     <section className='w-screen bg-white-1'>

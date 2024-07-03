@@ -8,6 +8,7 @@ import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 import { useMatchedPosts } from '@/services/post';
 import { useUserQuery } from '@/services/user';
+import { StackPushRoute } from '@/types/route';
 
 import Loading from '@/components/Loading';
 import NativeLink from '@/components/NativeLink';
@@ -73,7 +74,7 @@ function WalkRolePicker() {
               <PostSection.Slide posts={walkablePosts} type='BUTTON' onClick={handleClickPetSitterWalk} />
             ) : (
               <div className='flex flex-col justify-center items-center h-[112px] rounded-[10px] border-2 border-main-5'>
-                <NativeLink href='/posts' webviewPushPage='home' className=''>
+                <NativeLink href='/posts' webviewPushPage={StackPushRoute.Posts} className=''>
                   <p className='text-center text-sm text-text-2 leading-[20px]'>
                     신청 내역이 없습니다.
                     <br />

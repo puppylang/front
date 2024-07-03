@@ -13,7 +13,7 @@ import { USER_QUERY_KEY } from '@/services/user';
 import { CreateChatType } from '@/types/chat';
 import { Post } from '@/types/post';
 import { Resume } from '@/types/resume';
-import { DynamicParamTypes } from '@/types/route';
+import { DynamicParamTypes, StackPushRoute } from '@/types/route';
 import { UserType } from '@/types/user';
 import { formatDiffTime } from '@/utils/date';
 import { fetcherWithToken } from '@/utils/request';
@@ -214,7 +214,7 @@ function SubmittedResumeUI({ id }: { id: string }) {
               <p className='font-Jalnan text-text-2 text-sm'>아직 지원자가 없습니다.</p>
               <NativeLink
                 href='/posts'
-                webviewPushPage='posts'
+                webviewPushPage={StackPushRoute.Posts}
                 className='h-8 px-5 text-[12px] text-text-2 rounded-[10px] bg-gray-3 leading-8'
               >
                 둘러보러 가기

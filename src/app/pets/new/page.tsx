@@ -8,6 +8,7 @@ import useNativeRouter from '@/hooks/useNativeRouter';
 import { PET_QUERY_KEY } from '@/services/pet';
 import { useUserQuery } from '@/services/user';
 import { CreatePetFormType, DogBreed, Gender, Neuter, PetFormType } from '@/types/pet';
+import { StackPushRoute } from '@/types/route';
 import { fetcherStatusWithToken } from '@/utils/request';
 
 import Breed from '@/components/Breed';
@@ -76,7 +77,7 @@ export default function NewPet() {
   useEffect(() => {
     if (!petMutation.isSuccess) return;
     router.push('/user', {
-      webviewPushPage: 'home',
+      webviewPushPage: StackPushRoute.User,
     });
   }, [petMutation.isSuccess, router]);
 

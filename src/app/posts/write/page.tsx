@@ -6,6 +6,7 @@ import useNativeRouter from '@/hooks/useNativeRouter';
 import { createPost } from '@/services/post';
 import { useUserQuery } from '@/services/user';
 import { Post } from '@/types/post';
+import { StackPushRoute } from '@/types/route';
 
 import Loading from '@/components/Loading';
 import PostEditor from '@/components/PostEditor';
@@ -26,7 +27,7 @@ function PostWrite() {
 
     createPost(postData)
       .then(res => {
-        if (res) router.push('/posts', { webviewPushPage: 'home' });
+        if (res) router.push('/posts', { webviewPushPage: StackPushRoute.Posts });
       })
       .catch((err: Error) => {
         console.log(err);
