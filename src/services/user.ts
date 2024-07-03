@@ -153,3 +153,14 @@ export const useRecordWalkDistance = (id?: string) => {
       ),
   });
 };
+
+export const getUserSubmittedPosts = ({ page = 0, size = 20 }: PageParams) => {
+  try {
+    const data = fetcherWithToken<PageResponse<Post[]>>(`${USER_QUERY_KEY}/submitted-posts?size=${size}&page=${page}`);
+    return data;
+  } catch (err) {
+    if (err instanceof UserDeleteError) {
+      console.error(err.response.status);
+    }
+  }
+};
