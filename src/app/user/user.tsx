@@ -21,7 +21,7 @@ import UserActivity from '@/components/UserActivity';
 import ApiErrorFallback from './error';
 import { IconCaretRight, IconEdit } from '../../../public/assets/svgs';
 
-export default function zUserComponent() {
+export default function UserComponent() {
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (
