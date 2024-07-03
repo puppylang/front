@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { Gender } from '@/types/pet';
@@ -18,12 +19,14 @@ interface PostProps {
   posts: PostType[];
   className?: string;
   itemClassName?: string;
+  children?: ReactNode;
 }
 
-function PostList({ posts, className, itemClassName }: PostProps) {
+function PostList({ posts, className, itemClassName, children }: PostProps) {
   return (
     <ul className={`post-list flex flex-col gap-4 ${className || ''}`}>
       {posts?.map(post => <PostItem key={post.id} post={post} className={itemClassName} />)}
+      {children}
     </ul>
   );
 }

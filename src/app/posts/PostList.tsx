@@ -74,7 +74,10 @@ function PostList({ region }: { region: string }) {
             className='animation-load'
             itemClassName='shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'
           />
-          {isFetching && <div>Loading more...</div>}
+
+          {isFetching && (
+            <div className='list-none animate-pulse w-full h-[112px] bg-white rounded-[10px] shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]' />
+          )}
         </>
       ) : (
         <div className='flex justify-center items-center h-[300px] animation-show'>
