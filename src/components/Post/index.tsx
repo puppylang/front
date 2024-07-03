@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { Gender } from '@/types/pet';
@@ -18,12 +19,14 @@ interface PostProps {
   posts: PostType[];
   className?: string;
   itemClassName?: string;
+  children?: ReactNode;
 }
 
-function PostList({ posts, className, itemClassName }: PostProps) {
+function PostList({ posts, className, itemClassName, children }: PostProps) {
   return (
     <ul className={`post-list flex flex-col gap-4 ${className || ''}`}>
       {posts?.map(post => <PostItem key={post.id} post={post} className={itemClassName} />)}
+      {children}
     </ul>
   );
 }
@@ -96,15 +99,15 @@ function PostItemContent({ post }: PostItemContentProps) {
 
             {post.pet.gender && (
               <span
-                className="relative after:content-[''] after:absolute after:top-[55%] after:left-[-8px] after:translate-x-[50%]
-          after:translate-y-[-50%] after:w-[1px] after:h-[12px] after:bg-text-2"
+                className="relative after:content-[''] after:absolute after:top-[52%] after:left-[-8px] after:translate-x-[50%]
+          after:translate-y-[-50%] after:w-[1px] after:h-[10px] after:bg-text-2"
               >
                 {post.pet.gender === Gender.Female ? '암컷' : '수컷'}
               </span>
             )}
 
             {post.pet.birthday && (
-              <span className="relative after:content-[''] after:absolute after:top-[55%] after:left-[-8px] after:translate-x-[50%] after:translate-y-[-50%] after:w-[1px] after:h-[12px] after:bg-text-2">
+              <span className="relative after:content-[''] after:absolute after:top-[52%] after:left-[-8px] after:translate-x-[50%] after:translate-y-[-50%] after:w-[1px] after:h-[10px] after:bg-text-2">
                 {formatAge(post.pet.birthday)}
               </span>
             )}

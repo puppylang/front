@@ -7,7 +7,7 @@ interface PetCardItemProps {
   pet: Pet;
 }
 
-const breedCssStyle = `relative after:content-[''] after:absolute after:top-[50%] after:left-[-6px] after:translate-x-[50%] after:translate-y-[-50%] after:w-[1px] after:h-[10px] after:bg-text-2`;
+const breedCssStyle = `relative after:content-[''] after:absolute after:top-[50%] after:left-[-7px] after:translate-x-[50%] after:translate-y-[-50%] after:w-[1px] after:h-[8px] after:bg-text-2`;
 
 export function PetCardItem({ pet }: PetCardItemProps) {
   return (

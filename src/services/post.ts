@@ -30,9 +30,11 @@ export const getPosts = async () => {
   }
 };
 
-export const getPostsWithPaging = async ({ page = 0, size = 10 }: PageParams) => {
+export const getPostsWithPaging = async ({ page = 0, size = 10, region }: PageParams & { region: string }) => {
   try {
-    const data = await fetcherWithToken<PageResponse<Post[]>>(`${POST_KEY}?size=${size}&page=${page}`);
+    const data = await fetcherWithToken<PageResponse<Post[]>>(
+      `${POST_KEY}?size=${size}&page=${page}${region ? `&region=${region}` : ''}`,
+    );
     return data;
   } catch (err) {
     if (err instanceof UserDeleteError) {

@@ -178,6 +178,7 @@ export default function PostDetail({ params: { id } }: PostDetailProps) {
                 <PostInfo.Top
                   title={postData.title}
                   author={postData.author}
+                  address={postData.region?.region}
                   date={postData.created_at ? formatDate(postData.created_at) : ''}
                 >
                   {isMyPost ? (

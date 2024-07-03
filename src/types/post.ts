@@ -1,4 +1,5 @@
 import { Pet } from './pet';
+import { UserRegion } from './region';
 import { UserType } from './user';
 
 export interface Schedule {
@@ -17,6 +18,8 @@ export interface Post extends Schedule {
   author?: UserType;
   pet_id: number | null;
   pet: Pet | null;
+  region_id?: null | number;
+  region?: UserRegion;
   is_liked?: boolean;
   like_count?: number;
   view_count?: number;
@@ -48,3 +51,12 @@ export interface PageParams {
 export const BOTTOM_NAVIGATION_HEIGHT = 68;
 
 export type BottomSheetType = 'POST_UPDATE' | 'POST_STATUS_UPDATE' | 'POST_USER_BLOCK' | null;
+
+export type PostAlertType = 'PET' | 'REGION';
+
+export interface PostAlertConfig {
+  type: null | PostAlertType;
+  isOpen: boolean;
+  title: string;
+  message: string;
+}
