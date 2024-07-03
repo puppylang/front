@@ -31,6 +31,7 @@ export default function ClientRootLayout({ children }: { children: React.ReactNo
   return (
     <html lang='ko'>
       <head>
+        <title>퍼피랑</title>
         <link rel='preconnect' href='https://fonts.googleapis.com' />
         <link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='anonymous' />
         <script
