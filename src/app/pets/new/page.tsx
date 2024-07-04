@@ -122,7 +122,7 @@ export default function NewPet() {
                 onClose={() => setIsOpenPopup(false)}
                 className='border-b-0 text-center justify-center'
               >
-                <p className='text-center font-bold'>견종 선택하기</p>
+                <p className='text-center text-text-2 text-sm'>견종 선택하기</p>
               </Popup.CloseButton>
               <Breed
                 onClick={value => {
@@ -181,7 +181,7 @@ export default function NewPet() {
           <div className='fixed left-[50%] bottom-0 translate-x-[-50%] w-full bg-white container p-4'>
             <button
               type='submit'
-              className={`${isInvalidForm && ' opacity-40'} w-full py-2 rounded-[10px] bg-main-1 text-white-1 `}
+              className={`${isInvalidForm && ' opacity-40'} w-full py-2 rounded-[10px] bg-main-1 text-white`}
               disabled={isInvalidForm}
             >
               등록

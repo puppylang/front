@@ -31,7 +31,7 @@ export default function Breed({ onClick }: BreedProps) {
       <div className='flex items-center relative mx-4 py-4'>
         <IoSearch color='#E5E5E5' className='absolute left-2.5' />
         <input
-          className='border border-gray-1 w-full rounded-md px-8 py-1.5 text-[15px] text-text-1'
+          className='border border-gray-2 w-full rounded-[10px] px-8 py-[10px] text-sm text-text-1'
           type='text'
           placeholder='견종을 입력해 주세요.'
           value={value}
@@ -64,7 +64,7 @@ function BreedList({ breed, value, onClick }: BreedListProps) {
     <li>
       <button
         type='button'
-        className='block border-b border-gray-1 py-2 text-[14px] w-full text-left'
+        className='block border-b border-gray-2 py-[10px] text-sm w-full text-left'
         onClick={() => onClick(breed)}
       >
         {replaceBreedName.map((text, index) => {
