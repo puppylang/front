@@ -20,9 +20,9 @@ export default function Chat() {
   const { data: chatRooms, isLoading } = useChatsQuery(selectedType);
 
   return (
-    <>
-      <section className='container'>
-        <ul className='grid grid-cols-2 w-full'>
+    <section className='flex flex-col items-center'>
+      <div className='container'>
+        <ul className='grid grid-cols-2 w-full tab'>
           <li
             className={`${
               selectedType === ChatWritterType.Author ? 'border-b-text-1 text-text-1' : ' border-b-gray-2 text-text-2'
@@ -57,22 +57,24 @@ export default function Chat() {
             ))}
           </ul>
         )}
+
         {isLoading && !chatRooms && (
-          <>
+          <div className='pt-2'>
             <ChatSkelectonUI />
             <ChatSkelectonUI />
             <ChatSkelectonUI />
             <ChatSkelectonUI />
-          </>
+          </div>
         )}
-      </section>
-      {!isLoading && chatRooms && chatRooms.length === 0 && (
-        <PuppyError.Container>
-          <PuppyError.Title title='대화방이 존재 하지 않아요.' />
-          <PuppyError.Desc text='산책을 해주는 펫시터와 대화해 보세요.' />
-        </PuppyError.Container>
-      )}
-    </>
+
+        {!isLoading && chatRooms && chatRooms.length === 0 && (
+          <PuppyError.Container className='min-h-[calc(100vh-68px)]'>
+            <PuppyError.Title title='대화방이 존재 하지 않아요.' />
+            <PuppyError.Desc text='산책을 해주는 펫시터와 대화해 보세요.' />
+          </PuppyError.Container>
+        )}
+      </div>
+    </section>
   );
 }
 
