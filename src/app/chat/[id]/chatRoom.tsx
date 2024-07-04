@@ -273,77 +273,83 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   );
 
   return (
-    <div className='relative h-screen flex flex-col'>
-      <HeaderNavigation.Container className='!bg-bg-blue'>
-        <HeaderNavigation.Title text='채팅방' />
-        <HeaderNavigation.DotBtn onClick={() => setIsOpenBottomSheet(true)} />
-      </HeaderNavigation.Container>
-
-      <NativeLink href={`/posts/${post?.id}`} className='flex px-4 py-3 border-b-[1px]'>
-        <div className='flex-[1_0_50px]'>
-          {post && post.pet && <Profile.Pet className='!bg-bg-blue' pet={post.pet} width={50} height={50} />}
-        </div>
-        <div className='flex pl-4 w-full items-center'>
-          <div className='w-full'>
-            <p className='text-base text-[#222222]'>{post?.title}</p>
-            <p className='text-sm text-[#666666] font-light'>
-              {post?.pet?.breed} | {post?.pet?.gender === 'Male' ? '수컷' : '암컷'} |
-              {post?.pet?.birthday ? formatAge(post.pet.birthday) : 0}
-            </p>
+    <div className='relative h-screen flex flex-col items-center'>
+      <div className='container'>
+        <HeaderNavigation.Container className='!bg-bg-blue'>
+          <HeaderNavigation.Title text='채팅방' />
+          <HeaderNavigation.DotBtn onClick={() => setIsOpenBottomSheet(true)} />
+        </HeaderNavigation.Container>
+        <NativeLink href={`/posts/${post?.id}`} className='flex px-4 py-3 border-b-[1px]'>
+          <div className='flex-[1_0_50px]'>
+            {post && post.pet && <Profile.Pet className='!bg-bg-blue' pet={post.pet} width={50} height={50} />}
           </div>
-          {post && <PostStatusBadge status={post?.status} className='text-sm flex-[1_0_80px]' />}
+          <div className='flex pl-4 w-full items-center'>
+            <div className='w-full'>
+              <p className='text-base text-[#222222]'>{post?.title}</p>
+              <p className='text-sm text-[#666666] font-light'>
+                {post?.pet?.breed} | {post?.pet?.gender === 'Male' ? '수컷' : '암컷'} |
+                {post?.pet?.birthday ? formatAge(post.pet.birthday) : 0}
+              </p>
+            </div>
+            {post && <PostStatusBadge status={post?.status} className='text-sm flex-[1_0_80px]' />}
+          </div>
+        </NativeLink>
+        <div
+          className='relative p-4 bg-bg-blue min-h-[calc(100vh-205px)] max-h-[calc(100vh-205px)] overflow-y-auto'
+          ref={messageRef}
+        >
+          <div ref={topMessageRef} />
+
+          {isOpenPopup && <ChatPopup onClose={() => setIsOpenPopup(false)} />}
+
+          <div>
+            {filteredBlockedMessage.map((message, index) => {
+              const previousChatting = messagesData.messages[index - 1];
+              const isMyChat = user?.id === message.user_id;
+              const nextChatting = messagesData.messages[index + 1];
+              const isSameUserLastChat = nextChatting
+                ? nextChatting.user_id !== message.user_id || !isSameMinutes(message.time, nextChatting.time)
+                : true;
+
+              return (
+                <Message
+                  key={message.id}
+                  updateReadMessage={updateReadMessage}
+                  message={message}
+                  image={message.user_id === chat?.guest_id ? chat.guest.image : chat?.user.image}
+                  isSameUserLastChat={isSameUserLastChat}
+                  isSameDate={previousChatting ? isSameDay(message.time, previousChatting.time) : false}
+                  isSameMinutes={
+                    Boolean(nextChatting) && nextChatting && nextChatting.user_id === message.user_id
+                      ? isSameDay(message.time, nextChatting.time) && isSameMinutes(message.time, nextChatting.time)
+                      : false
+                  }
+                  isNotReadedFirstMessage={
+                    firstNotReadedMessage && !isReceivedSocketData ? firstNotReadedMessage.id === message.id : false
+                  }
+                  isMyChat={isMyChat}
+                />
+              );
+            })}
+          </div>
         </div>
-      </NativeLink>
-      <div className='p-4 pb-[60px] bg-bg-blue overflow-y-scroll relative' ref={messageRef}>
-        <div ref={topMessageRef} />
 
-        {isOpenPopup && <ChatPopup onClose={() => setIsOpenPopup(false)} />}
-
-        <div>
-          {filteredBlockedMessage.map((message, index) => {
-            const previousChatting = messagesData.messages[index - 1];
-            const isMyChat = user?.id === message.user_id;
-            const nextChatting = messagesData.messages[index + 1];
-            const isSameUserLastChat = nextChatting
-              ? nextChatting.user_id !== message.user_id || !isSameMinutes(message.time, nextChatting.time)
-              : true;
-
-            return (
-              <Message
-                key={message.id}
-                updateReadMessage={updateReadMessage}
-                message={message}
-                image={message.user_id === chat?.guest_id ? chat.guest.image : chat?.user.image}
-                isSameUserLastChat={isSameUserLastChat}
-                isSameDate={previousChatting ? isSameDay(message.time, previousChatting.time) : false}
-                isSameMinutes={
-                  Boolean(nextChatting) && nextChatting && nextChatting.user_id === message.user_id
-                    ? isSameDay(message.time, nextChatting.time) && isSameMinutes(message.time, nextChatting.time)
-                    : false
-                }
-                isNotReadedFirstMessage={
-                  firstNotReadedMessage && !isReceivedSocketData ? firstNotReadedMessage.id === message.id : false
-                }
-                isMyChat={isMyChat}
-              />
-            );
-          })}
-        </div>
+        <form
+          className='fixed bottom-0 w-full container flex gap-x-2 px-4 pt-2 pb-7 bg-bg-blue'
+          onSubmit={onSubmitChat}
+        >
+          <input
+            type='text'
+            placeholder='메시지 보내기'
+            className='w-full py-2 px-3 rounded-xl text-sm'
+            value={text}
+            onChange={({ target }) => setText(target.value)}
+          />
+          <button className='w-[30px] flex justify-center items-center' type='submit'>
+            <MdSend className={`w-[20px] h-[20px] ${text ? 'text-text-3' : 'opacity-20'}`} />
+          </button>
+        </form>
       </div>
-
-      <form className='fixed bottom-0 w-full p-2 px-3 pb-7 flex bg-bg-blue' onSubmit={onSubmitChat}>
-        <input
-          type='text'
-          placeholder='메시지 보내기'
-          className='w-full ml-1 py-2 px-3 rounded-xl text-sm'
-          value={text}
-          onChange={({ target }) => setText(target.value)}
-        />
-        <button className='w-[30px] flex justify-center items-center' type='submit'>
-          <MdSend className={`w-[20px] h-[20px] ${text ? 'text-text-3' : 'opacity-20'}`} />
-        </button>
-      </form>
-
       <BottomSheet isOpen={isOpenBottomSheet} onClose={() => setIsOpenBottomSheet(false)}>
         <NativeLink
           href={`/report?id=${chat?.author_id === user?.id ? chat?.guest_id : chat?.author_id}`}
@@ -404,7 +410,10 @@ const Message = React.memo(
       const date = new Date(currentTime);
       const hour = date.getHours();
       const minutes = date.getMinutes();
-      return `${hour >= 12 ? `오후 ${hour - 12}` : `오전 ${hour}`}:${minutes <= 9 ? `0${minutes}` : minutes}`;
+
+      return `${hour >= 12 ? `오후 ${hour - 12 === 0 ? '12' : hour - 12}` : `오전 ${hour}`}:${
+        minutes <= 9 ? `0${minutes}` : minutes
+      }`;
     };
 
     const getFullYear = (time: string) => {
@@ -463,8 +472,8 @@ const Message = React.memo(
             )}
             <div className={`relative `}>
               <p
-                className={`p-[6px_12px] h-auto rounded-xl text-sm self-start max-w-[200px] mx-2 ${
-                  isMyChat ? 'bg-main-2 text-white-1' : 'bg-white-1'
+                className={`p-[6px_12px] h-auto rounded-[10px] text-sm self-start max-w-[200px] mx-2 ${
+                  isMyChat ? 'bg-main-2 text-white' : 'bg-white-1 text-text-1'
                 }`}
               >
                 {message.text}
