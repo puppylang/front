@@ -1,9 +1,9 @@
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
 import { cookies } from 'next/headers';
 
-import { fetcherWithSSRToken } from '@/utils/request';
 import { CHATS_QUERY_KEY } from '@/services/chat';
 import { ChatWritterType } from '@/types/chat';
+import { fetcherWithSSRToken } from '@/utils/request';
 
 import Chat from './chat';
 
