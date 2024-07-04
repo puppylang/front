@@ -36,7 +36,7 @@ function FormString({
         )}
       </div>
       <input
-        className={`px-[14px] py-[10px] rounded-[15px] block border border-gray-3 w-full text-[14px] ${
+        className={`px-[14px] py-[10px] rounded-[10px] block border border-gray-3 w-full text-[14px] ${
           isErrorState && 'border-red-500'
         }`}
         type='text'
@@ -78,7 +78,7 @@ function FormNumber({
         <p>{title}</p>
       </div>
       <input
-        className={`px-[14px] py-[10px] rounded-[15px] block border border-gray-3 w-full text-[14px] ${
+        className={`px-[14px] py-[10px] rounded-[10px] block border border-gray-3 w-full text-[14px] ${
           isErrorState && 'border-red-500'
         }`}
         inputMode='numeric'
@@ -236,7 +236,7 @@ function FormTextarea({
         onKeyUp={onKeyUpTextarea}
         value={value}
         onChange={({ currentTarget }) => onChange(currentTarget.value)}
-        className={`resize-none overflow-hidden w-full border border-gray-3 rounded-[15px] px-[14px] py-[10px] text-[14px] h-[80px] outline-none focus:outline-none ${
+        className={`resize-none overflow-hidden w-full border border-gray-3 rounded-[10px] px-[14px] py-[10px] text-[14px] text-text-1 h-[80px] outline-none focus:outline-none ${
           isErrorState && 'border-red-500'
         }`}
         {...props}

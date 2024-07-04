@@ -111,107 +111,111 @@ export default function Edit() {
   }, [userMutation.isSuccess, router]);
 
   return (
-    <section className='container h-screen'>
-      <HeaderNavigation.Container>
-        <HeaderNavigation.Title text='회원정보수정' />
-      </HeaderNavigation.Container>
-      <form className='h-full min-h-screen bg-white-1 py-4 pb-14' onSubmit={onSubmitForm}>
-        {userMutation.isPending && <Loading />}
-        <div className='px-4'>
-          <div className='flex justify-center items-center py-5'>
-            <ImageUpload defaultURL={formState.image || undefined} onChangeFileInput={onChangeFileInput} />
+    <section className='flex flex-col items-center min-h-[100vh]'>
+      <div className='container'>
+        <HeaderNavigation.Container>
+          <HeaderNavigation.Title text='회원정보수정' />
+        </HeaderNavigation.Container>
+        <form className='h-full min-h-screen bg-white-1 py-4 pb-14' onSubmit={onSubmitForm}>
+          {userMutation.isPending && <Loading />}
+          <div className='px-4'>
+            <div className='flex justify-center items-center py-5'>
+              <ImageUpload defaultURL={formState.image || undefined} onChangeFileInput={onChangeFileInput} />
+            </div>
+
+            <div className='flex flex-col gap-y-4'>
+              <div className='flex flex-col gap-y-2'>
+                <div className='text-[12px] text-text-3'>
+                  <label htmlFor='name'>이름</label>
+                </div>
+                <input
+                  type='text'
+                  id='name'
+                  value={formState.name}
+                  onKeyDown={() => setIsNameChanging(true)}
+                  onBlur={() => setIsNameChanging(false)}
+                  onChange={({ currentTarget }) => setFormState(prev => ({ ...prev, name: currentTarget.value }))}
+                  className='px-[14px] py-[10px] rounded-[10px] block border border-gray-2 w-full text-[14px] text-text-1'
+                />
+                {isNameChanging && isInvalidName && (
+                  <p className='text-red-400 text-xs mt-1'>다른 사람이 사용하고 있어요.</p>
+                )}
+              </div>
+              <div className='flex flex-col gap-y-2'>
+                <div className='text-[12px] text-text-3'>
+                  <label htmlFor='birthday'>생년월일</label>
+                </div>
+                <input
+                  inputMode='numeric'
+                  placeholder='0000.00.00'
+                  id='birthday'
+                  maxLength={10}
+                  onChange={onChangeBirthdayInput}
+                  value={formState.birthday || ''}
+                  className='px-[14px] py-[10px] rounded-[10px] block border border-gray-2 w-full text-[14px] text-text-1 '
+                />
+              </div>
+              <div className='flex flex-col gap-y-2'>
+                <div className='text-[12px] text-text-3'>
+                  <label htmlFor='weight'>성별</label>
+                </div>
+                <div className='grid grid-cols-2 gap-5'>
+                  <input
+                    onChange={() => setFormState(prev => ({ ...prev, gender: Gender.Male }))}
+                    type='radio'
+                    value={Gender.Male}
+                    id='male'
+                    name='gender'
+                    className='hidden'
+                  />
+                  <label
+                    htmlFor='male'
+                    className={`${
+                      formState.gender === Gender.Male ? 'bg-main-2 text-white-1' : 'bg-gray-3 text-text-2'
+                    } block text-center text-[14px] py-4 rounded-3xl`}
+                  >
+                    남자
+                  </label>
+                  <input
+                    onChange={() => setFormState(prev => ({ ...prev, gender: Gender.Female }))}
+                    type='radio'
+                    id='female'
+                    name='gender'
+                    className='hidden'
+                    value={Gender.Female}
+                  />
+                  <label
+                    htmlFor='female'
+                    className={`${
+                      formState.gender === Gender.Female ? 'bg-main-2 text-white-1' : 'bg-gray-3 text-text-2'
+                    } text-center text-[14px] py-4 rounded-3xl`}
+                  >
+                    여자
+                  </label>
+                </div>
+              </div>
+              <div className='flex flex-col gap-y-2'>
+                <div className='text-[12px] text-text-3'>
+                  <label htmlFor='weight'>자기소개</label>
+                </div>
+                <textarea
+                  onKeyUp={onKeyUpTextarea}
+                  id='character'
+                  value={formState.character || ''}
+                  onChange={({ target }) => setFormState(prev => ({ ...prev, character: target.value }))}
+                  className='resize-none overflow-hidden w-full border border-gray-2 rounded-[10px] px-[14px] py-[10px] text-[14px] text-text-1 h-[80px] outline-main-2'
+                />
+              </div>
+            </div>
           </div>
 
-          <div className='mb-6'>
-            <div className='text-[12px] mb-1 text-text-3'>
-              <label htmlFor='name'>이름</label>
-            </div>
-            <input
-              type='text'
-              id='name'
-              value={formState.name}
-              onKeyDown={() => setIsNameChanging(true)}
-              onBlur={() => setIsNameChanging(false)}
-              onChange={({ currentTarget }) => setFormState(prev => ({ ...prev, name: currentTarget.value }))}
-              className='px-[14px] py-[10px] rounded-[15px] block border border-gray-3 w-full text-[14px]'
-            />
-            {isNameChanging && isInvalidName && (
-              <p className='text-red-400 text-xs mt-1'>다른 사람이 사용하고 있어요.</p>
-            )}
+          <div className='fixed left-[50%] bottom-0 translate-x-[-50%] w-full bg-white container p-4'>
+            <button type='submit' className='w-full py-2 rounded-[10px] bg-main-1 text-white'>
+              수정
+            </button>
           </div>
-          <div className='mb-6'>
-            <div className='text-[12px] mb-1 text-text-3'>
-              <label htmlFor='birthday'>생년월일</label>
-            </div>
-            <input
-              inputMode='numeric'
-              placeholder='0000.00.00'
-              id='birthday'
-              maxLength={10}
-              onChange={onChangeBirthdayInput}
-              value={formState.birthday || ''}
-              className='px-[14px] py-[10px] rounded-[15px] block border border-gray-3 w-full text-[14px]'
-            />
-          </div>
-          <div className='mb-6'>
-            <div className='text-[12px] mb-1 text-text-3'>
-              <label htmlFor='weight'>성별</label>
-            </div>
-            <div className='grid grid-cols-2 gap-5'>
-              <input
-                onChange={() => setFormState(prev => ({ ...prev, gender: Gender.Male }))}
-                type='radio'
-                value={Gender.Male}
-                id='male'
-                name='gender'
-                className='hidden'
-              />
-              <label
-                htmlFor='male'
-                className={`${
-                  formState.gender === Gender.Male ? 'bg-main-2 text-white-1' : 'bg-gray-3 text-text-2'
-                } block text-center text-[14px] py-4 rounded-3xl`}
-              >
-                남자
-              </label>
-              <input
-                onChange={() => setFormState(prev => ({ ...prev, gender: Gender.Female }))}
-                type='radio'
-                id='female'
-                name='gender'
-                className='hidden'
-                value={Gender.Female}
-              />
-              <label
-                htmlFor='female'
-                className={`${
-                  formState.gender === Gender.Female ? 'bg-main-2 text-white-1' : 'bg-gray-3 text-text-2'
-                } text-center text-[14px] py-4 rounded-3xl`}
-              >
-                여자
-              </label>
-            </div>
-          </div>
-          <div className='mb-6'>
-            <div className='text-[12px] mb-1 text-text-3'>
-              <label htmlFor='weight'>자기소개</label>
-            </div>
-            <textarea
-              onKeyUp={onKeyUpTextarea}
-              id='character'
-              value={formState.character || ''}
-              onChange={({ target }) => setFormState(prev => ({ ...prev, character: target.value }))}
-              className='resize-none overflow-hidden w-full border border-gray-3 rounded-[15px] px-[14px] py-[10px] text-[14px] h-[80px] outline-main-2'
-            />
-          </div>
-        </div>
-
-        <div className='fixed bottom-0 w-full bg-white-1'>
-          <button type='submit' className='w-full bg-main-1 text-white-1 pt-3 pb-7 text-lg '>
-            수정
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </section>
   );
 }

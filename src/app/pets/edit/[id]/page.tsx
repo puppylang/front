@@ -129,120 +129,125 @@ export default function EditPet({ params: { id } }: DynamicRouteParams) {
   }, [petUpdateMutation.isSuccess]);
 
   return (
-    <section className='w-screen bg-white-1'>
-      {(petDeleteMutaion.isPending || petUpdateMutation.isPending) && <Loading />}
-      <div className='h-32 bg-main-4 text-text-3 font-semibold flex justify-center items-center'>
-        <p>반려견을 등록해 주세요!</p>
-      </div>
-      <form onSubmit={onSubmitPetForm}>
-        <div className='px-6 pb-16'>
-          <div className='flex justify-center items-center py-5'>
-            <ImageUpload defaultURL={formState.image} onChangeFileInput={onChangeFileInput} />
+    <section className='flex flex-col items-center'>
+      <div className='container'>
+        {(petDeleteMutaion.isPending || petUpdateMutation.isPending) && <Loading />}
+        <div className='h-32 bg-main-4 text-text-3 flex justify-center items-center'>
+          <p className='font-Jalnan tracking-wide'>반려견을 수정해 주세요!</p>
+        </div>
+        <form onSubmit={onSubmitPetForm} className='p-4 bg-white'>
+          <div className='pb-16'>
+            <div className='flex justify-center items-center py-5'>
+              <ImageUpload defaultURL={formState.image} onChangeFileInput={onChangeFileInput} />
+            </div>
+
+            <Form.String
+              isRequired
+              title='이름'
+              onChange={value => setFormState(prev => ({ ...prev, name: value }))}
+              value={formState.name || ''}
+              minLength={2}
+              maxLength={10}
+              errorText='이름 2~10글자를 입력해 주세요.'
+            />
+
+            <Form.Title title='견종' isRequired>
+              <button
+                type='button'
+                onClick={() => setIsOpenPopup(true)}
+                className='flex items-center border border-gray-3 px-[14px] py-[10px] text-[13px] rounded-[15px] w-full'
+              >
+                <IoSearch color='#E5E5E5' />
+                {!formState.breed && <p className='pl-[6px] text-[#9BA3AF]'>견종 선택하기</p>}
+                {formState.breed && <p className='pl-[6px] text-text-1'>{formState.breed}</p>}
+              </button>
+            </Form.Title>
+
+            <Popup.Container className='h-full' isOpen={isOpenPopup}>
+              <Popup.CloseButton
+                onClose={() => setIsOpenPopup(false)}
+                className='border-b-0 text-center justify-center'
+              >
+                <p className='text-center text-text-2 text-sm'>견종 선택하기</p>
+              </Popup.CloseButton>
+              <Breed
+                onClick={value => {
+                  setIsOpenPopup(false);
+                  setFormState(prev => ({ ...prev, breed: value.replaceAll('_', '') as DogBreed }));
+                }}
+              />
+            </Popup.Container>
+
+            <Form.Number
+              isRequired
+              title='몸무게'
+              value={formState.weight ? String(formState.weight) : ''}
+              onChange={({ target }) => setFormState(prev => ({ ...prev, weight: Number(target.value) }))}
+              placeholder='00kg'
+              maxLength={4}
+            />
+
+            <Form.Number
+              isRequired
+              title='생년월일'
+              value={formState.birthday || ''}
+              onChange={onChangeBirthdayInput}
+              placeholder='0000-00-00'
+              maxLength={10}
+              minLength={10}
+              errorText='생년월일을 8글자를 입력해 주세요.'
+            />
+
+            <Form.Radio
+              title='성별'
+              onChange={value => setFormState(prev => ({ ...prev, gender: value as Gender }))}
+              firstInput={{ value: Gender.Male, id: 'male', title: '남아' }}
+              secondInput={{ value: Gender.Female, id: 'female', title: '여아' }}
+              activedValue={formState.gender || ''}
+            />
+
+            <Form.Radio
+              title='중성화 여부'
+              onChange={value => setFormState(prev => ({ ...prev, is_newtralize: value === Neuter.Neuter }))}
+              firstInput={{ value: Neuter.Neuter, id: Neuter.Neuter, title: '예' }}
+              secondInput={{ value: Neuter.NotNeuter, id: Neuter.NotNeuter, title: '아니오' }}
+              activedValue={
+                // eslint-disable-next-line
+                formState.is_newtralize ? Neuter.Neuter : formState.is_newtralize === false ? Neuter.NotNeuter : ''
+              }
+            />
+
+            <Form.Textarea
+              title='특징'
+              value={formState.character || ''}
+              onChange={value => setFormState(prev => ({ ...prev, character: value }))}
+            />
           </div>
 
-          <Form.String
-            isRequired
-            title='이름'
-            onChange={value => setFormState(prev => ({ ...prev, name: value }))}
-            value={formState.name || ''}
-            minLength={2}
-            maxLength={10}
-            errorText='이름 2~10글자를 입력해 주세요.'
-          />
-
-          <Form.Title title='견종' isRequired>
+          <div className='fixed left-[50%] bottom-0 translate-x-[-50%] w-full bg-white container p-4 border-t text-sm flex gap-x-2'>
             <button
               type='button'
-              onClick={() => setIsOpenPopup(true)}
-              className='flex items-center border border-gray-3 px-[14px] py-[10px] text-[13px] rounded-[15px] w-full'
+              className='w-full  text-main-1 py-2 rounded-[10px] border border-main-1'
+              onClick={() => setIsAlertOpen(true)}
             >
-              <IoSearch color='#E5E5E5' />
-              {!formState.breed && <p className='pl-[6px] text-[#9BA3AF]'>견종 선택하기</p>}
-              {formState.breed && <p className='pl-[6px] text-text-1'>{formState.breed}</p>}
+              삭제
             </button>
-          </Form.Title>
-
-          <Popup.Container className='h-full' isOpen={isOpenPopup}>
-            <Popup.CloseButton onClose={() => setIsOpenPopup(false)} className='border-b-0 text-center justify-center'>
-              <p className='text-center font-bold'>견종 선택하기</p>
-            </Popup.CloseButton>
-            <Breed
-              onClick={value => {
-                setIsOpenPopup(false);
-                setFormState(prev => ({ ...prev, breed: value.replaceAll('_', '') as DogBreed }));
-              }}
-            />
-          </Popup.Container>
-
-          <Form.Number
-            isRequired
-            title='몸무게'
-            value={formState.weight ? String(formState.weight) : ''}
-            onChange={({ target }) => setFormState(prev => ({ ...prev, weight: Number(target.value) }))}
-            placeholder='00kg'
-            maxLength={4}
+            <button
+              type='submit'
+              className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white py-2 rounded-[10px]`}
+              disabled={isInvalidForm}
+            >
+              수정
+            </button>
+          </div>
+          <Alert
+            isOpen={isAlertOpen}
+            message='반려견 정보를 삭제할 경우 모든 산책 기록은 삭제됩니다. 삭제하시겠습니까?'
+            onClose={() => setIsAlertOpen(false)}
+            onClick={onClickPetDeleteBtn}
           />
-
-          <Form.Number
-            isRequired
-            title='생년월일'
-            value={formState.birthday || ''}
-            onChange={onChangeBirthdayInput}
-            placeholder='0000-00-00'
-            maxLength={10}
-            minLength={10}
-            errorText='생년월일을 8글자를 입력해 주세요.'
-          />
-
-          <Form.Radio
-            title='성별'
-            onChange={value => setFormState(prev => ({ ...prev, gender: value as Gender }))}
-            firstInput={{ value: Gender.Male, id: 'male', title: '남아' }}
-            secondInput={{ value: Gender.Female, id: 'female', title: '여아' }}
-            activedValue={formState.gender || ''}
-          />
-
-          <Form.Radio
-            title='중성화 여부'
-            onChange={value => setFormState(prev => ({ ...prev, is_newtralize: value === Neuter.Neuter }))}
-            firstInput={{ value: Neuter.Neuter, id: Neuter.Neuter, title: '예' }}
-            secondInput={{ value: Neuter.NotNeuter, id: Neuter.NotNeuter, title: '아니오' }}
-            activedValue={
-              // eslint-disable-next-line
-              formState.is_newtralize ? Neuter.Neuter : formState.is_newtralize === false ? Neuter.NotNeuter : ''
-            }
-          />
-
-          <Form.Textarea
-            title='특징'
-            value={formState.character || ''}
-            onChange={value => setFormState(prev => ({ ...prev, character: value }))}
-          />
-        </div>
-
-        <div className='fixed bottom-0 w-full bg-white-1 pb-7 grid grid-cols-2 gap-2 px-4 pt-3 border-t text-sm'>
-          <button
-            type='button'
-            className='w-full text-white-1 bg-red-400 py-[9px] rounded-[7px]'
-            onClick={() => setIsAlertOpen(true)}
-          >
-            삭제
-          </button>
-          <button
-            type='submit'
-            className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white-1 py-[9px] rounded-[7px]`}
-            disabled={isInvalidForm}
-          >
-            수정
-          </button>
-        </div>
-        <Alert
-          isOpen={isAlertOpen}
-          message='반려견 정보를 삭제할 경우 모든 산책 기록은 삭제됩니다. 삭제하시겠습니까?'
-          onClose={() => setIsAlertOpen(false)}
-          onClick={onClickPetDeleteBtn}
-        />
-      </form>
+        </form>
+      </div>
     </section>
   );
 }

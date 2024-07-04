@@ -20,9 +20,9 @@ export default function Chat() {
   const { data: chatRooms, isLoading } = useChatsQuery(selectedType);
 
   return (
-    <>
-      <section className='container'>
-        <ul className='grid grid-cols-2 w-full'>
+    <section className='flex flex-col items-center'>
+      <div className='container'>
+        <ul className='tab grid grid-cols-2 w-full bg-white'>
           <li
             className={`${
               selectedType === ChatWritterType.Author ? 'border-b-text-1 text-text-1' : ' border-b-gray-2 text-text-2'
@@ -51,28 +51,30 @@ export default function Chat() {
           </li>
         </ul>
         {chatRooms && !isLoading && (
-          <ul className={`pb-[${BOTTOM_NAVIGATION_HEIGHT}px]`}>
+          <ul className={`pb-[${BOTTOM_NAVIGATION_HEIGHT}px] mt-2`}>
             {chatRooms.map(chatRoom => (
               <ChatRoomList key={chatRoom.id} chatRoom={chatRoom} type={selectedType} />
             ))}
           </ul>
         )}
+
         {isLoading && !chatRooms && (
-          <>
+          <div className='pt-2'>
             <ChatSkelectonUI />
             <ChatSkelectonUI />
             <ChatSkelectonUI />
             <ChatSkelectonUI />
-          </>
+          </div>
         )}
-      </section>
-      {!isLoading && chatRooms && chatRooms.length === 0 && (
-        <PuppyError.Container>
-          <PuppyError.Title title='대화방이 존재 하지 않아요.' />
-          <PuppyError.Desc text='산책을 해주는 펫시터와 대화해 보세요.' />
-        </PuppyError.Container>
-      )}
-    </>
+
+        {!isLoading && chatRooms && chatRooms.length === 0 && (
+          <PuppyError.Container className='min-h-[calc(100vh-68px)]'>
+            <PuppyError.Title title='대화방이 존재 하지 않아요.' className='text-text-2' />
+            <PuppyError.Desc text='산책을 해주는 펫시터와 대화해 보세요!' />
+          </PuppyError.Container>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -84,35 +86,35 @@ interface ChatRoomListProps {
 function ChatRoomList({ chatRoom, type }: ChatRoomListProps) {
   const { post, user, guest, post_id, id, lastMessage } = chatRoom;
 
-  const userImage = type === 'AUTHOR' ? guest.image : user.image;
+  const userImage = type === ChatWritterType.Author ? guest.image : user.image;
 
   return (
     <li>
-      <NativeLink
-        className='grid grid-cols-[90px_1fr] p-4'
-        href={`/chat/${id}?postId=${post_id}`}
-        type={RouterMethod.Push}
-      >
-        <div className='relative flex justify-end'>
+      <NativeLink className='flex flex-row gap-x-4 p-4' href={`/chat/${id}?postId=${post_id}`} type={RouterMethod.Push}>
+        <div className='w-[50px]'>
           <Profile.User
             image={userImage || ''}
-            imageClassName='absolute top-[-10px] left-0'
-            defaultUserDivClassName='absolute top-[-10px] left-0'
+            imageClassName='!w-[50px] !h-[50px]'
+            defaultUserDivClassName='!w-[50px] !h-[50px]'
           />
-          <Profile.Pet pet={post.pet} height={60} width={60} className='z-10 !bg-gray-200 w-[60px]' />
         </div>
-        <div className='flex flex-col justify-center pr-2 pl-4'>
-          <div className='flex items-center'>
-            <p className='mr-1 text-text-1'>{type === ChatWritterType.Author ? guest.name : user.name}</p>
-            <p className='text-xs text-gray-400 mr-1'>{post.preferred_walk_location}</p>
-            {lastMessage && <p className='text-xs text-gray-400'>{formatDiffTime(lastMessage.time)} 전</p>}
+
+        <div className='flex flex-col justify-center w-[calc(100%-76px)]'>
+          <div className='flex items-center justify-between mb-2'>
+            <div className='flex gap-x-1 items-center'>
+              <p className='text-text-1 text-sm'>{type === ChatWritterType.Author ? guest.name : user.name}</p>
+              <p className='text-[12px] text-text-2'>{post.preferred_walk_location}</p>
+            </div>
+            {lastMessage && <p className='text-[12px] text-text-2'>{formatDiffTime(lastMessage.time)} 전</p>}
           </div>
-          <div className='flex relative items-center'>
-            <p className='text-sm text-gray-600 text-ellipsis line-clamp-1 min-h-5 pr-4'>
+
+          <div className='flex relative items-center w-full justify-between'>
+            <p className='text-[12px] text-text-2 font-medium text-ellipsis line-clamp-1 w-[calc(100%-36px)] min-h-5'>
               {lastMessage && lastMessage.text}
             </p>
+
             {chatRoom.notReadedMessageCount > 0 && (
-              <p className='absolute w-[24px] h-[24px] right-0 text-xs flex justify-center items-center bg-main-1 text-white-1 rounded-full'>
+              <p className='w-[20px] h-[20px] text-xs flex justify-center items-center bg-main-1 text-white-1 rounded-full'>
                 {chatRoom.notReadedMessageCount}
               </p>
             )}

@@ -60,11 +60,11 @@ function UserSubmittedPosts() {
 
   return (
     <section id='submitted-posts' className='flex flex-col items-center'>
-      <HeaderNavigation.Container>
-        <HeaderNavigation.Title text='산책 신청목록' />
-      </HeaderNavigation.Container>
-
       <div className='container'>
+        <HeaderNavigation.Container>
+          <HeaderNavigation.Title text='산책 신청목록' />
+        </HeaderNavigation.Container>
+
         <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>산책 신청목록</h1>
 
         <div className='post-list p-4'>

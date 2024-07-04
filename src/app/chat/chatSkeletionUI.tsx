@@ -11,16 +11,12 @@ export function TabSkelectonUI() {
 
 export function ChatSkelectonUI() {
   return (
-    <div>
-      <div className='animate-pulse grid grid-cols-[90px_1fr] h-20 p-2'>
-        <div className='relative'>
-          <div className='absolute rounded-full top-0 left-2 w-[2.3rem] h-[2.3rem] bg-gray-200' />
-          <div className='rounded-full bg-gray-200 absolute right-4 bottom-0 p-2 w-[50px] h-[50px]' />
-        </div>
-        <div className='flex flex-col px-2 justify-center'>
-          <div className='w-[40%] h-5 bg-gray-200 mb-1' />
-          <div className='w-[60%] h-5 bg-gray-200' />
-        </div>
+    <div className='animate-pulse flex flex-row gap-x-4 h-20 p-4'>
+      <div className='rounded-full bg-gray-200 w-[50px] h-[50px]' />
+
+      <div className='flex flex-col gap-y-2 justify-center w-[calc(100%-66px)]'>
+        <div className='w-[60%] h-5 bg-gray-200 rounded-[4px]' />
+        <div className='w-[80%] h-5 bg-gray-200 rounded-[4px]' />
       </div>
     </div>
   );
