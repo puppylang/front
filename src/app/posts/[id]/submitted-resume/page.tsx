@@ -239,7 +239,7 @@ function SubmittedResumeUI({ id }: { id: string }) {
       </div>
     </>
   ) : (
-    <PuppyError.Container>
+    <PuppyError.Container className='h-[100vh]'>
       <PuppyError.Title title='접근 권한이 없습니다.' />
       <PuppyError.Desc text='글을 작성한 사람만 지원서를 확인할 수 있어요!' />
     </PuppyError.Container>
