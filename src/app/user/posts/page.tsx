@@ -11,10 +11,10 @@ function UserPosts() {
 
   return (
     <section id='user-post' className='flex flex-col items-center '>
-      <HeaderNavigation.Container>
-        <HeaderNavigation.Title text='내 게시글' />
-      </HeaderNavigation.Container>
       <div className='container'>
+        <HeaderNavigation.Container>
+          <HeaderNavigation.Title text='내 게시글' />
+        </HeaderNavigation.Container>
         <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>내 게시글</h1>
 
         {user ? <UserPostList authorId={user.id} /> : <Loading />}
