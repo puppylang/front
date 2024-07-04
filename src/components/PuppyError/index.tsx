@@ -1,23 +1,14 @@
 'use client';
 
-import Image from 'next/image';
 import { ReactNode } from 'react';
-
-import Empty_chat from '../../../public/empty_chat.png';
 
 interface PuppyErrorContainerProps {
   children: ReactNode;
   className?: string;
-  imgClassName?: string;
 }
 
-function PuppyErrorContainer({ children, className = '', imgClassName = '' }: PuppyErrorContainerProps) {
-  return (
-    <div className={`pt-24 flex flex-col items-center px-12 text-text-1 ${className}`}>
-      <Image src={Empty_chat} alt='jump cogi' width={150} height={100} className={`${imgClassName}`} />
-      {children}
-    </div>
-  );
+function PuppyErrorContainer({ children, className = '' }: PuppyErrorContainerProps) {
+  return <div className={`flex flex-col items-center justify-center px-4 text-text-1 ${className}`}>{children}</div>;
 }
 
 function PuppyErrorTitle({ title, className = '' }: { title: string; className?: string }) {
