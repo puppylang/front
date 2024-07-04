@@ -41,7 +41,7 @@ export function BottomSheet({ isOpen, children, onClose, className }: BottomShee
       <section
         ref={nodeRef}
         aria-hidden='true'
-        className='fixed w-screen h-screen top-0 z-50 bg-[rgba(0,0,0,0.5)]'
+        className='fixed w-screen h-screen top-0 z-50 backdrop-blur-[1.2px] bg-[#23232310]'
         onClick={onClickOverlayElement}
       >
         <div
