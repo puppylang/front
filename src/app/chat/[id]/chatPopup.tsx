@@ -6,7 +6,7 @@ interface ChatPopupProps {
 
 export default function ChatPopup({ onClose }: ChatPopupProps) {
   return (
-    <div className=' w-full absolute z-[100] left-[50%] translate-x-[-50%] '>
+    <div className=' w-full absolute z-[50] left-[50%] translate-x-[-50%] '>
       <div className='bg-main-5 relative flex gap-x-2 items-start mx-4 px-4 py-2 rounded-[10px]'>
         <span className='flex justify-center mt-[2px]'>
           <IconErrorBoxBlue className='w-[16px] h-[16px]' />
