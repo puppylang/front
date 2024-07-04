@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import { getIsExistedUserName } from '@/services/user';
 
@@ -11,7 +11,6 @@ interface UserNameInputProps {
 
 export default function UserNameInput({ value, onChange, setIsInvalidName, currentUserName }: UserNameInputProps) {
   const [errorText, setErrorText] = useState('');
-
   const checkUserName = async (value: string) => {
     if (value.length <= 1 || value.length >= 11) {
       setErrorText('이름은 2~10자로 입력해주세요.');
@@ -35,6 +34,16 @@ export default function UserNameInput({ value, onChange, setIsInvalidName, curre
     setIsInvalidName(false);
     setErrorText('');
   };
+
+  useEffect(() => {
+    if (value.length >= 2 && value.length <= 10) {
+      setErrorText('');
+      setIsInvalidName(false);
+    } else {
+      setErrorText('이름은 2~10자로 입력해주세요.');
+      setIsInvalidName(true);
+    }
+  }, [value, onChange]);
 
   return (
     <div className='mb-6'>

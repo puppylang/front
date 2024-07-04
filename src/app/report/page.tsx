@@ -102,7 +102,7 @@ export default function Report() {
             </NativeLink>
 
             <button
-              type='button'
+              type='submit'
               className={`${!isValidForm && 'opacity-40'} py-2 flex-1 rounded-[10px] bg-main-1 text-white-1`}
               disabled={!isValidForm}
             >

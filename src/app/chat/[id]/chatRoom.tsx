@@ -18,6 +18,7 @@ import {
   OBJECTIONABLE_TEXT,
   SocketData,
 } from '@/types/chat';
+import { Gender } from '@/types/pet';
 import { Post } from '@/types/post';
 import { formatAge } from '@/utils/date';
 
@@ -30,6 +31,7 @@ import { Profile } from '@/components/Profile';
 import Toast, { ToastStatus } from '@/components/Toast';
 
 import ChatPopup from './chatPopup';
+import Message from './message';
 
 interface ChatRoomProps {
   id: string;
@@ -76,6 +78,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   const { data: post } = useQuery<Post>({
     queryKey: [MESSAGE_POST_KEY, postId],
     queryFn: () => getPostPetDetail(postId),
+    staleTime: 0,
   });
   const { data: chat } = useChatDetailQuery(id);
   const { data: user } = useUserQuery();
@@ -283,13 +286,15 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
           <div className='flex-[1_0_50px]'>
             {post && post.pet && <Profile.Pet className='!bg-bg-blue' pet={post.pet} width={50} height={50} />}
           </div>
+
           <div className='flex pl-4 w-full items-center'>
             <div className='w-full'>
-              <p className='text-base text-[#222222]'>{post?.title}</p>
-              <p className='text-sm text-[#666666] font-light'>
-                {post?.pet?.breed} | {post?.pet?.gender === 'Male' ? '수컷' : '암컷'} |
-                {post?.pet?.birthday ? formatAge(post.pet.birthday) : 0}
-              </p>
+              <p className='text-base text-text-1'>{post?.title}</p>
+              <div className='text-sm text-text-2'>
+                <span className='mr-1'>{post?.pet?.breed} |</span>
+                <span className='mr-1'>{post?.pet?.gender === Gender.Male ? '수컷' : '암컷'} |</span>
+                <span>{post?.pet?.birthday ? formatAge(post.pet.birthday) : 0}</span>
+              </div>
             </div>
             {post && <PostStatusBadge status={post?.status} className='text-sm flex-[1_0_80px]' />}
           </div>
@@ -379,119 +384,3 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
     </div>
   );
 }
-
-interface MessageProps {
-  isMyChat: boolean;
-  message: MessageType;
-  image?: string | null;
-  isSameDate: boolean;
-  isSameMinutes: boolean;
-  isSameUserLastChat: boolean;
-  isNotReadedFirstMessage: boolean;
-  updateReadMessage: (chatId: number) => void;
-}
-
-const KOREAN_DAY = ['일', '월', '화', '수', '목', '금', '토'];
-
-const Message = React.memo(
-  ({
-    message,
-    isMyChat,
-    updateReadMessage,
-    isSameDate,
-    image,
-    isSameMinutes,
-    isSameUserLastChat,
-    isNotReadedFirstMessage,
-  }: MessageProps) => {
-    const messageRef = useRef<HTMLDivElement>(null);
-
-    const getCurrentTime = (currentTime: string) => {
-      const date = new Date(currentTime);
-      const hour = date.getHours();
-      const minutes = date.getMinutes();
-
-      return `${hour >= 12 ? `오후 ${hour - 12 === 0 ? '12' : hour - 12}` : `오전 ${hour}`}:${
-        minutes <= 9 ? `0${minutes}` : minutes
-      }`;
-    };
-
-    const getFullYear = (time: string) => {
-      const chattingDate = new Date(time);
-      const year = chattingDate.getFullYear();
-      const month = chattingDate.getMonth() + 1;
-      const date = chattingDate.getDate();
-      const day = chattingDate.getDay();
-
-      return `${year}년 ${month}월 ${date}일 ${KOREAN_DAY[day]}요일`;
-    };
-
-    useEffect(() => {
-      if (!messageRef || !messageRef.current || message.is_read || isMyChat) return;
-      const observer = new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting && !message.is_read) {
-          (async () => {
-            updateReadMessage(message.id);
-          })();
-        }
-      });
-
-      observer.observe(messageRef.current);
-
-      return () => {
-        if (!messageRef || !messageRef.current) return;
-        observer.unobserve(messageRef.current);
-      };
-    }, []);
-
-    useEffect(() => {
-      if (!isNotReadedFirstMessage) return;
-      messageRef.current?.scrollIntoView({ block: 'center' });
-    }, []);
-
-    return (
-      <>
-        {isNotReadedFirstMessage && (
-          <span className='my-4 m-auto flex justify-center text-xs bg-gray-200 text-text-3 w-[130px] py-1 rounded-lg'>
-            여기까지 읽었습니다.
-          </span>
-        )}
-        {!isSameDate && <p className='text-xs text-text-2 text-center mb-4'>{getFullYear(message.time)}</p>}
-        <div className={`flex w-full mb-6 ${isMyChat && 'flex-row-reverse'}`} ref={messageRef}>
-          <NativeLink href={`/user/${message.user_id}`}>
-            <Profile.User
-              image={image || ''}
-              alt={message.user_id}
-              imageClassName='!w-[50px] !h-[50px]'
-              defaultUserDivClassName='!w-[50px] !h-[50px]'
-            />
-          </NativeLink>
-          <div className='flex self-end relative'>
-            {isMyChat && !isSameMinutes && isSameUserLastChat && (
-              <p className='text-[10px] self-end text-text-2'>{getCurrentTime(message.time)}</p>
-            )}
-            <div className={`relative `}>
-              <p
-                className={`p-[6px_12px] h-auto rounded-[10px] text-sm self-start max-w-[200px] mx-2 ${
-                  isMyChat ? 'bg-main-2 text-white' : 'bg-white-1 text-text-1'
-                }`}
-              >
-                {message.text}
-              </p>
-              {!message.is_read && (
-                <p className={`text-[10px] text-text-3 absolute ${isMyChat ? ' left-[-5px]' : 'right-[-5px]'} top-0`}>
-                  1
-                </p>
-              )}
-            </div>
-            {!isMyChat && !isSameMinutes && isSameUserLastChat && (
-              <p className='text-[10px] self-end text-text-2'>{getCurrentTime(message.time)}</p>
-            )}
-          </div>
-        </div>
-      </>
-    );
-  },
-);
-
-Message.displayName = 'Message';

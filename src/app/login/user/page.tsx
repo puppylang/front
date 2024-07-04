@@ -27,7 +27,7 @@ const DEFAULT_PET_FORM: UserEditForm = {
 
 export default function LoginUser() {
   const [formState, setFormState] = useState(DEFAULT_PET_FORM);
-  const [isInvalidName, setIsInvalidName] = useState(true);
+  const [isInvalidName, setIsInvalidName] = useState(false);
   const [isCheckedEULA, setIsCheckedEULA] = useState(false);
   const [isCheckedUserPolicy, setIsCheckedUserPolicy] = useState(false);
 
