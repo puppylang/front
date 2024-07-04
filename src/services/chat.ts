@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ChatRoomDetail, ChatRoom, ChatWritterType, CreateChatType, Message } from '@/types/chat';
 import { fetcherStatusWithToken, fetcherWithToken } from '@/utils/request';
 
-const CHATS_QUERY_KEY = '/chats';
+export const CHATS_QUERY_KEY = '/chats';
 const CHAT_QUERY_KEY = '/chat';
 const MESSAGE_QUERY_KEY = '/chat/message';
 const POST_QUERY_KEY = '/chat/post';
