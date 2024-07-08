@@ -18,7 +18,6 @@ export default function Chat() {
   const [selectedType, setSelectedType] = useState<ChatWritterType>(ChatWritterType.Author);
 
   const { data: chatRooms, isLoading } = useChatsQuery(selectedType);
-  console.log(chatRooms);
 
   return (
     <section className='flex flex-col items-center'>

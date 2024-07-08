@@ -44,11 +44,11 @@ export default function Region() {
     mutationFn: (region: string) => createRegion(region),
     mutationKey: [USER_REGION_QUERY_KEY],
     onSuccess: data => {
-      queryClient.setQueryData([ACTIVED_REGION_QUERY_KEY], (oldData: ActivedRegion | undefined) => {
-        return oldData ? { ...oldData, region_id: data.id } : data;
+      queryClient.setQueryData([ACTIVED_REGION_QUERY_KEY], () => {
+        return { ...data, region_id: data.id };
       });
 
-      return queryClient.setQueryData([USER_REGION_QUERY_KEY], (oldData: UserRegion[]) => {
+      queryClient.setQueryData([USER_REGION_QUERY_KEY], (oldData: UserRegion[]) => {
         return [...oldData, data];
       });
     },

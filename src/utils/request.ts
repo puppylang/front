@@ -22,6 +22,7 @@ export const fetcherWithToken = async <T>(queryKey: string, axiosConfig?: AxiosR
 
   const { data } = await axios<T>({
     ...axiosConfig,
+    withCredentials: true,
     url: `${requestURL}${queryKey}`,
     headers: {
       ...axiosConfig?.headers,
