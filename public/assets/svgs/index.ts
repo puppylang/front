@@ -11,7 +11,6 @@ import IconClose from './close.svg';
 import IconCurrentLocation from './current_location.svg';
 import IconDog from './dog.svg';
 import IconEdit from './edit.svg';
-import IconErrorBoxBlue from './error-box-blue.svg';
 import IConErrorBox from './error-box.svg';
 import IconErrorBoxBlue from './error-box-blue.svg';
 import IconHeartFill from './heart_fill.svg';
