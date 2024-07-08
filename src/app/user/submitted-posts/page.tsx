@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
+import PostListSkeletonUI from '@/components/SkeletonUI/PostListSkeletonUI';
 import { getUserSubmittedPosts } from '@/services/user';
 import { Post } from '@/types/post';
 
@@ -12,7 +13,7 @@ function UserSubmittedPosts() {
   const [submittedPosts, setSubmittedPsots] = useState<Post[]>([]);
   const [page, setPage] = useState(0);
   const [last, setLast] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [observeTarget, setObserveTarget] = useState<Element | null>(null);
 
   const fetchSubmittedPosts = useCallback(async () => {
@@ -36,7 +37,6 @@ function UserSubmittedPosts() {
   const onIntersect: IntersectionObserverCallback = useCallback(
     ([entry]) => {
       if (last || isFetching) return;
-
       if (entry.isIntersecting) {
         fetchSubmittedPosts();
       }
@@ -45,7 +45,7 @@ function UserSubmittedPosts() {
   );
 
   useEffect(() => {
-    if (!observeTarget) return;
+    if (!observeTarget || !submittedPosts.length) return;
 
     const observe: IntersectionObserver = new IntersectionObserver(onIntersect, {
       root: null,
@@ -58,6 +58,10 @@ function UserSubmittedPosts() {
     return () => observe.unobserve(observeTarget);
   }, [observeTarget, onIntersect]);
 
+  useEffect(() => {
+    fetchSubmittedPosts();
+  }, []);
+
   return (
     <section id='submitted-posts' className='flex flex-col items-center'>
       <div className='container'>
@@ -68,7 +72,9 @@ function UserSubmittedPosts() {
         <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>산책 신청목록</h1>
 
         <div className='post-list p-4'>
-          {submittedPosts.length ? (
+          {submittedPosts.length === 0 && isFetching && <PostListSkeletonUI />}
+
+          {submittedPosts.length !== 0 && (
             <>
               <PostSection.List
                 posts={submittedPosts}
@@ -79,7 +85,9 @@ function UserSubmittedPosts() {
                 <div className='list-none animate-pulse w-full h-[112px] bg-white rounded-[10px] shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]' />
               )}
             </>
-          ) : (
+          )}
+
+          {!isFetching && !submittedPosts.length && (
             <div className='flex justify-center items-center h-[500px]'>
               <p className='text-text-2'>산책을 신청한 내역이 없습니다.</p>
             </div>
