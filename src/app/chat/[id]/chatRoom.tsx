@@ -1,24 +1,35 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import Image from 'next/image';
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { MdSend } from 'react-icons/md';
 
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import { getMessages } from '@/services/chat';
+import useNativeRouter from '@/hooks/useNativeRouter';
+import { deleteChat, getMessages, useChatDetailQuery } from '@/services/chat';
 import { MESSAGE_POST_KEY, getPostPetDetail } from '@/services/post';
+import { useCancelBlockMutation, useCreateBlockMutation } from '@/services/report';
 import { useUserQuery } from '@/services/user';
-import { Message as MessageType, SocketData } from '@/types/chat';
+import {
+  CHAT_SERVER_URL,
+  ChatAlertStatus,
+  ChatAlertType,
+  Message as MessageType,
+  OBJECTIONABLE_TEXT,
+  SocketData,
+} from '@/types/chat';
 import { Post } from '@/types/post';
 import { formatAge } from '@/utils/date';
 
+import Alert from '@/components/Alert';
+import { BottomSheet, SheetButton } from '@/components/BottomSheet';
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
-import PetProfile from '@/components/PetProfile';
 import PostStatusBadge from '@/components/PostStatusBadge';
+import { Profile } from '@/components/Profile';
+import Toast, { ToastStatus } from '@/components/Toast';
 
-import { IconUserDefault } from '../../../../public/assets/svgs';
+import ChatPopup from './chatPopup';
 
 interface ChatRoomProps {
   id: string;
@@ -35,6 +46,18 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   const [text, setText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isReceivedSocketData, setIsReceivedSocketData] = useState(false);
+  const [isOpenBottomSheet, setIsOpenBottomSheet] = useState(false);
+  const [isOpenPopup, setIsOpenPopup] = useState(true);
+  const [alertDetail, setAlertDetail] = useState<ChatAlertType>({
+    description: '',
+    isOpen: false,
+    status: null,
+  });
+  const [toastDetail, setToastDetail] = useState({
+    isOpen: false,
+    status: '',
+    description: '',
+  });
   const [messagesData, setMessagesData] = useState<MessageData>({
     showsFirstMessage: false,
     showsLastMessage: false,
@@ -46,21 +69,49 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
   const topMessageRef = useRef<HTMLDivElement>(null);
 
   const isInTopMessageView = useIntersectionObserver(topMessageRef);
+  const createBlockMutation = useCreateBlockMutation();
+  const cancelBlockMutation = useCancelBlockMutation();
+  const router = useNativeRouter();
 
   const { data: post } = useQuery<Post>({
     queryKey: [MESSAGE_POST_KEY, postId],
     queryFn: () => getPostPetDetail(postId),
   });
+  const { data: chat } = useChatDetailQuery(id);
   const { data: user } = useUserQuery();
 
+  const otherUser = chat && chat.is_author ? chat.guest_id : chat?.author_id;
   const firstNotReadedMessage = messagesData.messages.find(message => message.user_id !== user?.id && !message.is_read);
+  const isBlockedUser = user && Boolean(user.blocker.find(blockedUser => blockedUser.blocked_id === otherUser));
 
   const onSubmitChat = (event: FormEvent) => {
     event.preventDefault();
     if (!text) return;
     if (!webSocket.current) return;
+    const objectionableText = OBJECTIONABLE_TEXT.find(content => text.includes(content));
+    if (objectionableText) {
+      setToastDetail({
+        isOpen: true,
+        description: '불쾌감을 주는 언어가 포함되어 있습니다.',
+        status: 'error',
+      });
+      return;
+    }
+
+    if (isBlockedUser) {
+      setToastDetail({
+        isOpen: true,
+        description: '차단한 유저에게 메시지를 보낼 수 없어요.',
+        status: 'error',
+      });
+      return;
+    }
+
     webSocket.current.send(
-      JSON.stringify({ type: 'MESSAGE', data: { text, chat_id: id, user_id: user?.id, user_image: user?.image } }),
+      JSON.stringify({
+        type: 'MESSAGE',
+        data: { text, chat_id: id, user, other_user_id: otherUser },
+      }),
     );
 
     setText('');
@@ -88,8 +139,73 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
     webSocket.current?.send(JSON.stringify({ type: 'READ', data: { id: messageId, chat_id: id, user_id: user?.id } }));
   };
 
+  const onClickAlertBlockBtn = () => {
+    if (!user || !otherUser) return;
+
+    createBlockMutation.mutate({
+      blockerId: user.id,
+      blockedId: otherUser,
+    });
+
+    setToastDetail({
+      isOpen: true,
+      description: '사용자가 차단되었어요.',
+      status: 'success',
+    });
+
+    setAlertDetail({
+      isOpen: false,
+      description: '',
+      status: null,
+    });
+  };
+
+  const onClickBottomSheetBlockBtn = () => {
+    if (!user || !otherUser) return;
+
+    setIsOpenBottomSheet(false);
+
+    if (isBlockedUser) {
+      cancelBlockMutation.mutate({
+        blockerId: user.id,
+        blockedId: otherUser,
+      });
+
+      setToastDetail({
+        isOpen: true,
+        description: '사용자가 차단이 해제되었어요.',
+        status: 'success',
+      });
+
+      return;
+    }
+
+    setAlertDetail({
+      isOpen: true,
+      status: ChatAlertStatus.Block,
+      description: '차단시 서로의 게시글 확인하거나 채팅을 할 수 없어요. 정말 차단하실래요?',
+    });
+  };
+
+  const onClickExitBtn = () => {
+    setAlertDetail({
+      isOpen: true,
+      status: ChatAlertStatus.Exit,
+      description: '채팅방을 나가면 채팅 목록 및 대화 내용이 삭제되고 복구할 수 없어요. 채팅방을 나가시겠어요?',
+    });
+  };
+
+  const onClickAlertExitBtn = async () => {
+    setIsLoading(true);
+    const { status } = await deleteChat(id);
+    if (status === 201) {
+      setIsLoading(false);
+      router.back();
+    }
+  };
+
   useEffect(() => {
-    webSocket.current = new WebSocket('ws://localhost:8000/chat/ws');
+    webSocket.current = new WebSocket(CHAT_SERVER_URL);
     if (!webSocket || !user) return;
     webSocket.current.onopen = () => {
       if (webSocket.current?.readyState === 1) {
@@ -152,12 +268,20 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
     });
   }, [messagesData.messages, user]);
 
+  const filteredBlockedMessage = messagesData.messages.filter(
+    message => message.user_id === user?.id || !message.is_blocked_other,
+  );
+
   return (
     <div className='relative h-screen flex flex-col'>
-      <HeaderNavigation.Container className='bg-bg-blue' />
+      <HeaderNavigation.Container className='!bg-bg-blue'>
+        <HeaderNavigation.Title text='채팅방' />
+        <HeaderNavigation.DotBtn onClick={() => setIsOpenBottomSheet(true)} />
+      </HeaderNavigation.Container>
+
       <NativeLink href={`/posts/${post?.id}`} className='flex px-4 py-3 border-b-[1px]'>
         <div className='flex-[1_0_50px]'>
-          {post && post.pet && <PetProfile className='!bg-gray-200' pet={post.pet} width={50} height={50} />}
+          {post && post.pet && <Profile.Pet className='!bg-bg-blue' pet={post.pet} width={50} height={50} />}
         </div>
         <div className='flex pl-4 w-full items-center'>
           <div className='w-full'>
@@ -170,11 +294,13 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
           {post && <PostStatusBadge status={post?.status} className='text-sm flex-[1_0_80px]' />}
         </div>
       </NativeLink>
-      <div className='p-4 pb-[60px] bg-bg-blue overflow-y-scroll' ref={messageRef}>
+      <div className='p-4 pb-[60px] bg-bg-blue overflow-y-scroll relative' ref={messageRef}>
         <div ref={topMessageRef} />
 
+        {isOpenPopup && <ChatPopup onClose={() => setIsOpenPopup(false)} />}
+
         <div>
-          {messagesData.messages.map((message, index) => {
+          {filteredBlockedMessage.map((message, index) => {
             const previousChatting = messagesData.messages[index - 1];
             const isMyChat = user?.id === message.user_id;
             const nextChatting = messagesData.messages[index + 1];
@@ -187,6 +313,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
                 key={message.id}
                 updateReadMessage={updateReadMessage}
                 message={message}
+                image={message.user_id === chat?.guest_id ? chat.guest.image : chat?.user.image}
                 isSameUserLastChat={isSameUserLastChat}
                 isSameDate={previousChatting ? isSameDay(message.time, previousChatting.time) : false}
                 isSameMinutes={
@@ -203,7 +330,8 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
           })}
         </div>
       </div>
-      <form className='fixed bottom-0 w-full p-2 h-[60px] py-3 flex bg-bg-blue' onSubmit={onSubmitChat}>
+
+      <form className='fixed bottom-0 w-full p-2 px-3 pb-7 flex bg-bg-blue' onSubmit={onSubmitChat}>
         <input
           type='text'
           placeholder='메시지 보내기'
@@ -215,6 +343,33 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
           <MdSend className={`w-[20px] h-[20px] ${text ? 'text-text-3' : 'opacity-20'}`} />
         </button>
       </form>
+
+      <BottomSheet isOpen={isOpenBottomSheet} onClose={() => setIsOpenBottomSheet(false)}>
+        <NativeLink
+          href={`/report?id=${chat?.author_id === user?.id ? chat?.guest_id : chat?.author_id}`}
+          className='py-[10px] text-main-1 border-b-[1px] text-center'
+        >
+          신고하기
+        </NativeLink>
+        <SheetButton onClick={onClickBottomSheetBlockBtn}>{isBlockedUser ? '차단 해체하기' : '차단하기'}</SheetButton>
+        <SheetButton onClick={onClickExitBtn}>채팅방 나가기</SheetButton>
+      </BottomSheet>
+
+      <Alert
+        buttonText={alertDetail.status === ChatAlertStatus.Block ? '차단하기' : '나가기'}
+        message={alertDetail.description}
+        isOpen={alertDetail.isOpen}
+        onClose={() => setAlertDetail({ isOpen: false, description: '', status: null })}
+        onClick={alertDetail.status === ChatAlertStatus.Block ? onClickAlertBlockBtn : onClickAlertExitBtn}
+      />
+
+      <Toast
+        status={toastDetail.status as ToastStatus}
+        onClose={() => setToastDetail(prev => ({ ...prev, isOpen: false }))}
+        isInvisible={toastDetail.isOpen}
+        position='CENTER'
+        description={toastDetail.description}
+      />
     </div>
   );
 }
@@ -222,6 +377,7 @@ export default function ChatRoom({ id, postId }: ChatRoomProps) {
 interface MessageProps {
   isMyChat: boolean;
   message: MessageType;
+  image?: string | null;
   isSameDate: boolean;
   isSameMinutes: boolean;
   isSameUserLastChat: boolean;
@@ -237,6 +393,7 @@ const Message = React.memo(
     isMyChat,
     updateReadMessage,
     isSameDate,
+    image,
     isSameMinutes,
     isSameUserLastChat,
     isNotReadedFirstMessage,
@@ -290,21 +447,16 @@ const Message = React.memo(
             여기까지 읽었습니다.
           </span>
         )}
-        {!isSameDate && <p className='text-xs text-text-2 text-center'>{getFullYear(message.time)}</p>}
-        <div className={`flex w-full mb-3 ${isMyChat && 'flex-row-reverse'}`} ref={messageRef}>
-          {message.user_image ? (
-            <Image
-              width={50}
-              height={50}
-              src={message.user_image}
-              alt='example'
-              className='rounded-full self-start w-[50px] h-[50px]'
+        {!isSameDate && <p className='text-xs text-text-2 text-center mb-4'>{getFullYear(message.time)}</p>}
+        <div className={`flex w-full mb-6 ${isMyChat && 'flex-row-reverse'}`} ref={messageRef}>
+          <NativeLink href={`/user/${message.user_id}`}>
+            <Profile.User
+              image={image || ''}
+              alt={message.user_id}
+              imageClassName='!w-[50px] !h-[50px]'
+              defaultUserDivClassName='!w-[50px] !h-[50px]'
             />
-          ) : (
-            <div className='bg-gray-200 rounded-full w-[50px] h-[50px] flex justify-center items-center'>
-              <IconUserDefault className='w-[35px] h-[35px]' />
-            </div>
-          )}
+          </NativeLink>
           <div className='flex self-end relative'>
             {isMyChat && !isSameMinutes && isSameUserLastChat && (
               <p className='text-[10px] self-end text-text-2'>{getCurrentTime(message.time)}</p>

@@ -1,13 +1,5 @@
 import { Gender } from './pet';
-
-export interface UserFormType {
-  email: string;
-  name: string;
-  password: string;
-  gender: string;
-  phone_number: string;
-  birthday: string;
-}
+import { BlockerType } from './report';
 
 export interface UserType {
   id: string;
@@ -20,6 +12,7 @@ export interface UserType {
   character: string | null;
   region: string[];
   actived_region?: string;
+  blocker: BlockerType[];
 }
 
 export interface UserResponseType {

@@ -1,11 +1,10 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
 import { UserType } from '@/types/user';
 import { formatDateTime } from '@/utils/date';
 
-import { IconUserDefault } from '../../../public/assets/svgs';
+import { Profile } from '../Profile';
 
 interface PostTopInfoProps {
   date: string;
@@ -26,18 +25,14 @@ function PostTopInfo({ date, title, author, children }: PostTopInfoProps) {
           {author && (
             <div className='user-info flex items-center gap-x-2'>
               <Link href={`/user/${author.id}`}>
-                <div className='flex justify-center items-center rounded-full overflow-hidden bg-gray-3 w-8 h-8'>
-                  {author.image ? (
-                    <Image
-                      width={32}
-                      height={32}
-                      src={author.image}
-                      alt={`${author.name}프로필이미지`}
-                      className='object-cover'
-                    />
-                  ) : (
-                    <IconUserDefault width='18px' height='18px' />
-                  )}
+                <div className='flex justify-center items-center rounded-full overflow-hidden w-8 h-8'>
+                  <Profile.User
+                    image={author.image || ''}
+                    alt={`${author.name}프로필이미지`}
+                    imageClassName='!w-[32px] !h-[32px]'
+                    defaultUserImageClassName='!w-[18px] !h-[18px]'
+                    defaultUserDivClassName='bg-gray-3'
+                  />
                 </div>
               </Link>
               <Link href={`/user/${author.id}`}>

@@ -12,14 +12,15 @@ import { LoddingJSON } from '../../../../public/assets/json';
 
 export default function LoginSuccess() {
   const [isFirstLogin, setIsFirstLogin] = useState<boolean>();
+  const [accessToken, setAccessToken] = useState('');
   const router = useNativeRouter();
 
   const getUser = async (code: string, social: LoggedFrom, socialToken?: string) => {
     if (social === LoggedFrom.Kakao || social === LoggedFrom.Naver) {
       const { token, is_first_login } =
         social === LoggedFrom.Kakao ? await getKakaoAuth(code) : await getNaverAuth(code);
+      setAccessToken(token);
       saveToken(token);
-
       setIsFirstLogin(is_first_login);
 
       return;
@@ -28,7 +29,7 @@ export default function LoginSuccess() {
     if (social !== LoggedFrom.Apple || !socialToken) return;
     const { token, is_first_login } = await getAppleAuth(code, socialToken);
     saveToken(token);
-
+    setAccessToken(token);
     setIsFirstLogin(is_first_login);
   };
 
@@ -61,10 +62,12 @@ export default function LoginSuccess() {
   useEffect(() => {
     if (isFirstLogin === undefined) return;
     if (isFirstLogin) {
-      router.replace('/pets/new/login');
+      router.replace('/login/user', { token: accessToken });
       return;
     }
-    router.replace('/posts');
+    router.replace('/posts', {
+      token: accessToken,
+    });
   }, [isFirstLogin, router]);
 
   return (

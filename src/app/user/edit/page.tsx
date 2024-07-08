@@ -95,7 +95,9 @@ export default function Edit() {
 
   useEffect(() => {
     if (!userMutation.isSuccess) return;
-    router.push('/user');
+    router.push('/user', {
+      webviewPushPage: 'home',
+    });
   }, [userMutation.isSuccess, router]);
 
   return (
@@ -198,19 +200,8 @@ export default function Edit() {
           </div>
         </div>
 
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-        <div>123123123</div>
-
         <div className='fixed bottom-0 w-full bg-white-1'>
-          <button type='submit' className='w-full bg-main-1 text-white-1 text-[14px] py-3'>
+          <button type='submit' className='w-full bg-main-1 text-white-1 pt-3 pb-7 text-lg '>
             수정
           </button>
         </div>

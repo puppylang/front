@@ -1,17 +1,16 @@
 'use client';
 
-import Image from 'next/image';
-
 import UserProfileSkeleton from '@/components/SkeletonUI/UserProfileSkeleton';
 import { usePetQuery } from '@/services/pet';
 
+import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
+import { Profile } from '@/components/Profile';
 import { Section } from '@/components/Section';
 import UserActivity from '@/components/UserActivity';
 import UserPostList from '@/components/UserPostList';
 
-import { IconUserDefault } from '../../../../public/assets/svgs';
 import { useOthersQuery, useRecordWalkCount, useRecordWalkDistance } from '../../../services/user';
 
 interface UserProfileProps {
@@ -28,25 +27,16 @@ export default function UserProfile({ id }: UserProfileProps) {
 
   return user ? (
     <>
+      <HeaderNavigation.Container>
+        <HeaderNavigation.Title text='프로필' />
+      </HeaderNavigation.Container>
       <section id='user-info-container' className='flex flex-col items-center animation-show'>
         <Section.Container className='bg-white'>
           <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>퍼피랑 사용자 프로필 화면</h1>
 
           <div className='flex items-center gap-x-4'>
             <div className='image-container'>
-              {user.image ? (
-                <Image
-                  className='rounded-full w-[60px] h-[60px] object-cover'
-                  src={user.image}
-                  alt='profile'
-                  width={60}
-                  height={60}
-                />
-              ) : (
-                <div className='flex items-center justify-center w-[60px] h-[60px] bg-gray-4 rounded-full overflow-hidden'>
-                  <IconUserDefault width='30' height='30' />
-                </div>
-              )}
+              <Profile.User image={user.image || ''} defaultUserImageClassName='' />
             </div>
 
             <div className='user-info flex flex-col'>
@@ -84,7 +74,11 @@ export default function UserProfile({ id }: UserProfileProps) {
     <section id='user' className='animation-show'>
       <Section.Container className='bg-white flex flex-col gap-y-4 items-center justify-center min-h-[100vh]'>
         <h2 className='font-Jalnan text-text-1'>해당 유저가 존재하지 않습니다.</h2>
-        <NativeLink href='/posts' className='bg-main-2 text-white text-sm px-6 py-2 rounded-[10px]'>
+        <NativeLink
+          href='/posts'
+          webviewPushPage='home'
+          className='bg-main-2 text-white text-sm px-6 py-2 rounded-[10px]'
+        >
           홈으로 가기
         </NativeLink>
       </Section.Container>

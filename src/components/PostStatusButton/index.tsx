@@ -26,7 +26,7 @@ function PostStatusButton({ status, onClick }: PostStatusButtonProps) {
     <button
       type='button'
       onClick={onClick}
-      className={`flex gap-x-2 items-center text-[10px] min-w-[72px] px-4 pt-[6px] pb-[7px] rounded-[10px] border-[1px] ${borderStyle} bg-no-repeat appearance-none `}
+      className={`flex-none flex gap-x-2 items-center text-[10px] min-w-[72px] px-4 pt-[6px] pb-[7px] rounded-[10px] border-[1px] ${borderStyle} bg-no-repeat appearance-none `}
     >
       {status === PostStatus.IN_PROGRESS && '진행중'}
       {status === PostStatus.COMING && '예약중'}

@@ -1,20 +1,24 @@
 'use client';
 
-import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { QueryErrorResetBoundary, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { CgSpinner } from 'react-icons/cg';
 
-import { PostItem } from '@/app/posts/PostItem';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
 import { getPostsWithPaging } from '@/services/post';
-import { Post as IPost } from '@/types/post';
+import { USER_QUERY_KEY, updateUserActivedRegion, useUserQuery } from '@/services/user';
+import { BOTTOM_NAVIGATION_HEIGHT, Post as IPost } from '@/types/post';
+import { UserType } from '@/types/user';
 
 import Alert from '@/components/Alert';
 import Loading from '@/components/Loading';
 import { PetCardList } from '@/components/PetCardList';
+import { PostSection } from '@/components/Post';
 import { Section } from '@/components/Section';
 
+import UserActivedRegionSheet from './UserActivedRegionSheet';
 import ApiErrorFallback from '../user/error';
 
 export default function PostComponent() {
@@ -33,6 +37,9 @@ export default function PostComponent() {
 
 function Post() {
   const router = useNativeRouter();
+  const queryClient = useQueryClient();
+
+  const { data: user } = useUserQuery();
   const { data: pets } = usePetQuery();
 
   const [posts, setPosts] = useState<IPost[]>([]);
@@ -40,8 +47,36 @@ function Post() {
   const [last, setLast] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [observeTarget, setObserveTarget] = useState<Element | null>(null);
-
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [isActivedRegionLoading, setIsActivedRegionLoading] = useState(false);
+  const [isTopSheetOpen, setIsTopSheetOpen] = useState(false);
+
+  const updateActivedReigonMutation = useMutation({
+    mutationFn: (region: string) => updateUserActivedRegion(region),
+    mutationKey: [USER_QUERY_KEY],
+    onSuccess: (_, variable) => {
+      queryClient.setQueryData([USER_QUERY_KEY], (oldData: UserType) => {
+        return { ...oldData, actived_region: variable };
+      });
+      setIsActivedRegionLoading(false);
+    },
+  });
+
+  const regions = useMemo(() => {
+    if (!user) return [];
+
+    const sortedRegion = user.region.sort((a, b) => {
+      if (a === user.actived_region) {
+        return -1;
+      }
+      if (b === user.actived_region) {
+        return 1;
+      }
+      return a.localeCompare(b);
+    });
+
+    return sortedRegion;
+  }, [user]);
 
   const fetchPostData = useCallback(async () => {
     setIsLoading(true);
@@ -91,6 +126,14 @@ function Post() {
     router.push('/posts/write');
   };
 
+  const handleTopSheet = () => setIsTopSheetOpen(prev => !prev);
+
+  const handleUpdateActivedRegion = (address: string) => {
+    updateActivedReigonMutation.mutate(address);
+    handleTopSheet();
+    setIsActivedRegionLoading(true);
+  };
+
   return (
     <>
       <section className='flex flex-col items-center'>
@@ -101,9 +144,20 @@ function Post() {
 
           <div className='head flex justify-between items-center py-[24px]'>
             <h2 className='logo font-Jalnan text-xl text-main-3'>퍼피랑</h2>
-            <button type='button' className='text-sm bg-main-1 text-white w-[80px] py-2 rounded-[10px]'>
-              내 동네
-            </button>
+
+            {user && !isActivedRegionLoading ? (
+              <button
+                type='button'
+                className='text-sm bg-main-1 text-white w-[80px] py-2 rounded-[10px]'
+                onClick={handleTopSheet}
+              >
+                {user.actived_region ? user.actived_region.split(' ')[2] : '동네 설정'}
+              </button>
+            ) : (
+              <div className='flex items-center justify-center text-sm bg-main-1 text-white w-[80px] h-[36px] py-2 rounded-[10px]'>
+                <CgSpinner className='text-white animate-spin w-5 h-5' />
+              </div>
+            )}
           </div>
         </Section.Container>
       </section>
@@ -116,7 +170,7 @@ function Post() {
         <div className='' />
       </section>
 
-      <section className='post-container flex flex-col items-center'>
+      <section className={`post-container flex flex-col items-center pb-[${BOTTOM_NAVIGATION_HEIGHT}px]`}>
         <Section.Container className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <Section.Title title='산책해주실 분을 구하고 있어요 ! :)' className='mb-[0px]' />
@@ -132,9 +186,11 @@ function Post() {
           {/* </div> */}
 
           {posts?.length > 0 ? (
-            <ul className='post-list flex flex-col gap-4 animation-load'>
-              {posts?.map(postItem => <PostItem key={postItem.id} post={postItem} />)}
-            </ul>
+            <PostSection.List
+              posts={posts}
+              className='animation-load'
+              itemClassName='shadow-[0_2px_4px_0_rgba(76,76,76,0.1)]'
+            />
           ) : (
             <div className='flex justify-center items-center h-[300px]'>
               <p className='text-text-2'>등록된 구인 게시글이 없습니다.</p>
@@ -152,6 +208,16 @@ function Post() {
         onClick={() => router.push('/pets/new')}
         onClose={() => setIsAlertOpen(false)}
       />
+
+      {user && regions && (
+        <UserActivedRegionSheet
+          isOpen={isTopSheetOpen}
+          regions={regions}
+          activedRegion={user.actived_region}
+          onClick={handleUpdateActivedRegion}
+          onClose={handleTopSheet}
+        />
+      )}
     </>
   );
 }

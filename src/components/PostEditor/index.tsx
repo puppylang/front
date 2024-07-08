@@ -116,6 +116,9 @@ function PostEditor({ defaultValue, onSubmit }: PostEditorProps) {
               </FormInputsWithLabel.Container>
 
               <FormInputsWithLabel.Container label='내용' isRequired>
+                <p className='text-xs text-gray-500 mb-2'>
+                  부적절하거나 불쾌감을 줄 수 있는 컨텐츠는 제재를 받을 수 있습니다.
+                </p>
                 <FormInputsWithLabel.TextArea
                   placeholder='내용을 입력해주세요.'
                   value={postData.content}

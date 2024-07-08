@@ -6,8 +6,8 @@ export default function useNativeRouter() {
   const router = useRouter();
 
   const sendMessageToWebview = (message: WebviewRouter) => {
-    const { type, url, isStack, webviewPushPage } = message;
-    window.ReactNativeWebView.postMessage(JSON.stringify({ type, url, isStack, pushPage: webviewPushPage }));
+    const { type, url, isStack, webviewPushPage, token } = message;
+    window.ReactNativeWebView.postMessage(JSON.stringify({ type, url, isStack, pushPage: webviewPushPage, token }));
   };
 
   const nativeRouter = (href: string, options?: CustomNavigateOptions) => {
@@ -17,6 +17,7 @@ export default function useNativeRouter() {
         url: href,
         isStack: options?.isStack,
         webviewPushPage: options?.webviewPushPage,
+        token: options?.token,
       });
       return;
     }
@@ -30,6 +31,7 @@ export default function useNativeRouter() {
         url: href,
         isStack: options?.isStack,
         webviewPushPage: options?.webviewPushPage,
+        token: options?.token,
       });
 
       return;

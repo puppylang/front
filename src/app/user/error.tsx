@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { FallbackProps } from 'react-error-boundary';
 
-import { RouterMethod } from '@/types/route';
+import { RouterMethod, StackPushRoute } from '@/types/route';
 
 import NativeLink from '@/components/NativeLink';
 
@@ -33,6 +33,7 @@ export default function ApiErrorFallback({ error, resetErrorBoundary }: Fallback
         </button>
         <NativeLink
           href='/'
+          webviewPushPage={StackPushRoute.Login}
           type={RouterMethod.Replace}
           className='py-2 w-[120px] text-sm text-white  border border-main-1 bg-main-1 text-center rounded-[10px]'
         >

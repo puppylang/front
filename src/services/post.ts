@@ -127,3 +127,51 @@ export const useUpdatePostStatus = (id: string) => {
     },
   });
 };
+
+export const useMatchPost = (id: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: [POST_KEY, id],
+    mutationFn: ({ id, matched_user_id }: { id: string; matched_user_id: string | null }) => {
+      return matched_user_id ? matchPost(id, matched_user_id) : unMatchPost(id);
+    },
+    onSuccess: response => {
+      if (!response) return;
+
+      queryClient.setQueryData([POST_KEY, id], () => ({ ...response }));
+    },
+  });
+};
+
+export const matchPost = async (id: string, matched_user_id: string) => {
+  try {
+    const data = await fetcherWithToken(`${POST_KEY}/${id}/match`, {
+      method: 'POST',
+      data: { matched_user_id },
+    });
+    return data;
+  } catch (err) {
+    if (err instanceof UserDeleteError) {
+      console.error(err.response.status);
+    }
+  }
+};
+
+export const unMatchPost = async (id: string) => {
+  try {
+    const data = await fetcherWithToken(`${POST_KEY}/${id}/match`, { method: 'DELETE' });
+    return data;
+  } catch (err) {
+    if (err instanceof UserDeleteError) {
+      console.error(err.response.status);
+    }
+  }
+};
+
+export const useMatchedPosts = (user_id: string | undefined) => {
+  return useQuery({
+    queryKey: [POST_KEY, user_id],
+    queryFn: () => (user_id ? fetcherWithToken<Post[]>(`${POST_KEY}/matched?user_id=${user_id}`) : null),
+  });
+};

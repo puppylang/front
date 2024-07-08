@@ -1,87 +1,71 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 
-import { useChatQuery } from '@/services/chat';
+import { useChatsQuery } from '@/services/chat';
 import { ChatWritterType, ChatRoom } from '@/types/chat';
+import { BOTTOM_NAVIGATION_HEIGHT } from '@/types/post';
 import { RouterMethod } from '@/types/route';
 import { formatDiffTime } from '@/utils/date';
 
 import NativeLink from '@/components/NativeLink';
-import PetProfile from '@/components/PetProfile';
+import { Profile } from '@/components/Profile';
 import { PuppyError } from '@/components/PuppyError';
 
-import { ChatSkelectonUI, TabSkelectonUI } from './chatSkeletionUI';
-import { IconUserDefault } from '../../../public/assets/svgs';
+import { ChatSkelectonUI } from './chatSkeletionUI';
 
 export default function Chat() {
   const [selectedType, setSelectedType] = useState<ChatWritterType>(ChatWritterType.Author);
 
-  // const serverSentEvent = useRef<EventSource | null>(null);
-
-  const { data: chatRooms, isLoading } = useChatQuery(selectedType);
-
-  // useEffect(() => {
-  //   serverSentEvent.current = new EventSource('http://localhost:8000/chat/sse', {
-  //     withCredentials: true,
-  //   });
-
-  //   serverSentEvent.current.addEventListener('open', () => {});
-
-  //   serverSentEvent.current.addEventListener('message', e => {
-  //     console.log(e);
-  //   });
-  // }, []);
+  const { data: chatRooms, isLoading } = useChatsQuery(selectedType);
 
   return (
     <>
-      {isLoading && !chatRooms && (
-        <>
-          <TabSkelectonUI />
-          <ChatSkelectonUI />
-          <ChatSkelectonUI />
-          <ChatSkelectonUI />
-          <ChatSkelectonUI />
-        </>
-      )}
-      {!isLoading && chatRooms && (
-        <>
-          <ul className='grid grid-cols-2 w-full'>
-            <li
-              className={`${
-                selectedType === ChatWritterType.Author ? 'border-b-text-1 text-text-1' : ' border-b-gray-2 text-text-2'
-              } border-b`}
+      <section className='container'>
+        <ul className='grid grid-cols-2 w-full'>
+          <li
+            className={`${
+              selectedType === ChatWritterType.Author ? 'border-b-text-1 text-text-1' : ' border-b-gray-2 text-text-2'
+            } border-b`}
+          >
+            <button
+              className='w-full h-12 font-semibold text-xs'
+              type='button'
+              onClick={() => setSelectedType(ChatWritterType.Author)}
             >
-              <button
-                className='w-full h-12 font-semibold text-xs'
-                type='button'
-                onClick={() => setSelectedType(ChatWritterType.Author)}
-              >
-                견주
-              </button>
-            </li>
-            <li
-              className={`${
-                selectedType === ChatWritterType.Guest ? 'border-b-text-1 text-text-1' : 'border-b-gray-2 text-text-2'
-              } border-b`}
+              견주
+            </button>
+          </li>
+          <li
+            className={`${
+              selectedType === ChatWritterType.Guest ? 'border-b-text-1 text-text-1' : 'border-b-gray-2 text-text-2'
+            } border-b`}
+          >
+            <button
+              type='button'
+              className='w-full h-12 font-semibold text-xs'
+              onClick={() => setSelectedType(ChatWritterType.Guest)}
             >
-              <button
-                type='button'
-                className='w-full h-12 font-semibold text-xs'
-                onClick={() => setSelectedType(ChatWritterType.Guest)}
-              >
-                펫시터
-              </button>
-            </li>
-          </ul>
-          <ul>
+              펫시터
+            </button>
+          </li>
+        </ul>
+        {chatRooms && !isLoading && (
+          <ul className={`pb-[${BOTTOM_NAVIGATION_HEIGHT}px]`}>
             {chatRooms.map(chatRoom => (
               <ChatRoomList key={chatRoom.id} chatRoom={chatRoom} type={selectedType} />
             ))}
           </ul>
-        </>
-      )}
+        )}
+        {isLoading && !chatRooms && (
+          <>
+            <ChatSkelectonUI />
+            <ChatSkelectonUI />
+            <ChatSkelectonUI />
+            <ChatSkelectonUI />
+          </>
+        )}
+      </section>
       {!isLoading && chatRooms && chatRooms.length === 0 && (
         <PuppyError.Container>
           <PuppyError.Title title='대화방이 존재 하지 않아요.' />
@@ -110,20 +94,12 @@ function ChatRoomList({ chatRoom, type }: ChatRoomListProps) {
         type={RouterMethod.Push}
       >
         <div className='relative flex justify-end'>
-          {userImage ? (
-            <Image
-              className='absolute top-[-10px] left-0 rounded-full'
-              src={userImage}
-              alt='guest image'
-              width={50}
-              height={50}
-            />
-          ) : (
-            <div className='absolute top-[-10px] left-0 bg-gray-200 rounded-full h-[50px] w-[50px] flex justify-center items-center'>
-              <IconUserDefault alt='default user image' width={35} height={35} />
-            </div>
-          )}
-          <PetProfile pet={post.pet} height={60} width={60} className='z-10 !bg-gray-200 w-[60px]' />
+          <Profile.User
+            image={userImage || ''}
+            imageClassName='absolute top-[-10px] left-0'
+            defaultUserDivClassName='absolute top-[-10px] left-0'
+          />
+          <Profile.Pet pet={post.pet} height={60} width={60} className='z-10 !bg-gray-200 w-[60px]' />
         </div>
         <div className='flex flex-col justify-center pr-2 pl-4'>
           <div className='flex items-center'>

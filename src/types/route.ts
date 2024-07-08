@@ -6,6 +6,7 @@ export interface WebviewRouter {
   url?: string;
   isStack?: boolean;
   webviewPushPage?: string;
+  token?: string;
 }
 
 export enum RouterMethod {
@@ -17,10 +18,19 @@ export enum RouterMethod {
 export interface CustomNavigateOptions extends NavigateOptions {
   isStack?: boolean;
   webviewPushPage?: string;
+  token?: string;
 }
 
 export interface DynamicParamTypes {
   params: {
     id: string;
   };
+}
+
+export enum StackPushRoute {
+  Login = 'index',
+  Posts = '(tabs)',
+  Chat = 'chat',
+  Walk = 'walk',
+  User = 'user',
 }

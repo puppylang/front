@@ -12,6 +12,7 @@ import IconCurrentLocation from './current_location.svg';
 import IconDog from './dog.svg';
 import IconEdit from './edit.svg';
 import IConErrorBox from './error-box.svg';
+import IconErrorBoxBlue from './error-box-blue.svg';
 import IconHeartFill from './heart_fill.svg';
 import IconHeartOutline from './heart_outline.svg';
 import IconInfo from './info.svg';
@@ -32,6 +33,7 @@ export {
   IconTrash,
   IconCaretLeft,
   IconCaretRight,
+  IconErrorBoxBlue,
   IconCheckedBox,
   IConErrorBox,
   IconPause,

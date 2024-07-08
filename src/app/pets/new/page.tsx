@@ -75,7 +75,9 @@ export default function NewPet() {
 
   useEffect(() => {
     if (!petMutation.isSuccess) return;
-    router.push('/user');
+    router.push('/user', {
+      webviewPushPage: 'home',
+    });
   }, [petMutation.isSuccess, router]);
 
   return (
@@ -151,8 +153,8 @@ export default function NewPet() {
           <Form.Radio
             title='성별'
             onChange={value => setFormState(prev => ({ ...prev, gender: value as Gender }))}
-            firstInput={{ value: Gender.Male, id: 'male', title: '남성' }}
-            secondInput={{ value: Gender.Female, id: 'female', title: '여성' }}
+            firstInput={{ value: Gender.Male, id: 'male', title: '남아' }}
+            secondInput={{ value: Gender.Female, id: 'female', title: '여아' }}
             activedValue={formState.gender || ''}
           />
 
@@ -177,7 +179,7 @@ export default function NewPet() {
         <div className='fixed bottom-0 w-full bg-white-1'>
           <button
             type='submit'
-            className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white-1 text-[14px] py-3 `}
+            className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white-1 pt-3 pb-7`}
             disabled={isInvalidForm}
           >
             등록

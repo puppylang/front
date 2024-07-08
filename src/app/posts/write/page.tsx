@@ -26,7 +26,7 @@ function PostWrite() {
 
     createPost(postData)
       .then(res => {
-        if (res) router.push('/posts');
+        if (res) router.push('/posts', { webviewPushPage: 'home' });
       })
       .catch((err: Error) => {
         console.log(err);

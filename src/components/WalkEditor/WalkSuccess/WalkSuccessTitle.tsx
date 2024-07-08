@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { Pet } from '@/types/pet';
 
-import PetProfile from '@/components/PetProfile';
+import { Profile } from '@/components/Profile';
 
 interface WalkSuccessTitleProps {
   title: string;
@@ -18,7 +18,7 @@ function WalkSuccessTitle({ title, align, pet }: WalkSuccessTitleProps) {
   }, [align]);
   return (
     <div className={`puppy-info flex items-center gap-x-2 mt-4 ${ALIGN}`}>
-      <PetProfile pet={pet} width={30} height={30} />
+      <Profile.Pet pet={pet} width={30} height={30} />
 
       <p className='text-text-1 text-sm font-semibold'>{title}</p>
     </div>

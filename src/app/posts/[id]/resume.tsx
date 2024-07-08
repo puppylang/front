@@ -29,9 +29,10 @@ const DEFAULT_FORM: ResumeFormType = {
 interface ResumeProps {
   id: number;
   onClose: () => void;
+  onSubmit: () => void;
 }
 
-export default function Resume({ id, onClose }: ResumeProps) {
+export default function Resume({ id, onClose, onSubmit }: ResumeProps) {
   const [formState, setFormState] = useState(DEFAULT_FORM);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -58,7 +59,7 @@ export default function Resume({ id, onClose }: ResumeProps) {
     });
     if (status === 201) {
       setIsLoading(false);
-      onClose();
+      onSubmit();
     }
   };
 
@@ -80,12 +81,12 @@ export default function Resume({ id, onClose }: ResumeProps) {
     <>
       {isLoading && <Loading />}
       <form className='container px-4 bg-white-1 min-h-screen pb-16 bg-opacity-50' onSubmit={onSubmitResume}>
-        <div className='font-Jalnan text-[22px] py-[30px] flex flex-col justify-center items-center'>
+        <div className='font-Jalnan text-[18px] text-text-1 my-8 flex flex-col justify-center items-center'>
           <p>견주에게 보낼 프로필을</p>
           <p>완성해 주세요.</p>
         </div>
 
-        <div className='flex justify-center mb-[30px]'>
+        <div className='flex justify-center'>
           <ImageUpload
             defaultURL={formState.image}
             onChangeFileInput={url => setFormState(prev => ({ ...prev, image: url }))}
@@ -96,6 +97,7 @@ export default function Resume({ id, onClose }: ResumeProps) {
           title='이름'
           value={formState.name || ''}
           onChange={value => setFormState(prev => ({ ...prev, name: value }))}
+          divClassName='mb-[16px]'
         />
 
         <Form.Number
@@ -107,48 +109,8 @@ export default function Resume({ id, onClose }: ResumeProps) {
           minLength={4}
           placeholder='0000'
           errorText='태어난 연도 4글자 입력해주세요.'
+          divClassName='mb-[16px]'
         />
-
-        <Form.Radio
-          isRequired
-          title='성별'
-          onChange={value => setFormState(prev => ({ ...prev, gender: value as Gender }))}
-          firstInput={{ value: Gender.Male, id: 'male', title: '남성' }}
-          secondInput={{ value: Gender.Female, id: 'female', title: '여성' }}
-          activedValue={formState.gender}
-        />
-
-        <Form.Radio
-          title='반려견 부양 여부'
-          // eslint-disable-next-line
-          activedValue={formState.has_puppy === null ? '' : formState.has_puppy ? '부양' : '미부양'}
-          onChange={value => setFormState(prev => ({ ...prev, has_puppy: value === '부양' || false }))}
-          firstInput={{ value: '부양', id: '부양', title: '예' }}
-          secondInput={{ value: '미부양', id: '미부양', title: '아니요' }}
-        />
-
-        <Form.Title title='산책 경험'>
-          <p className='text-xs mb-2 text-text-1'>앱에 등록된 나의 산책 기록 10개를 불러와요!</p>
-          <div className='bg-gray-3 w-full p-2 py-3 rounded-xl px-3 h-[200px] overflow-y-scroll flex flex-col gap-y-3'>
-            {!isLoadingWalkList && walkList && walkList.length ? (
-              walkList.map(walk => (
-                <RecordWalkItem
-                  key={walk.id}
-                  className='drop-shadow-sm bg-white-1 rounded-xl'
-                  walk={walk}
-                  role={WalkRole.PetOwner}
-                />
-              ))
-            ) : (
-              <div className='h-full flex items-center flex-col justify-center'>
-                <p className='text-xs'>등록된 산책 기록이 없어요.</p>
-                <NativeLink href='/walk-role' className='bg-main-3 text-white-1 rounded-lg text-xs px-2 py-1 mt-1'>
-                  산책하러 가기
-                </NativeLink>
-              </div>
-            )}
-          </div>
-        </Form.Title>
 
         <Form.Number
           isRequired
@@ -161,6 +123,17 @@ export default function Resume({ id, onClose }: ResumeProps) {
           maxLength={11}
           minLength={11}
           errorText='올바른 연락처를 입력해주세요.'
+          divClassName='mb-[16px]'
+        />
+
+        <Form.Radio
+          isRequired
+          title='성별'
+          onChange={value => setFormState(prev => ({ ...prev, gender: value as Gender }))}
+          firstInput={{ value: Gender.Male, id: 'male', title: '남성' }}
+          secondInput={{ value: Gender.Female, id: 'female', title: '여성' }}
+          activedValue={formState.gender}
+          divClassName='mb-[16px]'
         />
 
         <Form.Textarea
@@ -171,16 +144,59 @@ export default function Resume({ id, onClose }: ResumeProps) {
           errorText='자기 소개를 입력해주세요.'
           placeholder='최소 10글자 이상 입력해주세요.'
           onChange={value => setFormState(prev => ({ ...prev, introduction: value }))}
+          divClassName='mb-[16px]'
         >
-          <p className='text-xs mb-1 text-text-1'>나를 소개할 수 있는 인사말로 시작해요.</p>
-          <p className='text-xs mb-1 text-text-1'>강아지 산책 경험이나 강아지를 언제 키워봤는지 작성하면 좋아요.</p>
-          <p className='text-xs mb-1 text-text-1'>해당 견종 산책 경험이 있는지 작성하면 좋아요.</p>
+          <ul className='flex flex-col gap-y-[1px] text-[12px] text-text-2 mb-2'>
+            <li>나를 소개할 수 있는 인사말로 시작해요.</li>
+            <li>강아지 산책 경험이나 강아지를 언제 키워봤는지 작성하면 좋아요.</li>
+            <li>해당 견종 산책 경험이 있는지 작성하면 좋아요.</li>
+          </ul>
         </Form.Textarea>
 
-        <div className='fixed bottom-0 left-0 w-full bg-white-1'>
+        <Form.Radio
+          title='반려견 부양 여부'
+          // eslint-disable-next-line
+          activedValue={formState.has_puppy === null ? '' : formState.has_puppy ? '부양' : '미부양'}
+          onChange={value => setFormState(prev => ({ ...prev, has_puppy: value === '부양' || false }))}
+          firstInput={{ value: '부양', id: '부양', title: '예' }}
+          secondInput={{ value: '미부양', id: '미부양', title: '아니요' }}
+          divClassName='mb-[16px]'
+        />
+
+        <Form.Title title='산책 경험' divClassName='pb-10'>
+          <p className='text-[12px] text-text-2 mb-2'>앱에 등록된 나의 산책 기록 10개를 불러와요!</p>
+          <div className='bg-gray-3 w-full p-2 py-3 rounded-xl px-3 h-[200px] overflow-y-scroll flex flex-col gap-y-3'>
+            {!isLoadingWalkList && walkList && walkList.length ? (
+              walkList.map(walk => (
+                <RecordWalkItem
+                  key={walk.id}
+                  className='drop-shadow-sm bg-white-1 rounded-xl'
+                  walk={walk}
+                  role={WalkRole.PetOwner}
+                />
+              ))
+            ) : (
+              <div className='h-full flex items-center flex-col justify-center gap-y-2'>
+                <p className='text-sm'>등록된 산책 기록이 없어요.</p>
+                <NativeLink
+                  href='/walk-role'
+                  webviewPushPage='home'
+                  className='bg-main-5 text-main-3 rounded-[10px] text-xs px-4 h-7 leading-7'
+                >
+                  산책하러 가기
+                </NativeLink>
+              </div>
+            )}
+          </div>
+        </Form.Title>
+
+        <div className='bg-white-1 fixed bottom-0 left-0 w-full pb-7 grid grid-cols-2 gap-2 px-4 pt-3 border-t text-sm'>
+          <button type='button' className='py-2 rounded-[9px] border border-main-1 text-main-1' onClick={onClose}>
+            취소
+          </button>
           <button
+            className={`py-2 rounded-[9px] bg-main-1 text-white-1 ${isDisabledSubmitBtn && 'opacity-40'}`}
             type='submit'
-            className={`w-full bg-main-1 text-white-1 text-[14px] py-3 ${isDisabledSubmitBtn && 'opacity-40'}`}
             disabled={isDisabledSubmitBtn}
           >
             등록

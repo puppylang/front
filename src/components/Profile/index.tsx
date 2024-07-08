@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 import { Pet } from '@/types/pet';
 
-import { IconDog } from '../../../public/assets/svgs';
+import { IconDog, IconUserDefault } from '../../../public/assets/svgs';
 
 interface PetProfileProps {
   pet: Pet;
@@ -41,4 +41,39 @@ function PetProfile({ pet, width, height, minW, minH, maxW, maxH, className = ''
   );
 }
 
-export default PetProfile;
+interface UserProfileProps {
+  image?: string;
+  alt?: string;
+  imageClassName?: string;
+  defaultUserDivClassName?: string;
+  defaultUserImageClassName?: string;
+}
+
+function UserProfile({
+  image,
+  alt,
+  imageClassName = '',
+  defaultUserDivClassName = '',
+  defaultUserImageClassName = '',
+}: UserProfileProps) {
+  return image ? (
+    <Image
+      width={60}
+      height={60}
+      className={`border-[1px] rounded-full w-[70px] h-[70px] object-cover ${imageClassName}`}
+      src={image}
+      alt={alt || 'profile'}
+    />
+  ) : (
+    <div
+      className={`flex items-center justify-center w-[60px] h-[60px] bg-gray-200 rounded-full overflow-hidden ${defaultUserDivClassName}`}
+    >
+      <IconUserDefault width='35' height='35' className={`${defaultUserImageClassName}`} />
+    </div>
+  );
+}
+
+export const Profile = {
+  Pet: PetProfile,
+  User: UserProfile,
+};

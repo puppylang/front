@@ -18,7 +18,7 @@ interface WalkSuccessProps {
 function WalkSuccess({ type, data }: WalkSuccessProps) {
   const router = useNativeRouter();
 
-  const handleGoTO = () => router.push('/posts');
+  const handleGoTO = () => router.push('/posts', { webviewPushPage: 'home' });
 
   return (
     <section id='walkSuccessForm' className='flex flex-col items-center bg-white w-full'>
@@ -54,6 +54,7 @@ function WalkSuccess({ type, data }: WalkSuccessProps) {
 
               <NativeLink
                 href='/posts'
+                webviewPushPage='posts'
                 className='block w-full mt-4 bg-main-2 text-sm text-white text-center h-[45px] leading-[45px] rounded-[10px]'
               >
                 둘러보러 가기
