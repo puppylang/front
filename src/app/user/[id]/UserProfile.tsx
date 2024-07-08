@@ -2,6 +2,7 @@
 
 import UserProfileSkeleton from '@/components/SkeletonUI/UserProfileSkeleton';
 import { usePetQuery } from '@/services/pet';
+import { StackPushRoute } from '@/types/route';
 
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import NativeLink from '@/components/NativeLink';
@@ -26,11 +27,11 @@ export default function UserProfile({ id }: UserProfileProps) {
   if (isLoading) return <UserProfileSkeleton />;
 
   return user ? (
-    <>
-      <HeaderNavigation.Container>
+    <div className='flex flex-col items-center animation-show'>
+      <HeaderNavigation.Container className='container z-[100]'>
         <HeaderNavigation.Title text='프로필' />
       </HeaderNavigation.Container>
-      <section id='user-info-container' className='flex flex-col items-center animation-show'>
+      <section id='user-info-container' className='flex flex-col items-center w-full'>
         <Section.Container className='bg-white'>
           <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>퍼피랑 사용자 프로필 화면</h1>
 
@@ -49,34 +50,34 @@ export default function UserProfile({ id }: UserProfileProps) {
         </Section.Container>
       </section>
 
-      <section id='pet-info-container' className='flex flex-col items-center animation-show'>
+      <section id='pet-info-container' className='flex flex-col items-center w-full'>
         <Section.Container className='bg-white border-t border-t-1 border-gray-3'>
           <Section.Title title='반려견 정보 🐾' />
           <PetCardList pets={pets} type='slide' />
         </Section.Container>
       </section>
 
-      <section id='activity-info-container' className='flex flex-col items-center animation-show'>
+      <section id='activity-info-container' className='flex flex-col items-center w-full'>
         <Section.Container className='bg-white border-t border-t-1 border-gray-3'>
           <Section.Title title='활동' />
           <UserActivity totalDistance={totalDistance?.total_distance} walkCount={recordWalks} />
         </Section.Container>
       </section>
 
-      <section id='post-info-container' className='flex flex-col items-center animation-show'>
+      <section id='post-info-container' className='flex flex-col items-center w-full'>
         <Section.Container className='p-[0px] border-t border-t-1 border-gray-3'>
           <Section.Title title='작성한 글' className='bg-white mb-[0px] p-4' />
           <UserPostList authorId={id} />
         </Section.Container>
       </section>
-    </>
+    </div>
   ) : (
-    <section id='user' className='animation-show'>
+    <section id='user' className='animation-show flex flex-col items-center'>
       <Section.Container className='bg-white flex flex-col gap-y-4 items-center justify-center min-h-[100vh]'>
         <h2 className='font-Jalnan text-text-1'>해당 유저가 존재하지 않습니다.</h2>
         <NativeLink
           href='/posts'
-          webviewPushPage='home'
+          webviewPushPage={StackPushRoute.Posts}
           className='bg-main-2 text-white text-sm px-6 py-2 rounded-[10px]'
         >
           홈으로 가기

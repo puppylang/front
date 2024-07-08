@@ -4,16 +4,18 @@ import { ReactNode } from 'react';
 import { UserType } from '@/types/user';
 import { formatDateTime } from '@/utils/date';
 
+import { IconLocation } from '../../../public/assets/svgs';
 import { Profile } from '../Profile';
 
 interface PostTopInfoProps {
   date: string;
   title: string;
   author?: UserType;
+  address?: string;
   children?: ReactNode;
 }
 
-function PostTopInfo({ date, title, author, children }: PostTopInfoProps) {
+function PostTopInfo({ date, title, author, address, children }: PostTopInfoProps) {
   return (
     <div>
       <span className='text-[10px] text-text-2 font-light px-4'>{date}</span>
@@ -35,8 +37,15 @@ function PostTopInfo({ date, title, author, children }: PostTopInfoProps) {
                   />
                 </div>
               </Link>
-              <Link href={`/user/${author.id}`}>
+              <Link href={`/user/${author.id}`} className='flex items-center gap-x-1 flex-wrap'>
                 <span className='user-name text-xs text-text-1'>{author.name}</span>
+
+                {address && (
+                  <div className='flex items-center gap-x-[2px]'>
+                    <IconLocation />
+                    <span className='user-name text-xs text-text-1'>{address}</span>
+                  </div>
+                )}
               </Link>
             </div>
           )}

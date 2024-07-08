@@ -1,16 +1,16 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { IoSearch } from 'react-icons/io5';
 
 import useNativeRouter from '@/hooks/useNativeRouter';
-import { PET_QUERY_KEY } from '@/services/pet';
+import { PET_QUERY_KEY, deletePet, updatePet, usePetQuery } from '@/services/pet';
 import { useUserQuery } from '@/services/user';
-import { CreatePetFormType, DogBreed, Gender, Neuter, PetFormType } from '@/types/pet';
+import { DogBreed, Gender, Neuter, Pet, PetFormType, UpdatePetFormType } from '@/types/pet';
 import { StackPushRoute } from '@/types/route';
-import { fetcherStatusWithToken } from '@/utils/request';
 
+import Alert from '@/components/Alert';
 import Breed from '@/components/Breed';
 import { Form } from '@/components/Form';
 import ImageUpload from '@/components/ImageUpload';
@@ -28,18 +28,42 @@ const DEFAULT_PET_FORM: PetFormType = {
   breed: undefined,
 };
 
-export default function NewPet() {
-  const [formState, setFormState] = useState<PetFormType>(DEFAULT_PET_FORM);
+export default function PetEdit({ id }: { id: string }) {
+  const [formState, setFormState] = useState(DEFAULT_PET_FORM);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isOpenPopup, setIsOpenPopup] = useState(false);
 
+  const queryClient = useQueryClient();
   const router = useNativeRouter();
 
-  const petMutation = useMutation({
-    mutationFn: (newPet: CreatePetFormType) => {
-      return fetcherStatusWithToken(PET_QUERY_KEY, { method: 'POST', data: newPet });
+  const { data: pets } = usePetQuery();
+  const { data: user } = useUserQuery();
+
+  const petUpdateMutation = useMutation({
+    mutationKey: [PET_QUERY_KEY],
+    mutationFn: (editPet: UpdatePetFormType) => {
+      return updatePet(editPet);
+    },
+    onSuccess: (_, variable) => {
+      queryClient.setQueryData([PET_QUERY_KEY], (oldData: Pet[]) => {
+        return oldData.map(pet => (pet.id === variable.id ? variable : pet));
+      });
     },
   });
-  const { data: user } = useUserQuery();
+
+  const petDeleteMutaion = useMutation({
+    mutationKey: [PET_QUERY_KEY],
+    mutationFn: (id: string) => {
+      return deletePet(id);
+    },
+    onSuccess: (_, variable) => {
+      queryClient.setQueryData([PET_QUERY_KEY], (oldData: Pet[]) => {
+        return oldData.filter(pet => pet.id !== Number(variable));
+      });
+    },
+  });
+
+  const currentPet = pets && pets.length !== 0 && pets.find(pets => pets.id === Number(id));
 
   const isInvalidForm = ![
     formState.name && formState.name.length >= 2,
@@ -50,6 +74,12 @@ export default function NewPet() {
 
   const onChangeFileInput = (uploadedImageURL: string) => {
     setFormState(prev => ({ ...prev, image: uploadedImageURL }));
+  };
+
+  const onSubmitPetForm = (event: FormEvent) => {
+    event.preventDefault();
+    if (!user) return;
+    petUpdateMutation.mutate({ ...formState, user_id: user.id, id: Number(id) });
   };
 
   const addDotInputValue = (value: string) => {
@@ -68,26 +98,38 @@ export default function NewPet() {
     setFormState(prev => ({ ...prev, birthday: isBackwordKey ? value : addDotInputValue(value) }));
   };
 
-  const onSubmitPetForm = (event: FormEvent) => {
-    event.preventDefault();
-    if (!user) return;
-    setFormState(DEFAULT_PET_FORM);
-    petMutation.mutate({ ...formState, user_id: user.id });
+  const onClickPetDeleteBtn = () => {
+    petDeleteMutaion.mutate(id);
   };
 
   useEffect(() => {
-    if (!petMutation.isSuccess) return;
+    if (!currentPet) return;
+    const { name, birthday, character, gender, image, is_newtralize, weight, breed } = currentPet;
+    setFormState({
+      name,
+      birthday,
+      character: character || undefined,
+      gender,
+      image: image || undefined,
+      is_newtralize,
+      weight,
+      breed,
+    });
+  }, [currentPet]);
+
+  useEffect(() => {
+    if (!petUpdateMutation.isSuccess) return;
     router.push('/user', {
       webviewPushPage: StackPushRoute.User,
     });
-  }, [petMutation.isSuccess, router]);
+  }, [petUpdateMutation.isSuccess]);
 
   return (
     <section className='flex flex-col items-center'>
       <div className='container'>
-        {petMutation.isPending && <Loading />}
+        {(petDeleteMutaion.isPending || petUpdateMutation.isPending) && <Loading />}
         <div className='h-32 bg-main-4 text-text-3 flex justify-center items-center'>
-          <p className='font-Jalnan tracking-wide'>반려견을 등록해 주세요!</p>
+          <p className='font-Jalnan tracking-wide'>반려견을 수정해 주세요!</p>
         </div>
         <form onSubmit={onSubmitPetForm} className='p-4 bg-white'>
           <div className='pb-16'>
@@ -109,7 +151,7 @@ export default function NewPet() {
               <button
                 type='button'
                 onClick={() => setIsOpenPopup(true)}
-                className='flex items-center border border-gray-3 px-[14px] py-[10px] text-[13px] rounded-[10px] w-full'
+                className='flex items-center border border-gray-3 px-[14px] py-[10px] text-[13px] rounded-[15px] w-full'
               >
                 <IoSearch color='#E5E5E5' />
                 {!formState.breed && <p className='pl-[6px] text-[#9BA3AF]'>견종 선택하기</p>}
@@ -178,15 +220,28 @@ export default function NewPet() {
             />
           </div>
 
-          <div className='fixed left-[50%] bottom-0 translate-x-[-50%] w-full bg-white container p-4'>
+          <div className='fixed left-[50%] bottom-0 translate-x-[-50%] w-full bg-white container p-4 border-t text-sm flex gap-x-2'>
+            <button
+              type='button'
+              className='w-full  text-main-1 py-2 rounded-[10px] border border-main-1'
+              onClick={() => setIsAlertOpen(true)}
+            >
+              삭제
+            </button>
             <button
               type='submit'
-              className={`${isInvalidForm && ' opacity-40'} w-full py-2 rounded-[10px] bg-main-1 text-white`}
+              className={`${isInvalidForm && ' opacity-40'} w-full bg-main-1 text-white py-2 rounded-[10px]`}
               disabled={isInvalidForm}
             >
-              등록
+              수정
             </button>
           </div>
+          <Alert
+            isOpen={isAlertOpen}
+            message='반려견 정보를 삭제할 경우 모든 산책 기록은 삭제됩니다. 삭제하시겠습니까?'
+            onClose={() => setIsAlertOpen(false)}
+            onClick={onClickPetDeleteBtn}
+          />
         </form>
       </div>
     </section>

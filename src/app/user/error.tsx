@@ -7,6 +7,8 @@ import { RouterMethod, StackPushRoute } from '@/types/route';
 
 import NativeLink from '@/components/NativeLink';
 
+import { StackPushRoute } from '../../types/route';
+
 export default function ApiErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   useEffect(() => {
     // eslint-disable-next-line

@@ -27,7 +27,7 @@ const DEFAULT_PET_FORM: UserEditForm = {
 
 export default function LoginUser() {
   const [formState, setFormState] = useState(DEFAULT_PET_FORM);
-  const [isInvalidName, setIsInvalidName] = useState(true);
+  const [isInvalidName, setIsInvalidName] = useState(false);
   const [isCheckedEULA, setIsCheckedEULA] = useState(false);
   const [isCheckedUserPolicy, setIsCheckedUserPolicy] = useState(false);
 
@@ -174,7 +174,7 @@ export default function LoginUser() {
         <div className='w-full px-6 pb-10'>
           <button
             type='submit'
-            className={`${isInvalidForm && ' opacity-40'} text-sm w-full bg-main-1 text-white-1 py-2 rounded-md`}
+            className={`${isInvalidForm && ' opacity-40'} text-sm w-full bg-main-1 text-white-1 py-3 rounded-md`}
             disabled={isInvalidForm}
           >
             등록

@@ -32,10 +32,9 @@ function RecordWalkItem({ walk, className, role }: RecordWalkItemProps) {
 
   return (
     <NativeLink
-      href={{
-        pathname: `/user/record-walks/${walk.id}`,
-        query: { role: role === WalkRole.PetOwner ? WalkRole.PetOwner : WalkRole.PetSitterWalker },
-      }}
+      href={`/user/record-walks/${walk.id}?role=${
+        role === WalkRole.PetOwner ? WalkRole.PetOwner : WalkRole.PetSitterWalker
+      }`}
     >
       <div className={`${className} flex gap-x-4 p-4`}>
         {walk.pet && <Profile.Pet pet={walk.pet} width={45} height={45} minW={45} className='w-[45px] h-[45px]' />}

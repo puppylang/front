@@ -61,10 +61,10 @@ export default function UserFavorites() {
 
   return (
     <section id='favorite-post' className='flex flex-col items-center'>
-      <HeaderNavigation.Container>
-        <HeaderNavigation.Title text='좋아요 목록' />
-      </HeaderNavigation.Container>
       <div className='container'>
+        <HeaderNavigation.Container>
+          <HeaderNavigation.Title text='좋아요 목록' />
+        </HeaderNavigation.Container>
         <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>좋아요 목록</h1>
 
         <div className='post-list p-4'>

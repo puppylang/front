@@ -3,15 +3,12 @@ import axios from 'axios';
 
 import { PageParams, Post, PostStatus } from '@/types/post';
 import { PageResponse } from '@/types/response';
-import { RegionType, UserEditForm, UserResponseType, UserType, UserDeleteError, LoggedFrom } from '@/types/user';
+import { UserEditForm, UserResponseType, UserType, UserDeleteError, LoggedFrom } from '@/types/user';
 import { TotalDistance } from '@/types/walk';
 import { fetchWithStatus, fetcher, fetcherStatusWithToken, fetcherWithToken, requestURL } from '@/utils/request';
 
 export const USER_QUERY_KEY = '/user';
-export const USER_REGION_QUERY_KEY = '/user/region';
-export const USER_ACTIVED_REGION_QUERY_KEY = '/user/actived-region';
 
-const REGION_QUERY_KEY = '/region';
 const VALIDATE_USER_NAME_QUERY_KEY = '/user/name';
 
 export const getKakaoAuth = async (code: string) => {
@@ -72,20 +69,6 @@ export const useUserQuery = () => {
       fetcherWithToken<UserType>(USER_QUERY_KEY, {
         withCredentials: true,
       }),
-  });
-};
-
-export const useRegionQuery = (query: string | { x: string; y: string }) => {
-  const isStringTypeQuery = typeof query === 'string';
-  return useQuery({
-    queryKey: [REGION_QUERY_KEY, isStringTypeQuery, query],
-    queryFn: () => {
-      if (isStringTypeQuery) {
-        return fetcher<RegionType[]>(`${REGION_QUERY_KEY}?text=${query}`);
-      }
-      return fetcher<RegionType[]>(`${REGION_QUERY_KEY}?x=${query.x}&y=${query.y}`);
-    },
-    enabled: isStringTypeQuery || (Boolean(query.x) && Boolean(query.y)),
   });
 };
 
@@ -151,23 +134,6 @@ export const getPostsByLike = ({ page = 0, size = 20 }: PageParams) => {
   }
 };
 
-export const deleteUserRegion = (region: string) => {
-  return fetcherStatusWithToken(USER_REGION_QUERY_KEY, { method: 'DELETE', data: { region } });
-};
-
-export const createUserRegion = (region: string) => {
-  return fetcherStatusWithToken(USER_REGION_QUERY_KEY, { method: 'POST', data: { region } });
-};
-
-export const updateUserActivedRegion = (region: string) => {
-  return fetcherStatusWithToken(USER_ACTIVED_REGION_QUERY_KEY, {
-    method: 'PATCH',
-    data: {
-      region,
-    },
-  });
-};
-
 export const useRecordWalkCount = (id?: string) => {
   return useQuery({
     queryKey: [USER_QUERY_KEY, id, 'RECORD_WALK_COUNT'],
@@ -186,4 +152,15 @@ export const useRecordWalkDistance = (id?: string) => {
         id ? `${USER_QUERY_KEY}/record-walks/distance?user_id=${id}` : `${USER_QUERY_KEY}/record-walks/distance`,
       ),
   });
+};
+
+export const getUserSubmittedPosts = ({ page = 0, size = 20 }: PageParams) => {
+  try {
+    const data = fetcherWithToken<PageResponse<Post[]>>(`${USER_QUERY_KEY}/submitted-posts?size=${size}&page=${page}`);
+    return data;
+  } catch (err) {
+    if (err instanceof UserDeleteError) {
+      console.error(err.response.status);
+    }
+  }
 };

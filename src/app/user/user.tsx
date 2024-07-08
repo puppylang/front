@@ -21,7 +21,7 @@ import UserActivity from '@/components/UserActivity';
 import ApiErrorFallback from './error';
 import { IconCaretRight, IconEdit } from '../../../public/assets/svgs';
 
-export default function zUserComponent() {
+export default function UserComponent() {
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (
@@ -119,7 +119,7 @@ function User() {
           <ul className='text-text-1 mt-4'>
             <ProfileLinkList text='내 게시글' href='/user/posts' />
             <ProfileLinkList text='좋아요 목록' href='/user/liked-posts' />
-            {/* <ProfileLinkList text='산책 신청목록' href='/' /> */}
+            <ProfileLinkList text='산책 신청목록' href='/user/submitted-posts' />
             <ProfileLinkList text='산책 일지' href='/user/record-walks' border='none' />
           </ul>
         </Section.Container>

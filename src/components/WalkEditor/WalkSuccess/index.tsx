@@ -1,6 +1,7 @@
 'use client';
 
 import useNativeRouter from '@/hooks/useNativeRouter';
+import { StackPushRoute } from '@/types/route';
 import { WalkForm, WalkRole } from '@/types/walk';
 import { formatDate } from '@/utils/date';
 
@@ -18,7 +19,7 @@ interface WalkSuccessProps {
 function WalkSuccess({ type, data }: WalkSuccessProps) {
   const router = useNativeRouter();
 
-  const handleGoTO = () => router.push('/posts', { webviewPushPage: 'home' });
+  const handleGoTO = () => router.push('/posts', { webviewPushPage: StackPushRoute.Posts });
 
   return (
     <section id='walkSuccessForm' className='flex flex-col items-center bg-white w-full'>
@@ -54,7 +55,7 @@ function WalkSuccess({ type, data }: WalkSuccessProps) {
 
               <NativeLink
                 href='/posts'
-                webviewPushPage='posts'
+                webviewPushPage={StackPushRoute.Posts}
                 className='block w-full mt-4 bg-main-2 text-sm text-white text-center h-[45px] leading-[45px] rounded-[10px]'
               >
                 둘러보러 가기

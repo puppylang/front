@@ -1,73 +1,82 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useDeferredValue, useMemo, useState } from 'react';
+import { useDeferredValue, useState } from 'react';
 import { CgSpinner } from 'react-icons/cg';
 import { IoCloseCircle, IoCloseOutline, IoSearch } from 'react-icons/io5';
 
 import useDebounce from '@/hooks/useDebounce';
 import {
-  USER_QUERY_KEY,
-  createUserRegion,
-  deleteUserRegion,
-  updateUserActivedRegion,
+  ACTIVED_REGION_QUERY_KEY,
+  USER_REGION_QUERY_KEY,
+  createRegion,
+  deleteRegion,
+  updateActivedRegion,
+  useActiveRegionQuery,
   useRegionQuery,
-  useUserQuery,
-} from '@/services/user';
+  useUserRegionQuery,
+} from '@/services/region';
+import { USER_QUERY_KEY } from '@/services/user';
+import { ActivedRegion, UserRegion } from '@/types/region';
 import { UserType } from '@/types/user';
+import { formatRegionTitle } from '@/utils/region';
 
 import { HeaderNavigation } from '@/components/HeaderNavigation';
 import Toast from '@/components/Toast';
 
-export default function UserRegion() {
+export default function Region() {
   const [searchValue, setSearchValue] = useState('');
-  const [activeRegion, setActiveRegion] = useState('');
   const [position, setPosition] = useState({ x: '', y: '' });
   const [showsToast, setShowsToast] = useState(false);
   const [toastDescription, setDescription] = useState('');
-  const [updatingActivedRegion, setUpdatingActivedRegion] = useState('');
+  const [updatingActivedRegion, setUpdatingActivedRegion] = useState<number | undefined>(undefined);
 
   const debounceSearchValue = useDebounce(searchValue, 300);
   const deferredValue = useDeferredValue(debounceSearchValue);
 
-  const { data: regionInfos } = useRegionQuery(deferredValue || position);
-  const { data: user } = useUserQuery();
   const queryClient = useQueryClient();
 
-  const regions = useMemo(() => user?.region, [user]);
+  const { data: regionInfos } = useRegionQuery(deferredValue || position);
+  const { data: userRegions } = useUserRegionQuery();
+  const { data: activedRegion } = useActiveRegionQuery();
 
   const createRegionMutation = useMutation({
-    mutationFn: (region: string) => createUserRegion(region),
-    mutationKey: [USER_QUERY_KEY],
-    onSuccess: (_, variable) => {
-      queryClient.setQueryData([USER_QUERY_KEY], (oldData: UserType) => {
-        return { ...oldData, region: [...oldData.region, variable] };
+    mutationFn: (region: string) => createRegion(region),
+    mutationKey: [USER_REGION_QUERY_KEY],
+    onSuccess: data => {
+      queryClient.setQueryData([ACTIVED_REGION_QUERY_KEY], () => {
+        return { ...data, region_id: data.id };
+      });
+
+      queryClient.setQueryData([USER_REGION_QUERY_KEY], (oldData: UserRegion[]) => {
+        return [...oldData, data];
       });
     },
   });
 
   const deleteRegionMutation = useMutation({
-    mutationFn: (region: string) => deleteUserRegion(region),
-    mutationKey: [USER_QUERY_KEY],
+    mutationFn: (id: number) => deleteRegion(id),
+    mutationKey: [USER_REGION_QUERY_KEY],
     onSuccess: (_, variable) => {
-      setUpdatingActivedRegion('');
-      queryClient.setQueryData([USER_QUERY_KEY], (oldData: UserType) => {
-        return {
-          ...oldData,
-          region: oldData.region.filter(data => data !== variable),
-          actived_region: variable === oldData.actived_region ? null : oldData.actived_region,
-        };
+      setUpdatingActivedRegion(undefined);
+
+      queryClient.setQueryData([USER_REGION_QUERY_KEY], (oldData: UserRegion[]) => {
+        return oldData.filter(region => region.id !== variable);
       });
     },
   });
 
   const updateReigonMutation = useMutation({
-    mutationFn: (region: string) => updateUserActivedRegion(region),
+    mutationFn: (regionId: number) => updateActivedRegion(regionId),
     mutationKey: [USER_QUERY_KEY],
-    onSuccess: (_, variable) => {
-      setUpdatingActivedRegion('');
+    onSuccess: data => {
+      setUpdatingActivedRegion(undefined);
+      queryClient.setQueryData([ACTIVED_REGION_QUERY_KEY], (oldData: ActivedRegion | undefined) => {
+        return oldData ? { ...oldData, region_id: data.region_id } : data;
+      });
+
       queryClient.setQueryData([USER_QUERY_KEY], (oldData: UserType) => {
-        return { ...oldData, actived_region: variable };
+        return { ...oldData, actived_region: data };
       });
     },
   });
@@ -80,33 +89,30 @@ export default function UserRegion() {
   };
 
   const onClickAddRegionBtn = async (address: string) => {
-    if (user && user.region.length === 2) {
+    if (userRegions && userRegions.length === 2) {
       setShowsToast(true);
       setDescription('지역은 최대 2개까지 설정할 수 있습니다.');
       return;
     }
-    const isIncludedSameGeo = user && user.region.includes(address);
+
+    const isIncludedSameGeo = userRegions && Boolean(userRegions.find(region => region.region === address));
     if (isIncludedSameGeo) {
       setShowsToast(true);
       setDescription('중복된 지역이 존재합니다.');
       return;
     }
 
-    if (!activeRegion) {
-      setActiveRegion(address);
-    }
     createRegionMutation.mutate(address);
   };
 
-  const onClickDeleteRegionBtn = (address: string) => {
-    setUpdatingActivedRegion(address);
-    deleteRegionMutation.mutate(address);
+  const onClickDeleteRegionBtn = (id: number) => {
+    setUpdatingActivedRegion(id);
+    deleteRegionMutation.mutate(id);
   };
 
-  const onClickGeoBtn = async (address: string) => {
-    setActiveRegion(address);
-    setUpdatingActivedRegion(address);
-    updateReigonMutation.mutate(address);
+  const onClickActiveRegionBtn = async (id: number) => {
+    setUpdatingActivedRegion(id);
+    updateReigonMutation.mutate(id);
   };
 
   return (
@@ -126,15 +132,16 @@ export default function UserRegion() {
                 <span className='text-[12px] text-text-3'>동네는 최대 2개까지 설정할 수 있습니다.</span>
               </div>
 
-              {regions && user && (
+              {userRegions && (
                 <ul className='flex gap-x-2'>
-                  {regions.map(region => (
+                  {userRegions.map(region => (
                     <RegisterLocationList
-                      key={region}
-                      isActived={user.actived_region === region}
-                      address={region}
-                      isLoading={updatingActivedRegion === region}
-                      onClickRegionBtn={onClickGeoBtn}
+                      key={region.id}
+                      id={region.id}
+                      isActived={activedRegion?.region_id === region.id}
+                      address={region.region}
+                      isLoading={updatingActivedRegion === region.id}
+                      onClickRegionBtn={onClickActiveRegionBtn}
                       onClickDeleteBtn={onClickDeleteRegionBtn}
                     />
                   ))}
@@ -149,7 +156,7 @@ export default function UserRegion() {
                 <input
                   className='border border-gray-2 w-full rounded-[10px] px-10 py-[10px] text-sm text-text-2'
                   type='text'
-                  placeholder='지역을 입력해 주세요.'
+                  placeholder='동명(읍,면)으로 검색(ex. 작전동)'
                   value={searchValue}
                   onChange={({ target }) => setSearchValue(target.value)}
                 />
@@ -166,20 +173,27 @@ export default function UserRegion() {
                 현재 위치로 찾기
               </button>
 
+              {searchValue.length >= 1 && (
+                <p className='font-semibold text-sm text-text-2'>`{searchValue}` 검색 결과</p>
+              )}
+
               {regionInfos && (
                 <div className='region-info-container'>
-                  {regionInfos.length === 0 ? (
-                    <p className='text-[14px] text-text-2'>등록된 동네가 없어요.</p>
+                  {regionInfos.status === 'NOT_FOUND' ? (
+                    <div className='h-[200px] text-sm text-text-2 flex flex-col items-center justify-center gap-y-1'>
+                      {searchValue.length === 1 && <p>정확한 검색을 위해 2글자 이상 입력해주세요.</p>}
+                      <p>검색 결과가 존재하지 않아요.</p>
+                    </div>
                   ) : (
-                    <ul>
-                      {regionInfos.map(region => (
-                        <li key={region.address_name}>
+                    <ul className='max-h-[320px] overflow-scroll'>
+                      {regionInfos.regions.map(region => (
+                        <li key={region.title}>
                           <button
                             type='button'
-                            onClick={() => onClickAddRegionBtn(region.address_name)}
+                            onClick={() => onClickAddRegionBtn(region.title)}
                             className='block w-full text-left border-b border-gray-2 py-[13px] text-[14px]'
                           >
-                            <span className='text-text-1 text-[14px]'>{region.address_name}</span>
+                            <span className='text-text-1 text-[14px]'>{region.title}</span>
                           </button>
                         </li>
                       ))}
@@ -208,8 +222,9 @@ export default function UserRegion() {
 interface RegisterLocationListProps {
   isActived: boolean;
   address: string;
-  onClickDeleteBtn: (address: string) => void;
-  onClickRegionBtn: (address: string) => void;
+  id: number;
+  onClickDeleteBtn: (id: number) => void;
+  onClickRegionBtn: (id: number) => void;
   isLoading: boolean;
 }
 
@@ -219,6 +234,7 @@ function RegisterLocationList({
   onClickDeleteBtn,
   onClickRegionBtn,
   isLoading,
+  id,
 }: RegisterLocationListProps) {
   return (
     <li
@@ -234,11 +250,11 @@ function RegisterLocationList({
             type='button'
             disabled={isLoading}
             className='text-sm p-0 m-0 w-[100%] text-left'
-            onClick={() => onClickRegionBtn(address)}
+            onClick={() => onClickRegionBtn(id)}
           >
-            {address.split(' ')[2]}
+            {formatRegionTitle(address)}
           </button>
-          <button type='button' onClick={() => onClickDeleteBtn(address)}>
+          <button type='button' onClick={() => onClickDeleteBtn(id)}>
             <IoCloseOutline />
           </button>
         </>

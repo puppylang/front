@@ -1,13 +1,15 @@
 'use client';
 
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormEvent, useEffect, useState } from 'react';
 
 import RecordWalkItem from '@/components/RecordWalkList/RecordWalkItem';
-import { createResume } from '@/services/resume';
+import { RESUMES_KEY, createResume } from '@/services/resume';
 import { useUserQuery } from '@/services/user';
 import { useCalendarWalks } from '@/services/walk';
 import { Gender } from '@/types/pet';
-import { ResumeFormType } from '@/types/resume';
+import { CreateResumeType, Resume as ResumeType, ResumeFormType } from '@/types/resume';
+import { StackPushRoute } from '@/types/route';
 import { WalkRole } from '@/types/walk';
 
 import { Form } from '@/components/Form';
@@ -42,6 +44,20 @@ export default function Resume({ id, onClose, onSubmit }: ResumeProps) {
     to: '2024-05-31T14:59:59.999Z',
     role: WalkRole.PetOwner,
   });
+  const queryClient = useQueryClient();
+
+  const submitResumeMutation = useMutation({
+    mutationKey: [RESUMES_KEY, id],
+    mutationFn: (data: CreateResumeType) => createResume(data),
+    onSuccess: (_, variables) => {
+      setIsLoading(false);
+      onSubmit();
+
+      queryClient.setQueryData([RESUMES_KEY, id], (oldData: ResumeType[]) => {
+        return oldData.length ? [...oldData, variables] : [variables];
+      });
+    },
+  });
 
   const isDisabledSubmitBtn =
     formState.birth_year.length !== 4 ||
@@ -51,16 +67,13 @@ export default function Resume({ id, onClose, onSubmit }: ResumeProps) {
 
   const sendResume = async () => {
     if (!user) return;
-    const { status } = await createResume({
+
+    submitResumeMutation.mutate({
       ...formState,
       user_id: user.id,
       post_id: id,
       has_walk_record: Boolean(walkList?.length),
     });
-    if (status === 201) {
-      setIsLoading(false);
-      onSubmit();
-    }
   };
 
   const onSubmitResume = (event: FormEvent) => {
@@ -180,7 +193,7 @@ export default function Resume({ id, onClose, onSubmit }: ResumeProps) {
                 <p className='text-sm'>등록된 산책 기록이 없어요.</p>
                 <NativeLink
                   href='/walk-role'
-                  webviewPushPage='home'
+                  webviewPushPage={StackPushRoute.Walk}
                   className='bg-main-5 text-main-3 rounded-[10px] text-xs px-4 h-7 leading-7'
                 >
                   산책하러 가기
@@ -191,11 +204,11 @@ export default function Resume({ id, onClose, onSubmit }: ResumeProps) {
         </Form.Title>
 
         <div className='bg-white-1 fixed bottom-0 left-0 w-full pb-7 grid grid-cols-2 gap-2 px-4 pt-3 border-t text-sm'>
-          <button type='button' className='py-2 rounded-[9px] border border-main-1 text-main-1' onClick={onClose}>
+          <button type='button' className='py-2 rounded-[10px] border border-main-1 text-main-1' onClick={onClose}>
             취소
           </button>
           <button
-            className={`py-2 rounded-[9px] bg-main-1 text-white-1 ${isDisabledSubmitBtn && 'opacity-40'}`}
+            className={`py-2 rounded-[10px] bg-main-1 text-white-1 ${isDisabledSubmitBtn && 'opacity-40'}`}
             type='submit'
             disabled={isDisabledSubmitBtn}
           >
