@@ -3,7 +3,6 @@ import { ReactNode } from 'react';
 
 import { UserType } from '@/types/user';
 import { formatDateTime } from '@/utils/date';
-import { formatRegionTitle } from '@/utils/region';
 
 import { IconLocation } from '../../../public/assets/svgs';
 import { Profile } from '../Profile';
@@ -38,13 +37,13 @@ function PostTopInfo({ date, title, author, address, children }: PostTopInfoProp
                   />
                 </div>
               </Link>
-              <Link href={`/user/${author.id}`} className='flex items-center gap-x-1'>
+              <Link href={`/user/${author.id}`} className='flex items-center gap-x-1 flex-wrap'>
                 <span className='user-name text-xs text-text-1'>{author.name}</span>
 
                 {address && (
                   <div className='flex items-center gap-x-[2px]'>
                     <IconLocation />
-                    <span className='user-name text-xs text-text-1'>{formatRegionTitle(address)}</span>
+                    <span className='user-name text-xs text-text-1'>{address}</span>
                   </div>
                 )}
               </Link>
