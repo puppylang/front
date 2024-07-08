@@ -1,10 +1,10 @@
-import Link from 'next/link';
 import { ReactNode } from 'react';
 
 import { UserType } from '@/types/user';
 import { formatDateTime } from '@/utils/date';
 
 import { IconLocation } from '../../../public/assets/svgs';
+import NativeLink from '../NativeLink';
 import { Profile } from '../Profile';
 
 interface PostTopInfoProps {
@@ -26,7 +26,7 @@ function PostTopInfo({ date, title, author, address, children }: PostTopInfoProp
 
           {author && (
             <div className='user-info flex items-center gap-x-2'>
-              <Link href={`/user/${author.id}`}>
+              <NativeLink href={`/user/${author.id}`}>
                 <div className='flex justify-center items-center rounded-full overflow-hidden w-8 h-8'>
                   <Profile.User
                     image={author.image || ''}
@@ -36,8 +36,8 @@ function PostTopInfo({ date, title, author, address, children }: PostTopInfoProp
                     defaultUserDivClassName='bg-gray-3'
                   />
                 </div>
-              </Link>
-              <Link href={`/user/${author.id}`} className='flex items-center gap-x-1 flex-wrap'>
+              </NativeLink>
+              <NativeLink href={`/user/${author.id}`} className='flex items-center gap-x-1 flex-wrap'>
                 <span className='user-name text-xs text-text-1'>{author.name}</span>
 
                 {address && (
@@ -46,7 +46,7 @@ function PostTopInfo({ date, title, author, address, children }: PostTopInfoProp
                     <span className='user-name text-xs text-text-1'>{address}</span>
                   </div>
                 )}
-              </Link>
+              </NativeLink>
             </div>
           )}
         </div>
