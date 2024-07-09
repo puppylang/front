@@ -27,6 +27,8 @@ export default function NativeLink({
   const onClickLink = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
 
+    if (type === RouterMethod.UpdateToken) return;
+
     if (onClick) {
       onClick();
     }
