@@ -43,10 +43,23 @@ export const getPostsWithPaging = async ({ page = 0, size = 10, region }: PagePa
   }
 };
 
+// TODO
 export const usePostDetailQuery = (id: string) => {
   return useQuery({
     queryKey: [POST_KEY, id],
     queryFn: () => fetcherWithToken<Post>(`${POST_KEY}/${id}`),
+  });
+};
+
+export const getPostDetailSSR = (id: string | null, token?: string) => {
+  return fetcherWithSSRToken<Post>(`${POST_KEY}/${id}`, token);
+};
+
+export const usePostDetailSSRQuery = (id: string) => {
+  return useQuery({
+    queryKey: [POST_KEY, id],
+    queryFn: () => getPostDetailSSR(id),
+    staleTime: 5000,
   });
 };
 
