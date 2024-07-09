@@ -1,11 +1,25 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
+import { RouterMethod, WebviewRouter } from '@/types/route';
+
 import { getToken } from './token';
 
 export const requestURL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:8000'
     : 'https://mass-bonnie-puppylang-server-accb847f.koyeb.app';
+
+axios.interceptors.response.use(response => {
+  const token = response.headers.authorization;
+  if (window.ReactNativeWebView && token) {
+    const tokenMessage: WebviewRouter = {
+      token,
+      type: RouterMethod.UpdateToken,
+    };
+    window.ReactNativeWebView.postMessage(JSON.stringify(tokenMessage));
+  }
+  return response;
+});
 
 export const fetcher = async <T>(queryKey: string, axiosConfig?: AxiosRequestConfig) => {
   const { data } = await axios<T>({ ...axiosConfig, url: `${requestURL}${queryKey}` });
