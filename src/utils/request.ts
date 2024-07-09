@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-import { RouterMethod, WebviewRouter } from '@/types/route';
+import { WebviewActionType, WebviewRequestType } from '@/types/route';
 
 import { getToken } from './token';
 
@@ -12,9 +12,9 @@ export const requestURL =
 axios.interceptors.response.use(response => {
   const token = response.headers.authorization;
   if (window.ReactNativeWebView && token) {
-    const tokenMessage: WebviewRouter = {
+    const tokenMessage: WebviewRequestType = {
       token,
-      type: RouterMethod.UpdateToken,
+      type: WebviewActionType.UpdateToken,
     };
     window.ReactNativeWebView.postMessage(JSON.stringify(tokenMessage));
   }

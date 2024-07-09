@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useChatsQuery } from '@/services/chat';
 import { ChatWritterType, ChatRoom } from '@/types/chat';
 import { BOTTOM_NAVIGATION_HEIGHT } from '@/types/post';
-import { RouterMethod } from '@/types/route';
+import { WebviewActionType } from '@/types/route';
 import { formatDiffTime } from '@/utils/date';
 
 import NativeLink from '@/components/NativeLink';
@@ -90,7 +90,11 @@ function ChatRoomList({ chatRoom, type }: ChatRoomListProps) {
 
   return (
     <li>
-      <NativeLink className='flex flex-row gap-x-4 p-4' href={`/chat/${id}?postId=${post_id}`} type={RouterMethod.Push}>
+      <NativeLink
+        className='flex flex-row gap-x-4 p-4'
+        href={`/chat/${id}?postId=${post_id}`}
+        type={WebviewActionType.Push}
+      >
         <div className='w-[50px]'>
           <Profile.User
             image={userImage || ''}

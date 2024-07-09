@@ -3,7 +3,7 @@
 import { ReactNode } from 'react';
 import { IoIosArrowRoundBack, IoMdMore } from 'react-icons/io';
 
-import { RouterMethod } from '@/types/route';
+import { WebviewActionType } from '@/types/route';
 
 import NativeLink from '../NativeLink';
 
@@ -15,7 +15,7 @@ interface HeaderNavigationContainer {
 function Container({ children, className }: HeaderNavigationContainer) {
   return (
     <nav className={`sticky top-0 w-full px-4 py-3 h-14 bg-white flex items-center justify-center ${className || ''}`}>
-      <NativeLink type={RouterMethod.Back} href='' className='absolute left-4'>
+      <NativeLink type={WebviewActionType.Back} href='' className='absolute left-4'>
         <IoIosArrowRoundBack className='text-text-2 text-2xl font-bold' />
       </NativeLink>
       {children}

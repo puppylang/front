@@ -1,7 +1,7 @@
 import { NavigateOptions } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
-export interface WebviewRouter {
-  type: RouterMethod;
+export interface WebviewRequestType {
+  type: WebviewActionType;
 
   url?: string;
   isStack?: boolean;
@@ -9,7 +9,7 @@ export interface WebviewRouter {
   token?: string;
 }
 
-export enum RouterMethod {
+export enum WebviewActionType {
   Push = 'push',
   Replace = 'replace',
   Back = 'back',
