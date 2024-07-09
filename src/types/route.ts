@@ -13,6 +13,7 @@ export enum RouterMethod {
   Push = 'push',
   Replace = 'replace',
   Back = 'back',
+  UpdateToken = 'updateToken',
 }
 
 export interface CustomNavigateOptions extends NavigateOptions {
