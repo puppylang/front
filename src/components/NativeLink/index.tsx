@@ -2,7 +2,7 @@ import Link, { LinkProps } from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MouseEvent, ReactNode } from 'react';
 
-import { RouterMethod } from '@/types/route';
+import { WebviewActionType } from '@/types/route';
 
 interface NativeLinkProps extends LinkProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface NativeLinkProps extends LinkProps {
   isStack?: boolean;
   webviewPushPage?: string;
   className?: string;
-  type?: RouterMethod;
+  type?: WebviewActionType;
   onClick?: () => void;
 }
 
@@ -20,12 +20,14 @@ export default function NativeLink({
   className,
   webviewPushPage = 'detail',
   isStack = true,
-  type = RouterMethod.Push,
+  type = WebviewActionType.Push,
   ...props
 }: NativeLinkProps) {
   const router = useRouter();
   const onClickLink = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
+
+    if (type === WebviewActionType.UpdateToken) return;
 
     if (onClick) {
       onClick();
@@ -33,7 +35,7 @@ export default function NativeLink({
 
     const href = props.href as string;
     if (!window.ReactNativeWebView) {
-      if (type === RouterMethod.Back) {
+      if (type === WebviewActionType.Back) {
         router.back();
         return;
       }
@@ -45,7 +47,7 @@ export default function NativeLink({
     if (type === 'back') {
       window.ReactNativeWebView.postMessage(
         JSON.stringify({
-          type: RouterMethod.Back,
+          type: WebviewActionType.Back,
         }),
       );
       return;

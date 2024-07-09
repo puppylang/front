@@ -1,11 +1,11 @@
 import { useRouter } from 'next/navigation';
 
-import { CustomNavigateOptions, RouterMethod, WebviewRouter } from '@/types/route';
+import { CustomNavigateOptions, WebviewActionType, WebviewRequestType } from '@/types/route';
 
 export default function useNativeRouter() {
   const router = useRouter();
 
-  const sendMessageToWebview = (message: WebviewRouter) => {
+  const sendMessageToWebview = (message: WebviewRequestType) => {
     const { type, url, isStack, webviewPushPage, token } = message;
     window.ReactNativeWebView.postMessage(JSON.stringify({ type, url, isStack, pushPage: webviewPushPage, token }));
   };
@@ -13,7 +13,7 @@ export default function useNativeRouter() {
   const nativeRouter = (href: string, options?: CustomNavigateOptions) => {
     if (window.ReactNativeWebView) {
       sendMessageToWebview({
-        type: RouterMethod.Push,
+        type: WebviewActionType.Push,
         url: href,
         isStack: options?.isStack,
         webviewPushPage: options?.webviewPushPage,
@@ -27,7 +27,7 @@ export default function useNativeRouter() {
   const nativeReplace = (href: string, options?: CustomNavigateOptions) => {
     if (window.ReactNativeWebView) {
       sendMessageToWebview({
-        type: RouterMethod.Replace,
+        type: WebviewActionType.Replace,
         url: href,
         isStack: options?.isStack,
         webviewPushPage: options?.webviewPushPage,
@@ -42,7 +42,7 @@ export default function useNativeRouter() {
   const nativeBack = () => {
     if (window.ReactNativeWebView) {
       sendMessageToWebview({
-        type: RouterMethod.Back,
+        type: WebviewActionType.Back,
       });
       return;
     }

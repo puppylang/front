@@ -18,11 +18,7 @@ export const saveToken = (token: string) => {
 };
 
 export const isWebview = () => {
-  const { userAgent } = navigator;
-  const isMobile = /Mobi|Android/i.test(userAgent);
-  const isTablet = /Tablet|iPad/i.test(userAgent);
-
-  return isMobile || isTablet;
+  return Boolean(window.ReactNativeWebView);
 };
 
 export const deleteCookie = () => {

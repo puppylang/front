@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { createReport } from '@/services/report';
 import { useUserQuery } from '@/services/user';
-import { RouterMethod } from '@/types/route';
+import { WebviewActionType } from '@/types/route';
 
 import { BottomSheet, SheetButton } from '@/components/BottomSheet';
 import { Form } from '@/components/Form';
@@ -94,7 +94,7 @@ export default function Report() {
 
           <div className='fixed left-[50%] bottom-0 translate-x-[-50%] w-full container bg-white-1 p-4 border-t flex gap-x-2'>
             <NativeLink
-              type={RouterMethod.Back}
+              type={WebviewActionType.Back}
               href=''
               className='py-2 flex-1 rounded-[10px] border border-main-1 text-main-1 text-center'
             >
