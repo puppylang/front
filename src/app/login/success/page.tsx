@@ -1,14 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Lottie from 'react-lottie-player';
 
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { getAppleAuth, getKakaoAuth, getNaverAuth } from '@/services/user';
 import { LoggedFrom } from '@/types/user';
 import { saveToken } from '@/utils/token';
 
-import { LoddingJSON } from '../../../../public/assets/json';
+import Loading from '@/components/Loading';
 
 export default function LoginSuccess() {
   const [isFirstLogin, setIsFirstLogin] = useState<boolean>();
@@ -72,7 +71,7 @@ export default function LoginSuccess() {
 
   return (
     <div className='h-screen flex flex-col items-center justify-center'>
-      <Lottie loop animationData={LoddingJSON} play className='w-36' />
+      <Loading />
     </div>
   );
 }
