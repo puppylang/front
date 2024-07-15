@@ -7,8 +7,9 @@ import NativeLink from '@/components/NativeLink';
 export default function NotFound() {
   return (
     <section className='flex flex-col justify-center items-center h-screen p-4'>
-      <h2 className='font-Jalnan text-text-1 mb-1'>페이지가 존재하지 않습니다.</h2>
-      <p className='text-sm text-text-2 text-center mb-3'>불편을 드려 죄송합니다.</p>
+      <h2 className='font-Jalnan text-text-1 mb-2'>요청하신 페이지를 찾을 수 없습니다.</h2>
+      <p className='text-text-2 text-sm'>페이지의 주소가 잘못되었습니다.</p>
+      <p className='text-text-2 text-sm mb-4'>입력하신 주소가 정확한지 다시 한번 확인해 주세요.</p>
       <NativeLink
         href='/'
         webviewPushPage={StackPushRoute.Login}
