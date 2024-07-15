@@ -48,7 +48,7 @@ function PostDetail({ id }: { id: string }) {
 
   const router = useNativeRouter();
 
-  const isLoading = isPostLoading && isUserLoading && isResumeLoading;
+  const isLoading = isPostLoading || isUserLoading || isResumeLoading;
 
   const isMyPost = user && postData && user.id === postData.author?.id;
   const filteredMyResume = resumes && user ? resumes.filter(resume => resume.user_id === user.id) : [];
