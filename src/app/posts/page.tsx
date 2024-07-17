@@ -1,8 +1,8 @@
 'use client';
 
+import * as Sentry from '@sentry/nextjs';
 import { QueryErrorResetBoundary, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Suspense, useMemo, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { CgSpinner } from 'react-icons/cg';
 
 import PostListSkeletonUI from '@/components/SkeletonUI/PostListSkeletonUI';
@@ -26,18 +26,13 @@ import { Section } from '@/components/Section';
 
 import PostList from './PostList';
 import UserActivedRegionSheet from './UserActivedRegionSheet';
-import ApiErrorFallback from '../user/error';
 
 export default function PostComponent() {
   return (
     <QueryErrorResetBoundary>
-      {({ reset }) => (
-        <ErrorBoundary FallbackComponent={ApiErrorFallback} onReset={reset}>
-          <Suspense fallback={<Loading />}>
-            <Post />
-          </Suspense>
-        </ErrorBoundary>
-      )}
+      <Suspense fallback={<Loading />}>
+        <Post />
+      </Suspense>
     </QueryErrorResetBoundary>
   );
 }
@@ -124,6 +119,14 @@ function Post() {
     handleTopSheet();
     setIsEditingActiveRegion(true);
   };
+
+  useEffect(() => {
+    if (!user) return;
+    Sentry.setUser({
+      Name: user.name,
+      ID: user.id,
+    });
+  }, [user]);
 
   return (
     <>
