@@ -41,14 +41,18 @@ class CustomAxiosError extends AxiosError {
 
 axios.interceptors.response.use(
   response => {
-    const token = response.headers.authorization;
-    if (window.ReactNativeWebView && token) {
-      const tokenMessage: WebviewRequestType = {
-        token,
-        type: WebviewActionType.UpdateToken,
-      };
-      window.ReactNativeWebView.postMessage(JSON.stringify(tokenMessage));
+    if (typeof window !== 'undefined') {
+      const token = response.headers.authorization;
+      if (window.ReactNativeWebView && token) {
+        const tokenMessage: WebviewRequestType = {
+          token,
+          type: WebviewActionType.UpdateToken,
+        };
+        window.ReactNativeWebView.postMessage(JSON.stringify(tokenMessage));
+      }
+      return response;
     }
+
     return response;
   },
   error => {
@@ -99,7 +103,7 @@ export const fetcherStatusWithToken = async <T>(queryKey: string, axiosConfig?: 
 export const fetcherWithSSRToken = async <T>(queryKey: string, token?: string, axiosConfig?: AxiosRequestConfig) => {
   let clientSideCookie;
   if (typeof window !== 'undefined') {
-    // Client Side Rendering get cookie
+    // Client Side  get cookie
     const cookie = document.cookie.split('; ').find(row => row.startsWith('token'));
     clientSideCookie = cookie ? cookie.split('=')[1] : undefined;
   }
