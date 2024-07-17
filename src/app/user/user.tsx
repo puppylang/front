@@ -2,7 +2,6 @@
 
 import { QueryErrorResetBoundary, useQueryClient } from '@tanstack/react-query';
 import { Suspense, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 
 import MyPageSkeleton from '@/components/SkeletonUI/MyPageSkeleton';
 import useNativeRouter from '@/hooks/useNativeRouter';
@@ -18,19 +17,14 @@ import { Profile } from '@/components/Profile';
 import { Section } from '@/components/Section';
 import UserActivity from '@/components/UserActivity';
 
-import ApiErrorFallback from './error';
 import { IconCaretRight, IconEdit } from '../../../public/assets/svgs';
 
 export default function UserComponent() {
   return (
     <QueryErrorResetBoundary>
-      {({ reset }) => (
-        <ErrorBoundary FallbackComponent={ApiErrorFallback} onReset={reset}>
-          <Suspense fallback={<Loading />}>
-            <User />
-          </Suspense>
-        </ErrorBoundary>
-      )}
+      <Suspense fallback={<Loading />}>
+        <User />
+      </Suspense>
     </QueryErrorResetBoundary>
   );
 }

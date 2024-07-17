@@ -2,7 +2,6 @@
 
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
@@ -15,18 +14,12 @@ import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
 import { PostSection } from '@/components/Post';
 
-import ApiErrorFallback from '../user/error';
-
 export default function WalkRolePickerComponent() {
   return (
     <QueryErrorResetBoundary>
-      {({ reset }) => (
-        <ErrorBoundary FallbackComponent={ApiErrorFallback} onReset={reset}>
-          <Suspense fallback={<Loading />}>
-            <WalkRolePicker />
-          </Suspense>
-        </ErrorBoundary>
-      )}
+      <Suspense fallback={<Loading />}>
+        <WalkRolePicker />
+      </Suspense>
     </QueryErrorResetBoundary>
   );
 }
