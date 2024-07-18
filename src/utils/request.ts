@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
 import { WebviewActionType, WebviewRequestType } from '@/types/route';
 
@@ -9,17 +9,56 @@ export const requestURL =
     ? 'http://localhost:8000'
     : 'https://mass-bonnie-puppylang-server-accb847f.koyeb.app';
 
-axios.interceptors.response.use(response => {
-  const token = response.headers.authorization;
-  if (window.ReactNativeWebView && token) {
-    const tokenMessage: WebviewRequestType = {
-      token,
-      type: WebviewActionType.UpdateToken,
-    };
-    window.ReactNativeWebView.postMessage(JSON.stringify(tokenMessage));
+class CustomAxiosError extends AxiosError {
+  constructor(error: AxiosError) {
+    super(error.message);
+    const errorStatus = error.response?.status || 0;
+    let name: string;
+
+    switch (errorStatus) {
+      case 400:
+        name = 'ApiBadRequestError';
+        break;
+      case 401:
+        name = 'ApiUnauthorizedError';
+        break;
+
+      case 404:
+        name = 'ApiNotFoundError';
+        break;
+      case 500:
+        name = 'ApiInternalServerError';
+        break;
+      default:
+        name = 'Api Error';
+        break;
+    }
+
+    this.status = errorStatus;
+    this.name = name;
   }
-  return response;
-});
+}
+
+axios.interceptors.response.use(
+  response => {
+    if (typeof window !== 'undefined') {
+      const token = response.headers.authorization;
+      if (window.ReactNativeWebView && token) {
+        const tokenMessage: WebviewRequestType = {
+          token,
+          type: WebviewActionType.UpdateToken,
+        };
+        window.ReactNativeWebView.postMessage(JSON.stringify(tokenMessage));
+      }
+      return response;
+    }
+
+    return response;
+  },
+  error => {
+    throw new CustomAxiosError(error);
+  },
+);
 
 export const fetcher = async <T>(queryKey: string, axiosConfig?: AxiosRequestConfig) => {
   const { data } = await axios<T>({ ...axiosConfig, url: `${requestURL}${queryKey}` });
@@ -64,7 +103,7 @@ export const fetcherStatusWithToken = async <T>(queryKey: string, axiosConfig?: 
 export const fetcherWithSSRToken = async <T>(queryKey: string, token?: string, axiosConfig?: AxiosRequestConfig) => {
   let clientSideCookie;
   if (typeof window !== 'undefined') {
-    // Client Side Rendering get cookie
+    // Client Side  get cookie
     const cookie = document.cookie.split('; ').find(row => row.startsWith('token'));
     clientSideCookie = cookie ? cookie.split('=')[1] : undefined;
   }

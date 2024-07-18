@@ -12,7 +12,7 @@ export const useChatsQuery = (type: ChatWritterType) => {
   return useQuery({
     queryKey: [CHATS_QUERY_KEY, type],
     queryFn: () => fetcherWithToken<ChatRoom[]>(`${CHATS_QUERY_KEY}?type=${type}`),
-    staleTime: 0,
+    staleTime: 60,
   });
 };
 
