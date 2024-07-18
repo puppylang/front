@@ -36,7 +36,7 @@ export default function Region() {
 
   const queryClient = useQueryClient();
 
-  const { data: regionInfos } = useRegionQuery(deferredValue || position);
+  const { data: regionInfos, isLoading } = useRegionQuery(deferredValue || position);
   const { data: userRegions } = useUserRegionQuery();
   const { data: activedRegion } = useActiveRegionQuery();
 
@@ -66,7 +66,7 @@ export default function Region() {
     },
   });
 
-  const updateReigonMutation = useMutation({
+  const updateRegionMutation = useMutation({
     mutationFn: (regionId: number) => updateActivedRegion(regionId),
     mutationKey: [USER_QUERY_KEY],
     onSuccess: data => {
@@ -112,7 +112,7 @@ export default function Region() {
 
   const onClickActiveRegionBtn = async (id: number) => {
     setUpdatingActivedRegion(id);
-    updateReigonMutation.mutate(id);
+    updateRegionMutation.mutate(id);
   };
 
   return (
@@ -175,6 +175,12 @@ export default function Region() {
 
               {searchValue.length >= 1 && (
                 <p className='font-semibold text-sm text-text-2'>`{searchValue}` 검색 결과</p>
+              )}
+
+              {isLoading && (
+                <div className='mt-3'>
+                  <CgSpinner className='text-main-3 animate-spin w-10 h-10 m-[0_auto]' />
+                </div>
               )}
 
               {regionInfos && (
