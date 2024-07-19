@@ -30,10 +30,14 @@ export const getPosts = async () => {
   }
 };
 
-export const getPostsWithPaging = async ({ page = 0, size = 10, region }: PageParams & { region: string }) => {
+export const getPostsWithPaging = async ({
+  page = 0,
+  size = 10,
+  region,
+}: PageParams & { region: string | undefined }) => {
   try {
     const data = await fetcherWithToken<PageResponse<Post[]>>(
-      `${POST_KEY}?size=${size}&page=${page}${region ? `&region=${region}` : ''}`,
+      `${POST_KEY}?page=${page}&size=${size}${region ? `&region=${region}` : ''}`,
     );
     return data;
   } catch (err) {
