@@ -1,13 +1,14 @@
 'use client';
 
-import { QueryErrorResetBoundary, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Suspense, useMemo, useState } from 'react';
+import { QueryErrorResetBoundary, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useRef, useEffect, useMemo, useState, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { CgSpinner } from 'react-icons/cg';
 
-import PostListSkeletonUI from '@/components/SkeletonUI/PostListSkeletonUI';
+import { PostSkeletonUI } from '@/components/SkeletonUI/PostListSkeletonUI';
 import useNativeRouter from '@/hooks/useNativeRouter';
 import { usePetQuery } from '@/services/pet';
+import { getPostsWithPaging } from '@/services/post';
 import {
   ACTIVED_REGION_QUERY_KEY,
   updateActivedRegion,
@@ -19,7 +20,6 @@ import { BOTTOM_NAVIGATION_HEIGHT, PostAlertConfig } from '@/types/post';
 import { formatRegionTitle } from '@/utils/region';
 
 import Alert from '@/components/Alert';
-import Loading from '@/components/Loading';
 import NativeLink from '@/components/NativeLink';
 import { PetCardList } from '@/components/PetCardList';
 import { Section } from '@/components/Section';
@@ -33,7 +33,7 @@ export default function PostComponent() {
     <QueryErrorResetBoundary>
       {({ reset }) => (
         <ErrorBoundary FallbackComponent={ApiErrorFallback} onReset={reset}>
-          <Suspense fallback={<Loading />}>
+          <Suspense fallback={<PostSkeletonUI.Container bgColor='bg-gray-200' />}>
             <Post />
           </Suspense>
         </ErrorBoundary>
@@ -46,19 +46,58 @@ function Post() {
   const router = useNativeRouter();
   const queryClient = useQueryClient();
 
-  const { data: user } = useUserQuery();
-  const { data: pets } = usePetQuery();
-  const { data: regions } = useUserRegionQuery();
+  const { data: user, isLoading: isUserLoading } = useUserQuery();
+  const { data: regions, isLoading: isRegionLoading } = useUserRegionQuery();
   const { data: activedRegion, isLoading: isActivedRegionLoading } = useActiveRegionQuery();
+  const { data: pets, isLoading: isPetLoading } = usePetQuery();
 
+  const [isEditingActiveRegion, setIsEditingActiveRegion] = useState(false);
+  const [isTopSheetOpen, setIsTopSheetOpen] = useState(false);
   const [alertConfig, setAlertConfig] = useState<PostAlertConfig>({
     type: null,
     isOpen: false,
     title: '',
     message: '',
   });
-  const [isEditingActiveRegion, setIsEditingActiveRegion] = useState(false);
-  const [isTopSheetOpen, setIsTopSheetOpen] = useState(false);
+  const observerEl = useRef<HTMLDivElement | null>(null);
+
+  const userActivedRegion = useMemo(() => activedRegion || null, [activedRegion]);
+
+  const userRegions = useMemo(() => {
+    if (!regions || regions.length < 1) return [];
+
+    const sortedRegion = regions.sort((a, b) => {
+      if (!userActivedRegion) return 0;
+
+      if (a.id === userActivedRegion?.region_id) return -1;
+
+      if (b.id === userActivedRegion?.region_id) return 1;
+
+      return 0;
+    });
+
+    return sortedRegion;
+  }, [regions, userActivedRegion]);
+
+  const currentActivedRegion =
+    userActivedRegion && userRegions.find(region => region.id === userActivedRegion.region_id);
+
+  const {
+    data: posts,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ['posts', currentActivedRegion?.region],
+    queryFn: ({ pageParam }) => getPostsWithPaging({ page: pageParam, region: currentActivedRegion?.region, size: 1 }),
+    initialPageParam: 0,
+    getNextPageParam: lastPage => {
+      if (!lastPage) return undefined;
+      return lastPage.last ? undefined : (lastPage.page || 0) + 1;
+    },
+    select: data => (data.pages ?? []).flatMap(page => page?.content ?? []),
+  });
 
   const updateActivedRegionMutation = useMutation({
     mutationFn: (regionId: number) => updateActivedRegion(regionId),
@@ -71,29 +110,7 @@ function Post() {
     },
   });
 
-  const userActivedRegion = useMemo(() => activedRegion || null, [activedRegion]);
-
-  const userRegions = useMemo(() => {
-    if (!regions || regions.length < 1) return [];
-
-    const sortedRegion = regions.sort((a, b) => {
-      if (!userActivedRegion) {
-        return 0;
-      }
-      if (a.id === userActivedRegion?.region_id) {
-        return -1;
-      }
-      if (b.id === userActivedRegion?.region_id) {
-        return 1;
-      }
-      return 0;
-    });
-
-    return sortedRegion;
-  }, [regions, userActivedRegion]);
-
-  const currentActivedRegion =
-    userActivedRegion && userRegions.find(region => region.id === userActivedRegion.region_id);
+  const handleTopSheet = () => setIsTopSheetOpen(prev => !prev);
 
   const handleClickWrite = () => {
     if (!userActivedRegion) {
@@ -117,13 +134,31 @@ function Post() {
     router.push('/posts/write');
   };
 
-  const handleTopSheet = () => setIsTopSheetOpen(prev => !prev);
-
   const handleUpdateActivedRegion = (id: number) => {
     updateActivedRegionMutation.mutate(id);
     handleTopSheet();
     setIsEditingActiveRegion(true);
   };
+
+  useEffect(() => {
+    const currentObserverEl = observerEl.current;
+    const observe = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    });
+    if (currentObserverEl) {
+      observe.observe(currentObserverEl);
+    }
+
+    return () => {
+      if (currentObserverEl) {
+        observe.disconnect();
+      }
+    };
+  }, [hasNextPage, fetchNextPage]);
+
+  const isLoading = status === 'pending' || isUserLoading || isRegionLoading || isPetLoading || posts === undefined;
 
   return (
     <>
@@ -153,64 +188,73 @@ function Post() {
         </Section.Container>
       </section>
 
-      <section className='pet-info-container flex flex-col items-center'>
-        <Section.Container className='flex flex-col py-[0px] '>
-          <Section.Title title='저의 사랑스러운 반려견입니다! 🐾' />
-          <PetCardList pets={pets} type='slide' />
-        </Section.Container>
-        <div className='' />
-      </section>
+      {isLoading && <PostSkeletonUI.Container bgColor='bg-gray-200' />}
 
-      <section className={`post-container flex flex-col items-center pb-[${BOTTOM_NAVIGATION_HEIGHT}px]`}>
-        <Section.Container className='flex flex-col gap-4'>
-          <div className='flex items-center justify-between'>
-            <Section.Title title='산책해주실 분을 구하고 있어요 ! :)' className='mb-[0px]' />
+      {!isLoading && (
+        <>
+          <section className='pet-info-container flex flex-col items-center'>
+            <Section.Container className='flex flex-col py-[0px] '>
+              <Section.Title title='저의 사랑스러운 반려견입니다! 🐾' />
+              <PetCardList pets={pets} type='slide' />
+            </Section.Container>
+          </section>
 
-            <button
-              type='button'
-              className='text-sm px-5 pb-1 h-[35px] leading-[33px] rounded-[10px] bg-white-1 border-[1px] border-gray-1 text-text-2'
-              onClick={handleClickWrite}
-            >
-              글쓰기
-            </button>
-          </div>
+          <section className={`post-container flex flex-col items-center pb-[${BOTTOM_NAVIGATION_HEIGHT}px]`}>
+            <Section.Container className='flex flex-col gap-4'>
+              <div className='flex items-center justify-between'>
+                <Section.Title title='산책해주실 분을 구하고 있어요 ! :)' className='mb-[0px]' />
 
-          {isActivedRegionLoading && <PostListSkeletonUI />}
+                <button
+                  type='button'
+                  className='text-sm px-5 pb-1 h-[35px] leading-[33px] rounded-[10px] bg-white-1 border-[1px] border-gray-1 text-text-2'
+                  onClick={handleClickWrite}
+                >
+                  글쓰기
+                </button>
+              </div>
 
-          {!isActivedRegionLoading && !userActivedRegion ? (
-            <div className='flex flex-col justify-center items-center gap-y-2 h-[300px]'>
-              <p className='text-text-2 font-Jalnan'>등록된 동네가 없습니다.</p>
-              <NativeLink
-                href='/user/region'
-                webviewPushPage='home'
-                className='bg-main-2 text-white text-xs px-6 py-2 rounded-[10px]'
-              >
-                등록하러가기
-              </NativeLink>
-            </div>
-          ) : (
-            currentActivedRegion && <PostList region={currentActivedRegion.region} />
+              {!isActivedRegionLoading && !userActivedRegion ? (
+                <div className='flex flex-col justify-center items-center gap-y-2 h-[300px]'>
+                  <p className='text-text-2 font-Jalnan'>등록된 동네가 없습니다.</p>
+                  <NativeLink
+                    href='/user/region'
+                    webviewPushPage='home'
+                    className='bg-main-2 text-white text-xs px-6 py-2 rounded-[10px]'
+                  >
+                    등록하러가기
+                  </NativeLink>
+                </div>
+              ) : (
+                currentActivedRegion && (
+                  <>
+                    <PostList posts={posts} />
+                    {isFetchingNextPage && <PostSkeletonUI.Item bgColor='bg-gray-200' />}
+                    <div ref={observerEl} className='h-[20px]' />
+                  </>
+                )
+              )}
+            </Section.Container>
+          </section>
+
+          <Alert
+            title={alertConfig.title}
+            message={alertConfig.message}
+            isOpen={alertConfig.isOpen}
+            buttonText='등록하러가기'
+            onClick={() => router.push(alertConfig.type === 'PET' ? '/pets/new' : '/user/region')}
+            onClose={() => setAlertConfig({ type: null, isOpen: false, title: '', message: '' })}
+          />
+
+          {user && userRegions && (
+            <UserActivedRegionSheet
+              isOpen={isTopSheetOpen}
+              regions={userRegions}
+              activedRegion={userActivedRegion}
+              onClick={handleUpdateActivedRegion}
+              onClose={handleTopSheet}
+            />
           )}
-        </Section.Container>
-      </section>
-
-      <Alert
-        title={alertConfig.title}
-        message={alertConfig.message}
-        isOpen={alertConfig.isOpen}
-        buttonText='등록하러가기'
-        onClick={() => router.push(alertConfig.type === 'PET' ? '/pets/new' : '/user/region')}
-        onClose={() => setAlertConfig({ type: null, isOpen: false, title: '', message: '' })}
-      />
-
-      {user && userRegions && (
-        <UserActivedRegionSheet
-          isOpen={isTopSheetOpen}
-          regions={userRegions}
-          activedRegion={userActivedRegion}
-          onClick={handleUpdateActivedRegion}
-          onClose={handleTopSheet}
-        />
+        </>
       )}
     </>
   );
