@@ -12,11 +12,11 @@ function UserProfile() {
   );
 }
 
-function UserPet() {
+function UserPet({ petBGColor = 'bg-bg-blue' }: { petBGColor?: string }) {
   return (
     <div className='animate-pulse flex flex-col gap-y-4 '>
-      <div className='w-[100px] h-4 rounded-[10px] bg-bg-blue' />
-      <PetCardSkeletonUI bgColor='bg-bg-blue' />
+      <div className={`w-[100px] h-4 rounded-[10px] bg-bg-blue ${petBGColor || ''}`} />
+      <PetCardSkeletonUI bgColor={`${petBGColor || ''}`} />
     </div>
   );
 }
