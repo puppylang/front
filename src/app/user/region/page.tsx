@@ -185,7 +185,7 @@ export default function Region() {
                       <p>검색 결과가 존재하지 않아요.</p>
                     </div>
                   ) : (
-                    <ul className='max-h-[320px] overflow-scroll'>
+                    <ul className='max-h-[320px] overflow-y-auto'>
                       {regionInfos.regions.map(region => (
                         <li key={region.title}>
                           <button
