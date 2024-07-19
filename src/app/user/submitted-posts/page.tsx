@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import PostListSkeletonUI from '@/components/SkeletonUI/PostListSkeletonUI';
+import { PostSkeletonUI } from '@/components/SkeletonUI/PostListSkeletonUI';
 import { getUserSubmittedPosts } from '@/services/user';
 import { Post } from '@/types/post';
 
@@ -72,7 +72,7 @@ function UserSubmittedPosts() {
         <h1 className='overflow-hidden absolute w-0 h-0 leading-0 indent-[-99999px]'>산책 신청목록</h1>
 
         <div className='post-list p-4'>
-          {submittedPosts.length === 0 && isFetching && <PostListSkeletonUI />}
+          {submittedPosts.length === 0 && isFetching && <PostSkeletonUI.List />}
 
           {submittedPosts.length !== 0 && (
             <>
